@@ -11,9 +11,6 @@ class Queue {
 		if (queueSize < 0) {
 			throw Exception("Param 'queueSize' must not be less than 0")
 		}
-		if (queueSize < 0) {
-			throw Exception("Param 'queueSize' must not be less than 0")
-		}
 		this.queueSize := queueSize
 		return this
 	}
