@@ -111,7 +111,8 @@ class MathTest extends TestCase {
 		this.assertException(Math, "log", "", "", 2, "text")
 		this.assertException(Math, "log", "", "", "text", 52)
 		this.assertException(Math, "log", "", "", "text", "text")
-		this.assertEquals(Math.log(2, 52), 5.70044)
+		this.assertEquals(Math.log(2, 8), 3)
+		this.assertEquals(Math.log(2, 52), 5.7004397181410926)
 	}
 
 	@Test_prime() {

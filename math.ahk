@@ -1,3 +1,7 @@
+#Include %A_LineFile%\..\modules\math
+#Include MathHelper.ahk
+#Include PrimeFactorProduct.ahk
+
 class Math {
 
 	requires() {
@@ -16,112 +20,112 @@ class Math {
 				. "' is not allowed")
 	}
 
-	swap(ByRef p1, ByRef p2) {
-		_temp := p1
-		p1 := p2
-		p2 := _temp
+	swap(ByRef firstElement, ByRef secondElement) {
+		tempElement := firstElement
+		firstElement := secondElement
+		secondElement := tempElement
 	}
 
-	floor(p*) {
-		return MathHelper.floorCeil("floor", Math.MAX_INT, p)
+	floor(elements*) {
+		return MathHelper.floorCeil("floor", Math.MAX_INT, elements)
 	}
 
-	ceil(p*) {
-		return MathHelper.floorCeil("ceil", Math.MIN_INT, p)
+	ceil(elements*) {
+		return MathHelper.floorCeil("ceil", Math.MIN_INT, elements)
 	}
 
-	limitTo(pnValue, pnMin, pnMax) {
-		if (pnValue >= pnMin && pnValue <= pnMax) {
-			return pnValue
+	limitTo(number, minimum, maximum) {
+		if (number >= minimum && number <= maximum) {
+			return number
 		}
-		if (pnValue > pnMax) {
-			return pnMax
+		if (number > maximum) {
+			return maximum
 		} else {
-			return pnMin
+			return minimum
 		}
 	}
 
-	isEven(piValue) {
-		if piValue is not integer
+	isEven(number) {
+		if number is not integer
 		{
 			throw Exception("Invalid data type, integer expected"
-					, -1, "<" piValue ">")
+					, -1, "<" number ">")
 		}
-		return Mod(piValue, 2) = 0
+		return Mod(number, 2) = 0
 	}
 
-	isOdd(piValue) {
-		if piValue is not integer
+	isOdd(number) {
+		if number is not integer
 		{
 			throw Exception("Invalid data type, integer expected"
-					, -1, "<" piValue ">")
+					, -1, "<" number ">")
 		}
-		return Mod(piValue, 2) != 0
+		return Mod(number, 2) != 0
 	}
 
-	isFractional(pnValue) {
-		_ff := A_FormatFloat
+	isFractional(number) {
+		tempFloatFormat := A_FormatFloat
 		SetFormat Float, 0.0
-		_intValue := pnValue + 0
-		SetFormat Float, %_ff%
-		return pnValue - _intValue != 0
+		integerShare := number + 0
+		SetFormat Float, %tempFloatFormat%
+		return number - integerShare != 0
 	}
 
-	root(piDegreeOfRoot, pnValue) {
-		if piDegreeOfRoot is not integer
+	root(degreeOfRoot, number) {
+		if degreeOfRoot is not integer
 		{
 			throw Exception("Invalid data type, integer excpected"
-					, -1, "<" piDegreeOfRoot ">")
+					, -1, "<" degreeOfRoot ">")
 		}
-		if pnValue is not number
+		if number is not number
 		{
 			throw Exception("Invalid data type, number expected"
-					, -1, "<" pnValue ">")
+					, -1, "<" number ">")
 		}
-		_floatFormat := A_FormatFloat
+		tempFloatFormat := A_FormatFloat
 		SetFormat Float, 0.14 						; FIXME: with 0.15 Math.Root(5, 2476099) returns 19.000000000000004
-		_root := pnValue**(1 / piDegreeOfRoot)
-		SetFormat Float, %_floatFormat%
-		return _root
+		rootOfNumber := number**(1 / degreeOfRoot)
+		SetFormat Float, %tempFloatFormat%
+		return rootOfNumber
 	}
 
-	log(piBase, pnValue) {
-		if piBase is not integer
+	log(base, exponent) {
+		if base is not integer
 		{
 			throw Exception("Invalid data type, integer excpected"
-					, -1, "<" piBase ">")
+					, -1, "<" base ">")
 		}
-		if pnValue is not number
+		if exponent is not number
 		{
 			throw Exception("Invalid data type, number excpected"
-					, -1, "<" pnValue ">")
+					, -1, "<" exponent ">")
 		}
-		_floatFormat := A_FormatFloat
+		tempFloatFormat := A_FormatFloat
 		SetFormat Float, 0.16
-		_n := Log(pnValue) / Log(piBase)
-		SetFormat Float, %_floatFormat%
-		return Log(pnValue) / Log(piBase)
+		logarithm := Log(exponent) / Log(base)
+		SetFormat Float, %tempFloatFormat%
+		return logarithm
 	}
 
-	isPrime(piValue) {
-		if piValue is not integer
+	isPrime(number) {
+		if number is not integer
 		{
 			throw Exception("Invalid data type, integer excpected"
-					, -1, "<" piValue ">")
+					, -1, "<" number ">")
 		}
-		if (piValue = 1) {
+		if (number == 1) {
 			return false
 		}
-		if (piValue >= 10) {
-			cLastDigit := SubStr(piValue, 0)
+		if (number >= 10) {
+			cLastDigit := SubStr(number, 0)
 			if cLastDigit not in 1,3,7,9
 			{
 				return false
 			}
 		}
 		i := 2
-		while (i * i <= piValue) {
-			if (Mod(piValue, i) = 0) {
+		while (i * i <= number) {
+			if (Mod(number, i) = 0) {
 				return false
 			}
 			i++
@@ -129,123 +133,131 @@ class Math {
 		return true
 	}
 
-	integerFactorization(pnValue) {
-		if pnValue is not number
+	integerFactorization(number) {
+		if number is not number
 		{
 			throw Exception("Invalid data type, number expected"
-					, -1, "<" pnValue ">")
+					, -1, "<" number ">")
 		}
-		if pnValue is not integer
+		if number is not integer
 		{
-			return new PrimeFactorProduct(pnValue)
+			return new PrimeFactorProduct(number)
 		}
-		if (Math.isPrime(pnValue)) {
-			return new PrimeFactorProduct(pnValue)
+		if (Math.isPrime(number)) {
+			return new PrimeFactorProduct(number)
 		}
-		_pfp := new PrimeFactorProduct()
+		listOfPrimeFactors := new PrimeFactorProduct()
 		i := 2
-		while (pnValue > 1 && pnValue / i != 1) {
-			while (Mod(pnValue, i) = 0) {
-				_pfp.add(i)
-				pnValue //= i
+		while (number > 1 && number / i != 1) {
+			while (Mod(number, i) = 0) {
+				listOfPrimeFactors.add(i)
+				number //= i
 			}
-		__FindNextPrime__:
-			if (pnValue > 1) {
+			if (number > 1) {
 				loop {
-					if (Math.isPrime(++i)) {
-						break
-					}
-				}
+					i++
+				} until (Math.isPrime(i))
 			}
 		}
-		if (pnValue > 1) {	; something left?
-			_pfp.add(i)		; add to factor list
+		if (number > 1) {
+			listOfPrimeFactors.add(i)
 		}
-		return _pfp
+		return listOfPrimeFactors
 	}
 
-	greatestCommonDivisor(pnValue1="", pnValue2="", pbUseEuklid=true) {
-		if pnValue1 is not number
+	greatestCommonDivisor(firstNumber="", secondNumber=""
+			, useEuklidsAlgorithm=true) {
+		if firstNumber is not number
 		{
 			throw Exception("Invalid data type, number expected"
-					, -1, "<" pnValue1 ">")
+					, -1, "<" firstNumber ">")
 		}
-		if pnValue2 is not number
+		if secondNumber is not number
 		{
 			throw Exception("Invalid data type, number expected"
-					, -1, "<" pnValue2 ">")
+					, -1, "<" secondNumber ">")
 		}
-		__ByEuklidAlgorithm__:
-		if (pbUseEuklid) {
-			return MathHelper.GCDEuklid(pnValue1, pnValue2)
+		if (useEuklidsAlgorithm) {
+			return MathHelper.GCDEuklid(firstNumber, secondNumber)
 		}
-		__ByIntegerFactorization__:
-		nGCD := 1
-		_pf1 := Math.integerFactorization(pnValue1).getList()
-		_pf2 := Math.integerFactorization(pnValue2).getList()
-		_pfi := Arrays.distinct(Arrays.intersection(_pf1, _pf2))
-		for i, _factor in _pfi {
-			nGCD *= _factor
+		greatestCommonDivisor := 1
+		listOfPrimeFactorsForFirstNumber
+				:= Math.integerFactorization(firstNumber).getList()
+		listOfPrimeFactorsForSecondNumber
+				:= Math.integerFactorization(secondNumber).getList()
+		intersectionOfPrimeFactors := Arrays.distinct(Arrays
+				.intersection(listOfPrimeFactorsForFirstNumber
+				, listOfPrimeFactorsForSecondNumber))
+		while (A_Index <= intersectionOfPrimeFactors.maxIndex()) {
+			greatestCommonDivisor *= intersectionOfPrimeFactors[A_Index]
 		}
-		return nGCD
+		return greatestCommonDivisor
 	}
 
-	lowestCommonMultiple(pnValue1="", pnValue2="") {
-		if pnValue1 is not number
+	lowestCommonMultiple(firstNumber="", secondNumber="") {
+		if firstNumber is not number
 		{
 			throw Exception("Invalid data type, number expected"
-					, -1, "<" pnValue1 ">")
+					, -1, "<" firstNumber ">")
 		}
-		if pnValue2 is not number
+		if secondNumber is not number
 		{
 			throw Exception("Invalid data type, number expected"
-					, -1, "<" pnValue2 ">")
+					, -1, "<" secondNumber ">")
 		}
-		nLCM := 1
-		_pf1 := Math.integerFactorization(pnValue1).getList()
-		_pf2 := Math.integerFactorization(pnValue2).getList()
-		_dist1 := Arrays.distinct(_pf1)
-		_count1 := 0, _count2 := 0
-		for i, _factor in _dist1 {
-			_count1 := Arrays.countOccurences(_pf1, _factor)
-			_count2 := Arrays.countOccurences(_pf2, _factor)
-			if (_count1 >= _count2) {
-				nLCM *= _factor**_count1
-				Arrays.removeValue(_pf2, _factor)
+		lowestCommonMultiple := 1
+		listOfPrimeFactorsForFirstNumber
+				:= Math.integerFactorization(firstNumber).getList()
+		listOfPrimeFactorsForSecondNumber
+				:= Math.integerFactorization(secondNumber).getList()
+		listOfDistinctPrimeFactorsForFirstNumber
+				:= Arrays.distinct(listOfPrimeFactorsForFirstNumber)
+		occurenceOfFactorOfFirstNumber := 0
+		occurenceOfFactorOfSecondNumber := 0
+		while (A_Index <= listOfDistinctPrimeFactorsForFirstNumber.maxIndex()) {
+			factor := listOfDistinctPrimeFactorsForFirstNumber[A_Index]
+			occurenceOfFactorOfFirstNumber := Arrays
+					.countOccurences(listOfPrimeFactorsForFirstNumber, factor)
+			occurenceOfFactorOfSecondNumber := Arrays
+					.countOccurences(listOfPrimeFactorsForSecondNumber, factor)
+			if (occurenceOfFactorOfFirstNumber
+					>= occurenceOfFactorOfSecondNumber) {
+				lowestCommonMultiple *= factor**occurenceOfFactorOfFirstNumber
+				Arrays.removeValue(listOfPrimeFactorsForSecondNumber, factor)
 			} else {
-				nLCM *= _factor**_count2
-				Arrays.removeValue(_pf2, _factor)
+				lowestCommonMultiple *= factor**occurenceOfFactorOfSecondNumber
+				Arrays.removeValue(listOfPrimeFactorsForSecondNumber, factor)
 			}
 		}
-		for i, _factor in _pf2 {
-			nLCM *= _factor
+		while (A_Index <= listOfPrimeFactorsForSecondNumber.maxIndex()) {
+			lowestCommonMultiple *= listOfPrimeFactorsForSecondNumber[A_Index]
 		}
-		return nLCM
+		return lowestCommonMultiple
 	}
 
-	zeroFillShiftR(num, shift) {
+	zeroFillShiftR(number, shift) {
 		if (shift = 0) {
-			return num
+			return number
 		}
 		if (shift < 0) {
 			return ~(-1 << (shift*-1))
 		}
-		masklt := num<0
-		num := num >> shift
-		if (masklt) {
-			num &= Math.MAX_LONG
+		isNegativeNumber := number<0
+		number := number >> shift
+		if (isNegativeNumber) {
+			number &= Math.MAX_LONG
 		}
-		return num
+		return number
 	}
 
-	numberOfLeadingZeros(i) {
-		if (i = 0) {
+	numberOfLeadingZeros(number) {
+		if (number = 0) {
 			return 64
 		}
 		n := 1
-		x := UI(Math.zeroFillShiftR(i, 32))
+		x := UI(Math.zeroFillShiftR(number, 32))
 		if (x = 0) {
-			n += 32, x := I(i)
+			n += 32, x := I(number)
 		}
 		if (Math.zeroFillShiftR(x, 16) = 0) {
 			n += 16, I(x <<= 16)
@@ -263,27 +275,27 @@ class Math {
 		return n
 	}
 
-	bitCount(i) {
-		i := i - (Math.zeroFillShiftR(i, 1) & 0x5555555555555555)
-		i := (i & 0x3333333333333333) + (Math.zeroFillShiftR(i, 2)
-				& 0x3333333333333333)
-		i := (i + Math.zeroFillShiftR(i, 4)) & 0x0f0f0f0f0f0f0f0f
-		i := i + (Math.zeroFillShiftR(i, 8))
-		i := i + (Math.zeroFillShiftR(i, 16))
-		i := i + (Math.zeroFillShiftR(i, 32))
-		return I(i & 0x7f)
+	bitCount(number) {
+		number := number - (Math.zeroFillShiftR(number, 1) & 0x5555555555555555)
+		number := (number & 0x3333333333333333)
+				+ (Math.zeroFillShiftR(number, 2) & 0x3333333333333333)
+		number := number + Math.zeroFillShiftR(number, 4) & 0x0f0f0f0f0f0f0f0f
+		number := number + Math.zeroFillShiftR(number, 8)
+		number := number + Math.zeroFillShiftR(number, 16)
+		number := number + Math.zeroFillShiftR(number, 32)
+		return I(number & 0x7f)
 	}
 
-	numberOfTrailingZeros(i) {
-		if (i = 0) {
+	numberOfTrailingZeros(number) {
+		if (number = 0) {
 			return 64
 		}
 		n := 63
-		y := I(i)
+		y := I(number)
 		if (y != 0) {
 			n := n -32, x := y
 		} else {
-			x := I(Math.zeroFillShiftR(i, 32))
+			x := I(Math.zeroFillShiftR(number, 32))
 		}
 		y := I(x <<16)
 		if (y != 0) {
@@ -305,117 +317,8 @@ class Math {
 	}
 }
 
-class MathHelper {
-
-	__new() {
-		throw Exception("Instatiation of class '" this.__Class
-				. "' ist not allowed", -1)
-	}
-
-	floorCeil(pstrType, pnFloorCeil, p*) {
-		for i, v in p {
-			if (v.maxIndex() != "") {
-				for j, v1 in v {
-					if (!IsObject(v1)) {
-						if v1 is not number
-						{
-							throw Exception("Invalid data type", -1, "<" v1 ">")
-						}
-						if ((pstrType = "ceil" && v1 > pnFloorCeil)
-								|| (pstrType = "floor" && v1 < pnFloorCeil)) {
-							pnFloorCeil := v1
-						}
-					} else {
-						pnFloorCeil := MathHelper.floorCeil(pstrType
-								, pnFloorCeil, v1)
-					}
-				}
-			} else {
-				if v is not number
-				{
-					throw Exception("Invalid data type", -1, "<" v ">")
-				}
-				if ((pstrType = "ceil" && v > pnFloorCeil)
-						|| (pstrType = "floor" && v < pnFloorCeil)) {
-					pnFloorCeil := v
-				}
-			}
-		}
-		return pnFloorCeil
-	}
-
-	GCDEuklid(pnValue1, pnValue2) { ; ahklint-ignore: W007
-		if (pnValue1 < pnValue2) {
-			Math.swap(pnValue1, pnValue2)
-		}
-		return MathHelper.GCDEuklidRecursion(pnValue1, pnValue2)
-	}
-
-	GCDEuklidRecursion(pnValue1, pnValue2) { ; ahklint-ignore: W007
-		_remain := Mod(pnValue1, pnValue2)
-		if (_remain > 0) {
-			return MathHelper.GCDEuklidRecursion(pnValue2, _remain)
-		}
-		return pnValue2
-	}
-}
-
-class PrimeFactorProduct {
-
-	FactorList := []
-	iFactors   := 0
-
-	__new(piFactor="") {
-		if (piFactor != "") {
-			this.factorList.push(piFactor)
-			this.iFactors := 1
-		}
-		return this
-	}
-
-	count() {
-		return this.iFactors
-	}
-
-	add(piFactor) {
-		this.factorList.push(piFactor)
-		this.iFactors++
-		return this.factorList.maxIndex()
-	}
-
-	getList() {
-		return this.factorList
-	}
-
-	toString(pbCompact=false, pstrPower="**") {
-		_string := ""
-		if (!pbCompact) {
-			for i, _factor in this.factorList {
-				_string .= (_string = "" ? "" : "*") _factor
-			}
-		} else {
-			_count := 0
-			_lastFactor := this.factorList[1]
-			for i, _factor in this.factorList {
-				if (i = 1 || _factor = _lastFactor) {
-					_count++
-				} else {
-					_string .= (_string = "" ? "" : "*") _lastFactor
-							. (_count > 1 ? pstrPower _count : "")
-					_lastFactor := _factor
-					_count := 1
-				}
-			}
-			_string .= (_string = "" ? "" : "*") _lastFactor
-					. (_count > 1 ? pstrPower _count : "")
-		}
-		return _string
-	}
-}
-
 ; ahklint-ignore-begin: W007
 I(i) {
-	; return (i > 0x7fffffff ? -(~i) - 1 : i < -0x80000000 ? i & ~0x80000000 : i)
 	return i << 32 >> 32
 }
 
