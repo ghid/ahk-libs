@@ -74,6 +74,7 @@ class TestCase {
 		return TestData.numberOfFailingTests
 	}
 
+	; TODO: Replace with App.checkRequiredClasses
 	checkRequiredClasses(forClass="") {
 		forClass := (forClass != "" ? forClass : this)
 		requiredClasses := forClass.requires()

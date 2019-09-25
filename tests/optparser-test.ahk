@@ -27,6 +27,7 @@ class OptParserTest extends TestCase {
 		this.assertEquals(OptParser.OPT_MULTIPLE, 16)
 		this.assertEquals(OptParser.OPT_NEG, 32)
 		this.assertEquals(OptParser.OPT_NEG_USAGE, 64)
+		this.assertEquals(OptParser.OPT_ALLOW_SINGLE_DASH, 128)
 		this.assertEquals(OptParser.PARSER_ALLOW_DASHED_ARGS, 1)
 	}
 
@@ -473,6 +474,15 @@ usage: Test
 		op.add(new OptParser.Boolean("h", "help", opts, "_h", "Help"))
 		ra := op.parse(["--", "-"])
 		this.assertEquals(ra[1], "-")
+	}
+
+	@Test_dashedOptionArgsSingleDash() {
+		opts := {}
+		op := new OptParser("Test", OptParser.PARSER_ALLOW_DASHED_ARGS)
+		op.add(new OptParser.String("f", "", opts, "f", "string", "Test"
+				, OptParser.OPT_ARGREQ|OptParser.OPT_ALLOW_SINGLE_DASH))
+		ra := op.parse(["-f", "-", "--"])
+		this.assertEquals(opts.f, "-")
 	}
 
 	@Test_callbacks() {

@@ -218,6 +218,17 @@ class ArraysTest extends TestCase {
 		this.assertEquals(f[9], 9)
 		this.assertEquals(f[10], 10)
 	}
+
+	@Test_unionWithSource() {
+		VennData.includeSource := true
+		this.assertTrue(Arrays.equal(Arrays
+				.union(["abc","def","ghi","jkl"], ["abc","mno"])
+				, ["(A) abc","(B) abc","(A) def"
+				,"(A) ghi","(A) jkl","(B) mno"]))
+		this.assertTrue(Arrays.equal(Arrays.union([1,2,3,4], [3,4,5,6])
+				, ["(A) 1","(A) 2","(A) 3","(B) 3"
+				,"(A) 4","(B) 4","(B) 5","(B) 6"]))
+	}
 }
 
 exitapp ArraysTest.runTests()

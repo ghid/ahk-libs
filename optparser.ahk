@@ -1,7 +1,7 @@
 class OptParser {
 
 	requires() {
-		return [Object]
+		return [Object, String]
 	}
 
 	/*
@@ -24,6 +24,7 @@ class OptParser {
 	static OPT_MULTIPLE  := 16
 	static OPT_NEG       := 32
 	static OPT_NEG_USAGE := 64
+	static OPT_ALLOW_SINGLE_DASH := 128
 
 	static PARSER_ALLOW_DASHED_ARGS := 1
 
