@@ -6,5 +6,5 @@ class VennData {
 	static indexB := 0
 	static operation := ""
 	static compareAsType := 0
-	static includeSource := false
+	static printSource := false
 }

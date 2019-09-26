@@ -180,7 +180,7 @@ class Arrays {
 	}
 
 	pushToResultSet(element, resultSet, source="") {
-		resultSet.push((VennData.includeSource ? "(" source ") " : "") element)
+		resultSet.push((VennData.printSource ? "(" source ") " : "") element)
 		return resultSet
 	}
 
