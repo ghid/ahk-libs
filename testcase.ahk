@@ -1,3 +1,5 @@
+#Include <app>
+
 #Include %A_LineFile%\..\modules\testcase\
 #Include TestData.ahk
 #Include LoggingHelper.ahk
@@ -5,7 +7,7 @@
 class TestCase {
 
 	requires() {
-		return [DataTable]
+		return [DataTable, App]
 	}
 
 	static lAPIOverhead := TestCase.initAPIOverhead()
@@ -14,6 +16,7 @@ class TestCase {
 
 	static duration := 0.0
 	static allSuccessfulTestsDuration := 0.0
+	static stopOnFirstError := false
 
 	static SUCCESSFUL := 1
 	static SUCCESSFUL_SYMBOL := Chr(0x2714)
@@ -57,8 +60,9 @@ class TestCase {
 	}
 
 	runTests(selectedTestNames*) {
-		TestCase.checkRequiredClasses(this)
+		App.checkRequiredClasses(this)
 		TestData.testClass := this
+		TestCase.handleStopOnFirstError()
 		selectedTestNames.push(A_Args*)
 		TestCase.selectTests(selectedTestNames*)
 		if (TestCase.findTestsAndFixtures(TestData.testClass)) {
@@ -74,22 +78,11 @@ class TestCase {
 		return TestData.numberOfFailingTests
 	}
 
-	; TODO: Replace with App.checkRequiredClasses
-	checkRequiredClasses(forClass="") {
-		forClass := (forClass != "" ? forClass : this)
-		requiredClasses := forClass.requires()
-		while (A_Index <= requiredClasses.maxIndex()) {
-			requiredClass := requiredClasses[A_Index]
-			if (IsObject(requiredClass)) {
-				OutputDebug % forClass.__Class " uses " requiredClass.__Class
-				TestCase.checkRequiredClasses(requiredClass)
-			} else {
-				OutputDebug % "Misses requirement #" A_Index
-						. " for " forClass.__Class
-				TestCase.writeLine(TestCase.RED "Missing requirement #" A_Index
-						. " for " forClass.__Class TestCase.RESET)
-				exitapp -1
-			}
+	handleStopOnFirstError() {
+		if (A_Args.maxIndex() != "" && A_Args[A_Args.maxIndex()] == "-S") {
+			OutputDebug Halt on first error
+			TestCase.stopOnFirstError := true
+			A_Args.removeAt(A_Args.length())
 		}
 	}
 
@@ -154,6 +147,9 @@ class TestCase {
 					TestCase.performTestFunction(testName, TestData.testClass)
 				} catch gotException {
 					TestCase.testFailed(testName, gotException)
+					if (TestCase.stopOnFirstError) {
+						break
+					}
 				}
 				TestCase.runAfterFixtures()
 			}
@@ -602,8 +598,7 @@ class TestCase {
 		summaryTable.defineColumn(new DataTable.Column(
 				, DataTable.COL_RESIZE_USE_LARGEST_DATA))
 		summaryTable.addData(["TESTNAME", "RESULT"])
-		for testName
-				, testState in TestData.testState {
+		for testName, testState in TestData.testState {
 			summaryTable.addData([testName, TestCase.stateName(testState)])
 		}
 		OutputDebug % "`n" summaryTable.getTableAsString("| ", " | ", " |")
