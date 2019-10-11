@@ -275,6 +275,37 @@ class ObjectTest extends TestCase {
 		this.assertTrue(o1, o2)
 	}
 
+	@Test_map() {
+		invoice := { customer: "BigCo"
+				, performances: [ { playID: "hamlet" }
+				, { playID: "othello" } ] }
+
+		this.assertException(Object, "map",,, 0, "enrich")
+		this.assertException(Object, "map",,, invoice.performances
+				, "aMissingFunction")
+
+		result := Object.map(invoice.performances, "enrich")
+		this.assertEquals(result.count(), 2)
+		this.assertEquals(result[1].playID, "hamlet")
+		this.assertEquals(result[1].play, "Test")
+		this.assertEquals(result[1].amount, 42)
+		this.assertEquals(result[2].playID, "othello")
+		this.assertEquals(result[2].play, "Test")
+		this.assertEquals(result[2].amount, 42)
+
+		result := Object.map(["a", "b"], "enrich")
+		this.assertEquals(result.count(), 2)
+		this.assertEquals(result[1, 1], "a")
+		this.assertEquals(result[1].play, "Test")
+		this.assertEquals(result[1].amount, 42)
+		this.assertEquals(result[2, 1], "b")
+		this.assertEquals(result[2].play, "Test")
+		this.assertEquals(result[2].amount, 42)
+
+		result := Object.map([], "enrich")
+		this.assertEquals(result.count(), 0)
+	}
+
 	@AfterClass_Teardown() {
 		FileDelete %A_Temp%\object-test.ini
 		if (FileExist(A_Temp "\object-test.ini")) {
@@ -285,7 +316,6 @@ class ObjectTest extends TestCase {
 			this.fail("File " A_Temp "\class-test.ini could not be deleted")
 		}
 	}
-
 }
 
 ; Testclass definitions
@@ -319,6 +349,13 @@ class KKunde {
 
 class KKundeEx extends KKunde {
 
+}
+
+enrich(anObject) {
+	result := anObject.clone()
+	result.play := "Test"
+	result.amount := 42
+	return result
 }
 
 exitapp ObjectTest.runTests()
