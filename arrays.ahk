@@ -410,4 +410,22 @@ class Arrays {
 		}
 		return result
 	}
+
+	reduce(anArray, callbackFuncName, initialValue) {
+		if (anArray.count() == "") {
+			throw Exception("First argument has to be an array")
+		}
+		lambda := Func(callbackFuncName)
+		if (!IsFunc(lambda)) {
+			throw Exception("Function " callbackFuncName " not found")
+		}
+		if (!IsFunc(callbackFuncName)) {
+			throw Exception("")
+		}
+		result := initialValue
+		for _, element in anArray {
+			result := lambda.(result, element)
+		}
+		return result
+	}
 }

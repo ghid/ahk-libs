@@ -260,6 +260,15 @@ class ArraysTest extends TestCase {
 		result := Arrays.map([], "enrich")
 		this.assertEquals(result.count(), 0)
 	}
+
+	@Test_reduce() {
+		this.assertException(Arrays, "reduce",,, 0, "sum", 0)
+		this.assertException(Arrays, "reduce",,, [], "aMissingFunction", 0)
+		this.assertEquals(Arrays.reduce([1,2,3,4], "sum", 5), 15)
+		this.assertEquals(Arrays.reduce([1,2,3,4], "mult", 5), 120)
+		this.assertEquals(Arrays.reduce(["T", "e", "s", "t"], "cat", "A ")
+				, "A Test")
+	}
 }
 
 enrich(anArray) {
@@ -267,6 +276,18 @@ enrich(anArray) {
 	result.play := "Test"
 	result.amount := 42
 	return result
+}
+
+sum(accumulator, element) {
+	return accumulator + element
+}
+
+mult(accumulator, element) {
+	return accumulator * element
+}
+
+cat(accumulator, element) {
+	return accumulator . element
 }
 
 exitapp ArraysTest.runTests()
