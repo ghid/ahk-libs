@@ -66,7 +66,7 @@ class OptParser {
 	}
 
 	add(option) {
-		if (Object.InstanceOf(option, "OptParser.Counter")) {
+		if (Object.instanceOf(option, "OptParser.Counter")) {
 			if (this.hasCounter) {
 				this.die("Only one counter option per option parser allowed."	; NOTEST: 'die' method will never return
 						, 3)													; NOTEST
@@ -74,7 +74,7 @@ class OptParser {
 				this.hasCounter := true
 			}
 		}
-		this.optionList.Insert(option)
+		this.optionList.insert(option)
 	}
 
 	usage() {
@@ -138,9 +138,9 @@ class OptParser {
 		if (fileAttributes && !InStr(fileAttributes, "D")) {
 			try {
 				rcFile := FileOpen(filePath, "r `n")
-				while (not rcFile.AtEOF) {
+				while (not rcFile.atEOF) {
 					line := rcFile.readLine()
-					if (!RegExMatch(line, "\s*#")) {
+					if (!RegExMatch(line, "^\s*(#.*)?$")) {
 						args := StrSplit(line, [A_Space, A_Tab], "`r`n")
 						argumentList.push(args*)
 					}
