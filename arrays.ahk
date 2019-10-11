@@ -392,4 +392,22 @@ class Arrays {
 		} until (index > anArray.maxIndex())
 		return flatArray
 	}
+
+	map(anArray, callbackFuncName) {
+		if (anArray.count() == "") {
+			throw Exception("First argument has to be an array")
+		}
+		lambda := Func(callbackFuncName)
+		if (!IsFunc(lambda)) {
+			throw Exception("Function " callbackFuncName " not found")
+		}
+		result := []
+		for _, element in anArray {
+			if (!IsObject(element)) {
+				element := {1: element}
+			}
+			result.push(lambda.(element))
+		}
+		return result
+	}
 }

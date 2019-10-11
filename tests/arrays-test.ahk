@@ -229,6 +229,44 @@ class ArraysTest extends TestCase {
 				, ["(A) 1","(A) 2","(A) 3","(B) 3"
 				,"(A) 4","(B) 4","(B) 5","(B) 6"]))
 	}
+
+	@Test_map() {
+		invoice := { customer: "BigCo"
+				, performances: [ { playID: "hamlet" }
+				, { playID: "othello" } ] }
+
+		this.assertException(Arrays, "map",,, 0, "enrich")
+		this.assertException(Arrays, "map",,, invoice.performances
+				, "aMissingFunction")
+
+		result := Arrays.map(invoice.performances, "enrich")
+		this.assertEquals(result.count(), 2)
+		this.assertEquals(result[1].playID, "hamlet")
+		this.assertEquals(result[1].play, "Test")
+		this.assertEquals(result[1].amount, 42)
+		this.assertEquals(result[2].playID, "othello")
+		this.assertEquals(result[2].play, "Test")
+		this.assertEquals(result[2].amount, 42)
+
+		result := Arrays.map(["a", "b"], "enrich")
+		this.assertEquals(result.count(), 2)
+		this.assertEquals(result[1, 1], "a")
+		this.assertEquals(result[1].play, "Test")
+		this.assertEquals(result[1].amount, 42)
+		this.assertEquals(result[2, 1], "b")
+		this.assertEquals(result[2].play, "Test")
+		this.assertEquals(result[2].amount, 42)
+
+		result := Arrays.map([], "enrich")
+		this.assertEquals(result.count(), 0)
+	}
+}
+
+enrich(anArray) {
+	result := anArray.clone()
+	result.play := "Test"
+	result.amount := 42
+	return result
 }
 
 exitapp ArraysTest.runTests()

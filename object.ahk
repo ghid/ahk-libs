@@ -130,24 +130,6 @@ class Object {
 		}
 		return true
 	}
-
-	map(targetObject, functionName) {
-		if (targetObject.count() == "") {
-			throw Exception("First argument is no array")
-		}
-		func := Func(functionName)
-		if (!IsFunc(func)) {
-			throw Exception("Function " functionName " not found")
-		}
-		result := {}
-		for _, element in targetObject {
-			if (!IsObject(element)) {
-				element := {1: element}
-			}
-			result.push(func.(element))
-		}
-		return result
-	}
 }
 
 object_Serialize(poObject, poIni, pstId="") {
