@@ -110,7 +110,7 @@ class PrintfHelper {
 	}
 
 	doPadding(replacingValue) {
-		if (PrintfHelper.placeHolder.size) {
+		; if (PrintfHelper.placeHolder.size) {
 			if (InStr(PrintfHelper.INT_TYPES
 					, PrintfHelper.placeHolder.type)) {
 				replacingValue := PrintfHelper.padIntegerTypes(replacingValue)
@@ -121,7 +121,7 @@ class PrintfHelper {
 					, PrintfHelper.placeHolder.type)) {
 				replacingValue := PrintfHelper.padFloatTypes(replacingValue)
 			}
-		}
+		; }
 		return replacingValue
 	}
 
@@ -135,12 +135,15 @@ class PrintfHelper {
 						.padNumber(PrintfHelper.placeHolder.precision)
 			}
 		}
+		replacingValue := RegExReplace(replacingValue , "\.\d+$", "")
+		size := (PrintfHelper.placeHolder.size == ""
+				? StrLen(replacingValue)
+				: PrintfHelper.placeHolder.size)
 		if (PrintfHelper.placeHolder.flag = "-") {
-			replacingValue := replacingValue
-					.padRight(PrintfHelper.placeHolder.size)
+			replacingValue := replacingValue.padRight(size)
 		} else {
 			replacingValue := replacingValue
-					.padNumber(PrintfHelper.placeHolder.size
+					.padNumber(size
 					, PrintfHelper.placeHolder.zero)
 		}
 		return replacingValue
@@ -157,12 +160,18 @@ class PrintfHelper {
 
 	padFloatTypes(replacingValue) {
 		RegExMatch(replacingValue
-				, "(?<integer>[+-]?\d+)(\.(?<fraction>\d*))", $)
+				, "(?<integer>[+-]?\d*)(\.(?<fraction>\d*))?", $)
 		frac := (PrintfHelper.placeHolder.precision > 0
 				? "." ($fraction ? $fraction : "0")
 				.padRight(PrintfHelper.placeHolder.precision, "0")
 				: "")
-		return ($integer.padNumber(PrintfHelper.placeHolder.size - StrLen(frac)
-				, PrintfHelper.placeHolder.zero)) frac
+		if (PrintfHelper.placeHolder.size == "") {
+			replacingValue := $integer frac
+		} else {
+			replacingValue := $integer
+					.padNumber(PrintfHelper.placeHolder.size - StrLen(frac)
+					, PrintfHelper.placeHolder.zero) frac
+		}
+		return replacingValue
 	}
 }

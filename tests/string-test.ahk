@@ -706,6 +706,20 @@ class StringTest extends TestCase {
 				, "Width trick:    10", TestCase.AS_STRING)
 		; this.assertEquals("%+.0e".Printf(3.1416), "+3e+000", TestCase.AS_STRING) ; TODO: FIXME "e" isn't supported yet
 		; this.assertEquals("%+E".Printf(3.1416), "+3.1416E+000", TestCase.AS_STRING) ; TODO: FIXME "E" isn't supported yet
+		; TODO: Add the following:
+	}
+
+	@Test_printf_20191009() {
+		this.assertEquals("%i".printf(47.00)
+				, "47", TestCase.AS_STRING)
+		this.assertEquals("%-7.0i".printf(-47.00)
+				, "-47    ", TestCase.AS_STRING)
+		this.assertEquals("%-7.2i".printf(-47.00)
+				, "-0047  ", TestCase.AS_STRING)
+		this.assertEquals("You earned %i credits".printf(47.000)
+				, "You earned 47 credits")
+		this.assertEquals("Amount owed is $%.2f".printf(1730)
+				, "Amount owed is $1730.00")
 	}
 
 	@Test_Hyphenate() {
