@@ -133,6 +133,14 @@ class AnsiTest extends TestCase {
 		Ansi.stdErr := Ansi.__InitStdErr()
 		FileDelete %A_Temp%\ansi-test-err.txt
 	}
+
+	@Test_readLine() {
+		saveStdIn := Ansi.stdIn
+		Ansi.stdIn := FileOpen(A_ScriptDir "\testdata\input.txt", "r")
+		this.assertEquals(Ansi.readLine(), "Das ist ein Test!")
+		Ansi.stdIn.close()
+		Ansi.stdIn := saveStdIn
+	}
 }
 
 exitapp AnsiTest.runTests()

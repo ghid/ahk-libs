@@ -168,7 +168,7 @@ class Ansi {
 		pstLine := ""
 		loop {
 			Ansi.stdOut.read(0)
-			line := RTrim(Ansi.stdIn.readLine(), "`n")
+			line := RTrim(Ansi.stdIn.readLine(), "`n`r")
 			pstLine .= line
 			Ansi.stdOut.read(0)
 		} until (StrLen(line) = 0 || pbMultiLine = false)
