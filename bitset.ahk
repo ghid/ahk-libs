@@ -112,7 +112,7 @@ class BitSet {
 
 	ensureCapacity(wordsRequired) {
 		if (this.words.maxIndex()+1 < wordsRequired) {
-			request := Math.ceil(2 * this.words.maxIndex()+1, wordsRequired)
+			request := Max(2 * this.words.maxIndex()+1, wordsRequired)
 			this.words := Arrays.copyOf(this.words, request)
 			this.sizeIsSticky := false
 		}
@@ -252,7 +252,7 @@ class BitSet {
 		if (this = set) {
 			return
 		}
-		wordsInCommon := Math.floor(this.wordsInUse, set.wordsInUse)
+		wordsInCommon := Max(this.wordsInUse, set.wordsInUse)
 		if (this.wordsInUse < set.wordsInUse) {
 			this.ensureCapacity(set.wordsInUse)
 			this.wordsInUse := set.wordsInUse
@@ -271,7 +271,7 @@ class BitSet {
 	}
 
 	xor(set) {
-		wordsInCommon := Math.floor(this.wordsInUse, set.wordsInUse)
+		wordsInCommon := Max(this.wordsInUse, set.wordsInUse)
 		if (this.wordsInUse < set.wordsInUse) {
 			this.ensureCapacity(set.wordsInUse)
 			this.wordsInUse := set.wordsInUse
@@ -290,7 +290,7 @@ class BitSet {
 	}
 
 	andNot(set) {
-		i := Math.floor(this.wordsInUse, set.wordsInUse) - 1
+		i := Max(this.wordsInUse, set.wordsInUse) - 1
 		while (i >= 0) {
 			this.words[i] &= ~set.words[i]
 			i--
