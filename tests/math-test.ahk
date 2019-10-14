@@ -12,10 +12,9 @@
 
 #Include %A_ScriptDir%\..\math.ahk
 
-;{{{ 	@Test_StringClass
 class MathTest extends TestCase {
 
-	@Test_MathClass() {
+	@Test_mathClass() {
 		this.assertTrue(IsFunc(Math.swap))
 		this.assertTrue(IsFunc(Math.floor))
 		this.assertTrue(IsFunc(Math.ceil))
@@ -52,7 +51,7 @@ class MathTest extends TestCase {
 		this.assertEquals(Math.MAX_SHORT, 0x7FFF)
 	}
 
-	@Test_Swap() {
+	@Test_swap() {
 		Math.swap(a := "a", b := "b")
 		this.assertTrue(a == "b" && b == "a")
 		Math.swap(a := -5, b := 133)
@@ -63,7 +62,7 @@ class MathTest extends TestCase {
 		this.assertTrue(a = 123 && b = 123)
 	}
 
-	@Test_ceilFloor() {
+	@Test_ceilAndFloor() {
 		this.assertException(Math , "floor")
 		this.assertException(Math , "ceil")
 		this.assertEquals(Math.floor(13, 3), 3)
@@ -81,6 +80,26 @@ class MathTest extends TestCase {
 		this.assertException(Math, "floor",,, [13, "vier", 3])
 		this.assertEquals(MathHelper.floorCeil("floor", 100, 99), 99)
 		this.assertEquals(MathHelper.floorCeil("ceil", 99, 100), 100)
+	}
+
+	@Test_min() {
+		this.assertEquals(Math.min(), "")
+		this.assertEquals(Math.min(5), 5)
+		this.assertEquals(Math.min(13, 3), 3)
+		this.assertEquals(Math.min(-50, 0), -50)
+		this.assertEquals(Math.min(-50, 0, -50.01), -50.01)
+		this.assertEquals(Math.min(1.3, 2.1, 1.1, 2.9), 1.1)
+		this.assertEquals(Math.min([13, 3]), 3)
+		this.assertEquals(Math.min(69, [13, 3], 19), 3)
+		this.assertEquals(Math.min([11,[21,22,23,[24,75,26],9],31]), 9)
+		this.assertEquals(Math.min(x := 4), 4)
+	}
+
+	@Test_max() {
+		this.assertEquals(Math.max(-50, 0, -50.01), 0)
+		this.assertEquals(Math.max(1.3, 2.1, 1.1, 2.9), 2.9)
+		this.assertEquals(Math.max([11,[21,22,23,[24,75,26],29],31]), 75)
+		this.assertEquals(Math.max(x := 5), 5)
 	}
 
 	@Test_limitTo() {
@@ -235,14 +254,14 @@ class MathTest extends TestCase {
 	}
 
 	@Test_zeroFillShiftR() {
-		this.AssertEquals(Math.ZeroFillShiftR(5, 1), 2)
-		this.AssertEquals(Math.ZeroFillShiftR(UI(-1), 30), 3)
-		this.AssertEquals(Math.ZeroFillShiftR(UI(-1), 31), 1)
-		this.AssertEquals(Math.ZeroFillShiftR(UI(-2147483648), 31), 1)
-		this.AssertEquals(Math.ZeroFillShiftR(-1, -1), 1)
-		this.AssertEquals(Math.ZeroFillShiftR(-1, -7), 127)
-		this.AssertEquals(Math.ZeroFillShiftR(0xffffffffffffffff, -7), 127)
-		this.AssertEquals(Math.ZeroFillShiftR(130369, 0), 130369)
+		this.assertEquals(Math.zeroFillShiftR(5, 1), 2)
+		this.assertEquals(Math.zeroFillShiftR(UI(-1), 30), 3)
+		this.assertEquals(Math.zeroFillShiftR(UI(-1), 31), 1)
+		this.assertEquals(Math.zeroFillShiftR(UI(-2147483648), 31), 1)
+		this.assertEquals(Math.zeroFillShiftR(-1, -1), 1)
+		this.assertEquals(Math.zeroFillShiftR(-1, -7), 127)
+		this.assertEquals(Math.zeroFillShiftR(0xffffffffffffffff, -7), 127)
+		this.assertEquals(Math.zeroFillShiftR(130369, 0), 130369)
 	}
 
 	@Test_numberOfTrailingZeros() {
@@ -269,5 +288,4 @@ class MathTest extends TestCase {
 	}
 }
 
-exitapp MathTest.RunTests()
-
+exitapp MathTest.runTests()

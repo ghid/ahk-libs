@@ -27,11 +27,25 @@ class Math {
 	}
 
 	floor(elements*) {
+		OutputDebug %A_ThisFunc% is deprecated. Use Math.min() instead
 		return MathHelper.floorCeil("floor", Math.MAX_INT, elements)
 	}
 
 	ceil(elements*) {
+		OutputDebug %A_ThisFunc% is deprecated. Use Math.max() instead
 		return MathHelper.floorCeil("ceil", Math.MIN_INT, elements)
+	}
+
+	min(elements*) {
+		flatElements := Arrays.flatten([elements])
+		return Arrays.reduce(flatElements, Func("min")
+				, flatElements[flatElements.minIndex()])
+	}
+
+	max(elements*) {
+		flatElements := Arrays.flatten([elements])
+		return Arrays.reduce(flatElements, Func("max")
+				, flatElements[flatElements.minIndex()])
 	}
 
 	limitTo(number, minimum, maximum) {
