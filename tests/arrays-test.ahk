@@ -239,7 +239,7 @@ class ArraysTest extends TestCase {
 		this.assertException(Arrays, "map",,, invoice.performances
 				, "aMissingFunction")
 
-		result := Arrays.map(invoice.performances, "enrich")
+		result := Arrays.map(invoice.performances, Func("enrich"))
 		this.assertEquals(result.count(), 2)
 		this.assertEquals(result[1].playID, "hamlet")
 		this.assertEquals(result[1].play, "Test")
@@ -248,7 +248,7 @@ class ArraysTest extends TestCase {
 		this.assertEquals(result[2].play, "Test")
 		this.assertEquals(result[2].amount, 42)
 
-		result := Arrays.map(["a", "b"], "enrich")
+		result := Arrays.map(["a", "b"], Func("enrich"))
 		this.assertEquals(result.count(), 2)
 		this.assertEquals(result[1, 1], "a")
 		this.assertEquals(result[1].play, "Test")
@@ -264,10 +264,24 @@ class ArraysTest extends TestCase {
 	@Test_reduce() {
 		this.assertException(Arrays, "reduce",,, 0, "sum", 0)
 		this.assertException(Arrays, "reduce",,, [], "aMissingFunction", 0)
-		this.assertEquals(Arrays.reduce([1,2,3,4], "sum", 5), 15)
-		this.assertEquals(Arrays.reduce([1,2,3,4], "mult", 5), 120)
-		this.assertEquals(Arrays.reduce(["T", "e", "s", "t"], "cat", "A ")
+		this.assertEquals(Arrays.reduce([1,2,3,4], Func("sum"), 5), 15)
+		this.assertEquals(Arrays.reduce([1,2,3,4], Func("mult"), 5), 120)
+		this.assertEquals(Arrays.reduce(["T", "e", "s", "t"]
+				, Func("ArraysTest.enumeration").bind(ArraysTest), "A")
+				, "A;T;e;s;t")
+		this.assertEquals(Arrays.reduce(["T", "e", "s", "t"]
+				, ArraysTest.enumeration.bind(ArraysTest), "A")
+				, "A;T;e;s;t")
+		this.assertEquals(Arrays.reduce(["T", "e", "s", "t"], Func("cat"), "A ")
 				, "A Test")
+		this.assertEquals(Arrays.reduce([15, 12, 10, 14], Func("Min"), +9999)
+				, 10)
+		this.assertEquals(Arrays.reduce([15, 12, 10, 14], Func("Max"), -9999)
+				, 15)
+	}
+
+	enumeration(accumulator, element) {
+		return accumulator ";" element
 	}
 }
 

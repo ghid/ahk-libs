@@ -393,38 +393,33 @@ class Arrays {
 		return flatArray
 	}
 
-	map(anArray, callbackFuncName) {
+	map(anArray, callbackFunc) {
 		if (anArray.count() == "") {
 			throw Exception("First argument has to be an array")
 		}
-		lambda := Func(callbackFuncName)
-		if (!IsFunc(lambda)) {
-			throw Exception("Function " callbackFuncName " not found")
+		if (!IsFunc(callbackFunc) && !IsObject(callbackFunc)) {
+			throw Exception("Function not found " callbackFunc)
 		}
 		result := []
 		for _, element in anArray {
 			if (!IsObject(element)) {
 				element := {1: element}
 			}
-			result.push(lambda.(element))
+			result.push(callbackFunc.call(element))
 		}
 		return result
 	}
 
-	reduce(anArray, callbackFuncName, initialValue) {
+	reduce(anArray, callbackFunc, initialValue) {
 		if (anArray.count() == "") {
 			throw Exception("First argument has to be an array")
 		}
-		lambda := Func(callbackFuncName)
-		if (!IsFunc(lambda)) {
-			throw Exception("Function " callbackFuncName " not found")
-		}
-		if (!IsFunc(callbackFuncName)) {
-			throw Exception("")
+		if (!IsFunc(callbackFunc) && !IsObject(callbackFunc)) {
+			throw Exception("Function not found " callbackFunc)
 		}
 		result := initialValue
 		for _, element in anArray {
-			result := lambda.(result, element)
+			result := callbackFunc.call(result, element)
 		}
 		return result
 	}
