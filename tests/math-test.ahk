@@ -253,15 +253,40 @@ class MathTest extends TestCase {
 		this.assertEquals(US(-1), 0xffff)
 	}
 
+	@Test_SL() {
+		this.assertEquals(SL(0xffffffffffffffff << -2), -4611686018427387904)
+		this.assertEquals(SL(0xffffffffffffffff << -1), -9223372036854775808)
+		this.assertEquals(SL(0xffffffffffffffff << 0), -1)
+		this.assertEquals(SL(0xffffffffffffffff << 1), -2)
+		this.assertEquals(SL(0xffffffffffffffff << 2), -4)
+	}
+
 	@Test_zeroFillShiftR() {
+		this.assertEquals(Math.zeroFillShiftR(SL(0xffffffffffffffff), -7), 127)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -321), 0)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -320), 9223372036854775807)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -319), 4611686018427387903)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -129), 0)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -128), 9223372036854775807)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -127), 4611686018427387903)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -126), 2305843009213693951)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -66), 1)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -65), 0)
+		this.assertEquals(Math.zeroFillShiftR(9223372036854775807, -64), 9223372036854775807)
 		this.assertEquals(Math.zeroFillShiftR(5, 1), 2)
 		this.assertEquals(Math.zeroFillShiftR(UI(-1), 30), 3)
 		this.assertEquals(Math.zeroFillShiftR(UI(-1), 31), 1)
 		this.assertEquals(Math.zeroFillShiftR(UI(-2147483648), 31), 1)
 		this.assertEquals(Math.zeroFillShiftR(-1, -1), 1)
 		this.assertEquals(Math.zeroFillShiftR(-1, -7), 127)
-		this.assertEquals(Math.zeroFillShiftR(0xffffffffffffffff, -7), 127)
 		this.assertEquals(Math.zeroFillShiftR(130369, 0), 130369)
+		this.assertEquals(Math.zeroFillShiftR(SL(0xffffffffffffffff), -63)
+				, 0xffffffffffffffff)
+		this.assertEquals(Math.zeroFillShiftR(SL(0xffffffffffffffff), -64), -1)
+		this.assertEquals(Math.zeroFillShiftR(SL(0xffffffffffffffff), -65), 1)
+		this.assertEquals(Math.zeroFillShiftR(UL(-1), 47), 65535)
+		this.assertEquals(Math.zeroFillShiftR(-1, 48), 65535)
+		this.assertEquals(Math.zeroFillShiftR((0 << 1), 31), 0)
 	}
 
 	@Test_numberOfTrailingZeros() {

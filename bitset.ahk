@@ -9,32 +9,35 @@ class BitSet {
 	static ADDRESS_BITS_PER_WORD := 6
 	static BITS_PER_WORD := 1 << BitSet.ADDRESS_BITS_PER_WORD
 	static BIT_INDEX_MASK := BitSet.BITS_PER_WORD - 1
-	static WORD_MASK := 0xffffffffffffffff
+	static WORD_MASK := SL(0xffffffffffffffff)
 
 	words := []
 	wordsInUse := 0
 	sizeIsSticky := false
 
 	wordIndex(bitIndex) {
-		return I(bitIndex >> BitSet.ADDRESS_BITS_PER_WORD)
+		return bitIndex >> BitSet.ADDRESS_BITS_PER_WORD
 	}
 
 	checkInvariants() {
-		words_length := (this.words.maxIndex() == ""
-				? 0
-				: this.words.maxIndex()+1)
 		try {
 			TestCase.assert(this.wordsInUse == 0
 					|| this.words[this.wordsInUse - 1] != 0
-					, A_ThisFunc ": Assertion 1 failed")
+					, A_ThisFunc ": Assertion 1 failed: "
+					. this.wordsInUse "==0 || "
+					. this.words[this.wordsInUse - 1] "!=0")
 			TestCase.assert(this.wordsInUse >= 0
-					&& this.wordsInUse <= words_length
-					, A_ThisFunc ": Assertion 2 failed")
-			TestCase.assert(this.wordsInUse == words_length
+					&& this.wordsInUse <= this.words.count()
+					, A_ThisFunc ": Assertion 2 failed: "
+					. this.wordsInUse ">=0 && "
+					. this.wordsInUse "<=" this.words.count())
+			TestCase.assert(this.wordsInUse == this.words.count()
 					|| this.words[this.wordsInUse] == 0
-					, A_ThisFunc ": Assertion 3 failed")
-		} catch gotException {
-			throw gotException
+					, A_ThisFunc ": Assertion 3 failed: "
+					. this.wordsInUse "==" this.words.count() " || "
+					. this.words[this.wordsInUse] "==0")
+		} catch gotException {	; NOTEST: Selfcheck
+			throw gotException  ; NOTEST: -
 		}
 	}
 
@@ -73,7 +76,7 @@ class BitSet {
 
 	initWords(nbits) {
 		this.words := []
-		loop % this.wordIndex(nbits-1)+1 {
+		loop % this.wordIndex(nbits-1) + 1 {
 			this.words[A_Index-1] := 0
 		}
 	}
@@ -96,23 +99,35 @@ class BitSet {
 
 	toLongArray() {
 		longArray := []
-		loop % this.words.maxIndex()+1 {
+		loop % this.wordsInUse {
 			longArray.push(this.words[A_Index - 1])
 		}
 		return longArray
 	}
 
 	toByteArray() {
-		byteArray := []
-		loop % this.words.maxIndex()+1 {
-			byteArray.push(this.words[A_Index - 1])
-		}
-		return byteArray
+		; TODO: Implment `toByteArray` method!
+		/*
+		int n = wordsInUse;
+		if (n == 0)
+			return new byte[0];
+		int len = 8 * (n-1);
+		for (long x = words[n - 1]; x != 0; x >>>= 8)
+			len++;
+		byte[] bytes = new byte[len];
+		ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+		for (int i = 0; i < n - 1; i++)
+			bb.putLong(words[i]);
+		for (long x = words[n - 1]; x != 0; x >>>= 8)
+			bb.put((byte) (x & 0xff));
+		return bytes;
+		*/
+		return this.toLongArray()
 	}
 
 	ensureCapacity(wordsRequired) {
-		if (this.words.maxIndex()+1 < wordsRequired) {
-			request := Max(2 * this.words.maxIndex()+1, wordsRequired)
+		if (this.words.count() < wordsRequired) {
+			request := Max(2 * this.words.count(), wordsRequired)
 			this.words := Arrays.copyOf(this.words, request)
 			this.sizeIsSticky := false
 		}
@@ -155,14 +170,14 @@ class BitSet {
 
 	flipRange(fromIndex, toIndex) {
 		this.checkRange(fromIndex, toIndex)
-		if (fromIndex = toIndex) {
+		if (fromIndex == toIndex) {
 			return
 		}
 		startWordIndex := this.wordIndex(fromIndex)
 		endWordIndex := this.wordIndex(toIndex - 1)
 		this.expandTo(endWordIndex)
-		firstWordMask := I(BitSet.WORD_MASK << fromIndex)
-		lastWordMask := Math.zeroFillShiftR(BitSet.WORD_MASK, 0-toIndex)
+		firstWordMask := BitSet.WORD_MASK << fromIndex
+		lastWordMask := Math.zeroFillShiftR(BitSet.WORD_MASK, -toIndex)
 		if (startWordIndex = endWordIndex) {
 			; Case 1: One word
 			this.words[startWordIndex] ^= (firstWordMask & lastWordMask)
@@ -170,18 +185,14 @@ class BitSet {
 			; Case 2: Multiple words
 			; Handle first word
 			this.words[startWordIndex] ^= firstWordMask
-
 			; Handle intermediate words, if any
-			i := I(startWordIndex+1)
-			while (i < endWordIndex+1) {
-				this.words[i] ^= BitSet.WORD_MASK
-				i++
+			i := startWordIndex+1
+			while (i < endWordIndex) {
+				this.words[i++] ^= BitSet.WORD_MASK
 			}
-
 			; Handle last word
 			this.words[endWordIndex] ^= lastWordMask
 		}
-
 		this.recalculateWordsInUse()
 		this.checkInvariants()
 	}
@@ -212,9 +223,9 @@ class BitSet {
 		startWordIndex := this.wordIndex(fromIndex)
 		endWordIndex := this.wordIndex(toIndex - 1)
 		this.expandTo(endWordIndex)
-		firstWordMask := BitSet.WORD_MASK << fromIndex
+		firstWordMask := SL(BitSet.WORD_MASK << fromIndex)
 		lastWordMask := Math.zeroFillShiftR(BitSet.WORD_MASK, -toIndex)
-		if (startWordIndex = endWordIndex) {
+		if (startWordIndex == endWordIndex) {
 			; Case 1: One word
 			this.words[startWordIndex] |= (firstWordMask & lastWordMask)
 		} else {
@@ -222,9 +233,9 @@ class BitSet {
 			; Handle first word
 			this.words[startWordIndex] |= firstWordMask
 			; Handle intermediate words, if any
-			i := I(startWordIndex+1)
+			i := startWordIndex+1
 			while (i < endWordIndex) {
-				this.words[i] = BitSet.WORD_MASK
+				this.words[i++] := BitSet.WORD_MASK
 			}
 			; Handle last word
 			this.words[endWordIndex] |= lastWordMask
@@ -237,7 +248,7 @@ class BitSet {
 			return
 		}
 		while (this.wordsInUse > set.wordsInUse) {
-			this.words[--wordsInUse] := 0
+			this.words[--this.wordsInUse] := 0
 		}
 		i := 0
 		while (i < this.wordsInUse) {
@@ -252,7 +263,7 @@ class BitSet {
 		if (this = set) {
 			return
 		}
-		wordsInCommon := Max(this.wordsInUse, set.wordsInUse)
+		wordsInCommon := Min(this.wordsInUse, set.wordsInUse)
 		if (this.wordsInUse < set.wordsInUse) {
 			this.ensureCapacity(set.wordsInUse)
 			this.wordsInUse := set.wordsInUse
@@ -271,7 +282,7 @@ class BitSet {
 	}
 
 	xor(set) {
-		wordsInCommon := Max(this.wordsInUse, set.wordsInUse)
+		wordsInCommon := Min(this.wordsInUse, set.wordsInUse)
 		if (this.wordsInUse < set.wordsInUse) {
 			this.ensureCapacity(set.wordsInUse)
 			this.wordsInUse := set.wordsInUse
@@ -290,7 +301,7 @@ class BitSet {
 	}
 
 	andNot(set) {
-		i := Max(this.wordsInUse, set.wordsInUse) - 1
+		i := Min(this.wordsInUse, set.wordsInUse) - 1
 		while (i >= 0) {
 			this.words[i] &= ~set.words[i]
 			i--
@@ -310,7 +321,6 @@ class BitSet {
 			throw Exception("IndexOutOfBoundsException: bitIndex < 0: "
 					. bitIndex)
 		}
-
 		wordIndex := this.wordIndex(bitIndex)
 		if (wordIndex >= this.wordsInUse) {
 			return
@@ -321,7 +331,7 @@ class BitSet {
 	}
 
 	clearRange(fromIndex, toIndex) {
-		if (fromIndex = toIndex) {
+		if (fromIndex == toIndex) {
 			return
 		}
 		startWordIndex := this.wordIndex(fromIndex)
@@ -333,23 +343,25 @@ class BitSet {
 			toIndex := this.length()
 			endWordIndex := this.wordsInUse - 1
 		}
-		firstWordMask := I(BitSet.WORD_MASK << fromIndex)
+		firstWordMask := BitSet.WORD_MASK << fromIndex
 		lastWordMask := Math.zeroFillShiftR(BitSet.WORD_MASK, -toIndex)
-		if (startWordIndex = endWordIndex) {
+		if (startWordIndex == endWordIndex) {
 			; Case 1: One word
 			this.words[startWordIndex] &= ~(firstWordMask & lastWordMask)
 		} else {
 			; Case 2: Multiple words
 			; Handle first word
-			this.words[startWordIndex+1] &= ~firstWordMask
+			this.words[startWordIndex] &= ~firstWordMask
 			; Handle intermediate words, if any
-			i := I(startWordIndex+1)
-			while (i < endWordIndex+1) {
-				this.words[i] = 0
+			i := startWordIndex+1
+			while (i < endWordIndex) {
+				this.words[i++] := 0
 			}
 			; Handle last word
 			this.words[endWordIndex] &= ~lastWordMask
 		}
+		this.recalculateWordsInUse()
+		this.checkInvariants()
 	}
 
 	get(bitIndex) {
@@ -376,25 +388,26 @@ class BitSet {
 		result := new BitSet(toIndex - fromIndex)
 		targetWords := this.wordIndex(toIndex - fromIndex - 1) + 1
 		sourceIndex := this.wordIndex(fromIndex)
-		wordAligned := ((fromIndex & BitSet.BIT_INDEX_MASK) = 0)
+		wordAligned := (fromIndex & BitSet.BIT_INDEX_MASK) == 0
 		; Process all words but the last word
 		i := 0
 		while (i < targetWords - 1) {
-			result.words[i] := wordAligned ? this.words[sourceIndex]
+			result.words[i++] := wordAligned
+					? this.words[sourceIndex]
 					: Math.zeroFillShiftR(this.words[sourceIndex], fromIndex)
-					| I((this.words[sourceIndex+1] << -fromIndex))
-			i++
+					| (this.words[sourceIndex+1] << -fromIndex)
 			sourceIndex++
 		}
 		; Process the last word
-		lastWordMask := mATH.zeroFillShiftR(BitSet.WORD_MASK, -toIndex)
-		result.words[targetWords] := ((toIndex-1) & BitSet.BIT_INDEX_MASK)
+		lastWordMask := Math.zeroFillShiftR(BitSet.WORD_MASK, -toIndex)
+		result.words[targetWords - 1]
+				:= ((toIndex-1) & BitSet.BIT_INDEX_MASK)
 				< (fromIndex & BitSet.BIT_INDEX_MASK)
-				? ((Math.zeroFillShiftR(this.words[sourceIndex], fromIndex))
-				| (I(this.words[sourceIndex+1] & lastWordMask) << -fromIndex))
+				? (Math.zeroFillShiftR(this.words[sourceIndex], fromIndex)
+				| (this.words[sourceIndex+1] & lastWordMask) << -fromIndex)
 				: (Math.zeroFillShiftR(this.words[sourceIndex] & lastWordMask
 				, fromIndex))
-		; Set wordsInuse correctly
+		; Set wordsInUse correctly
 		result.wordsInUse := targetWords
 		result.recalculateWordsInUse()
 		result.checkInvariants()
@@ -436,7 +449,7 @@ class BitSet {
 		word := ~this.words[u] & (BitSet.WORD_MASK << fromIndex)
 		loop {
 			if (word != 0) {
-				return u * BitSet.BITS_PER_WORD
+				return (u * BitSet.BITS_PER_WORD)
 						+ Math.numberOfTrailingZeros(word)
 			}
 			if (++u = this.wordsInUse) {
@@ -458,7 +471,7 @@ class BitSet {
 	cardinality() {
 		sum := 0
 		loop % this.wordsInUse {
-			sum += Math.bitCount(this.words[A_Index])
+			sum += Math.bitCount(this.words[A_Index - 1])
 		}
 		return sum
 	}
@@ -468,22 +481,21 @@ class BitSet {
 		numBits := (this.wordsInUse > 128)
 				? this.cardinality()
 				: this.wordsInUse * BitSet.BITS_PER_WORD
-		b := "{"
-		i := I(this.nextSetBit(0))
+		result := "{"
+		i := this.nextSetBit(0)
 		if (i != -1) {
-			b .= i
-			i := I(this.nextSetBit(i+1))
+			result .= i
+			i := this.nextSetBit(i+1)
 			while (i >= 0) {
-				endOfRun := I(this.nextClearBit(i))
+				endOfRun := this.nextClearBit(i)
 			    while (i < endOfRun) {
-					b .= ", " i
+					result .= ", " i
 					i++
 				}
-				i := I(this.nextSetBit(i+1))
+				i := this.nextSetBit(i+1)
 			}
 		}
-		b .= "}"
-
-		return b
+		result .= "}"
+		return result
 	}
 }
