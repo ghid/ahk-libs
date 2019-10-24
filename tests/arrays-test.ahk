@@ -28,6 +28,9 @@ class ArraysTest extends TestCase {
 		this.assertTrue(IsFunc(Arrays.append))
 		this.assertTrue(IsFunc(Arrays.copyOf))
 		this.assertTrue(IsFunc(Arrays.flatten))
+		this.assertTrue(IsFunc(Arrays.forEach))
+		this.assertTrue(IsFunc(Arrays.map))
+		this.assertTrue(IsFunc(Arrays.reduce))
 	}
 
 	@Test_equal() {
@@ -261,6 +264,14 @@ class ArraysTest extends TestCase {
 		this.assertEquals(result.count(), 0)
 	}
 
+	@Test_isArray() {
+		this.assertException(Arrays, "isArray",,, 0)
+	}
+
+	@Test_isCallbackFunction() {
+		this.assertException(Arrays, "isCallbackFunction",,, "aMissingFunction")
+	}
+
 	@Test_reduce() {
 		this.assertException(Arrays, "reduce",,, 0, "sum", 0)
 		this.assertException(Arrays, "reduce",,, [], "aMissingFunction", 0)
@@ -282,6 +293,41 @@ class ArraysTest extends TestCase {
 
 	enumeration(accumulator, element) {
 		return accumulator ";" element
+	}
+
+	@Test_forEach() {
+		this.assertException(Arrays, "forEach",,, 0, "copyItems")
+		this.assertException(Arrays, "forEach",,, [], "aMissingFunction")
+		items := ["item1", "item2", "item3"]
+		copy := []
+		Arrays.forEach(items, ArraysTest.copyItems.bind(ArraysTest, copy))
+		this.assertEquals(copy.count(), 3)
+		this.assertEquals(copy[1], items[1])
+		this.assertEquals(copy[2], items[2])
+		this.assertEquals(copy[3], items[3])
+		; Just to demonstrate another use-case:
+		Arrays.forEach(copy, ArraysTest.logItems.bind(ArraysTest))
+	}
+
+	copyItems(copy, item) {
+		copy.push(item)
+	}
+
+	logItems(item, index) {
+		OutputDebug % "`n" index ": " item
+	}
+
+	@Test_filter() {
+		this.assertException(Arrays, "filter",,, 0, "findLongWords")
+		this.assertException(Arrays, "filter",,, [], "aMissingFunction")
+		words := ["spray", "limit", "elite", "exubertant", "destruction", "present"] ; ahklint-ignore: W002
+		this.assertTrue(Arrays.equal(Arrays.filter(words
+				, ArraysTest.findLongWords.bind(ArraysTest))
+				, ["exubertant", "destruction", "present"]))
+	}
+
+	findLongWords(word) {
+		return StrLen(word) > 6
 	}
 }
 

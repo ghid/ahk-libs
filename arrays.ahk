@@ -394,33 +394,57 @@ class Arrays {
 	}
 
 	map(anArray, callbackFunc) {
-		if (anArray.count() == "") {
-			throw Exception("First argument has to be an array")
-		}
-		if (!IsFunc(callbackFunc) && !IsObject(callbackFunc)) {
-			throw Exception("Function not found " callbackFunc)
-		}
+		Arrays.isArray(anArray)
+		Arrays.isCallbackFunction(callbackFunc)
 		result := []
-		for _, element in anArray {
-			if (!IsObject(element)) {
-				element := {1: element}
+		for _, currentValue in anArray {
+			if (!IsObject(currentValue)) {
+				currentValue := {1: currentValue}
 			}
-			result.push(callbackFunc.call(element))
+			result.push(callbackFunc.call(currentValue))
 		}
 		return result
 	}
 
 	reduce(anArray, callbackFunc, initialValue) {
-		if (anArray.count() == "") {
-			throw Exception("First argument has to be an array")
-		}
-		if (!IsFunc(callbackFunc) && !IsObject(callbackFunc)) {
-			throw Exception("Function not found " callbackFunc)
-		}
+		Arrays.isArray(anArray)
+		Arrays.isCallbackFunction(callbackFunc)
 		result := initialValue
-		for _, element in anArray {
-			result := callbackFunc.call(result, element)
+		for _, currentValue in anArray {
+			result := callbackFunc.call(result, currentValue)
 		}
 		return result
+	}
+
+	forEach(anArray, callbackFunc) {
+		Arrays.isArray(anArray)
+		Arrays.isCallbackFunction(callbackFunc)
+		for _, currentValue in anArray {
+			callbackFunc.call(currentValue, A_Index, anArray)
+		}
+	}
+
+	filter(anArray, callbackFunc) {
+		Arrays.isArray(anArray)
+		Arrays.isCallbackFunction(callbackFunc)
+		result := []
+		for _, currentValue in anArray {
+			if (callbackFunc.call(currentValue, A_Index, anArray)) {
+				result.push(currentValue)
+			}
+		}
+		return result
+	}
+
+	isArray(anArray) {
+		if (anArray.count() == "") {
+			throw Exception("Argument has to be an array")
+		}
+	}
+
+	isCallbackFunction(callbackFunc) {
+		if (!IsFunc(callbackFunc) && !IsObject(callbackFunc)) {
+			throw Exception("Callback function not found " callbackFunc)
+		}
 	}
 }
