@@ -107,15 +107,15 @@ class Arrays {
 	}
 
 	processSetAAndSetB() {
-		resultSet := []
+		result := []
 		while ((VennData.indexA != "" && VennData.indexB != "")
 				&& (VennData.indexA < VennData.setA.maxIndex()
 				|| VennData.indexB < VennData.setB.maxIndex())) {
-			resultSet := Arrays.catchUpSetA(resultSet)
-			resultSet := Arrays.catchUpSetB(resultSet)
-			resultSet := Arrays.processElementsContainedInBothSets(resultSet)
+			result := Arrays.catchUpSetA(result)
+			result := Arrays.catchUpSetB(result)
+			result := Arrays.processElementsContainedInBothSets(result)
 		}
-		return resultSet
+		return result
 	}
 
 	catchUpSetA(resultSet) {
