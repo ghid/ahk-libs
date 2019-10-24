@@ -249,16 +249,11 @@ class Math {
 		return lowestCommonMultiple
 	}
 
+	; see also: https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.19
 	zeroFillShiftR(number, shift) {
 		if (number == 0) {
 			return 0
 		}
-		; if (number >= 0x7fffffffffffffff && (shift == 0 || shift == -64)) {
-			; return (number & ~0x7fffffffffffffff) - 1
-		; }
-		; if (number >= 0x7fffffffffffffff && shift < 0 && shift >= -65) {
-			; shift--
-		; }
 		if (number > 0x7fffffffffffffff) {
 			number := (number & ~0x7fffffffffffffff) - 1
 		}
