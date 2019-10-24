@@ -104,7 +104,6 @@ class Arrays {
 		VennData.setA.push(HIGH)
 		VennData.setB.push(HIGH)
 		resultSet := Arrays.processSetAAndSetB()
-		OutputDebug % A_ThisFunc "`n" LoggingHelper.dump(resultSet)
 		return resultSet
 	}
 
