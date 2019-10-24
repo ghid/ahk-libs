@@ -154,7 +154,7 @@ class Arrays {
 		return result
 	}
 
-	processElementsContainedInBothSets(resultSet) {
+	processElementsContainedInBothSets(result) {
 		while ((VennData.indexA < VennData.setA.maxIndex()
 				|| VennData.indexB < VennData.setB.maxIndex())
 				&& (VennData.setA[VennData.indexA])
@@ -162,19 +162,19 @@ class Arrays {
 				, VennData.compareAsType) == 0) {
 			if (VennData.operation == Arrays.OPERATION_INERSECTION
 					|| VennData.operation == Arrays.OPERATION_UNION) {
-				resultSet := Arrays
+				result := Arrays
 						.pushToResultSet(VennData.setA[VennData.indexA]
-						, resultSet, "A")
-				resultSet := Arrays
+						, result, "A")
+				result := Arrays
 						.pushToResultSet(VennData.setB[VennData.indexB]
-						, resultSet, "B")
+						, result, "B")
 			}
 			if (VennData.operation != Arrays.OPERATION_RELAVIVE_COMPLEMENT) {
 				VennData.indexB++
 			}
 			VennData.indexA++
 		}
-		return resultSet
+		return result
 	}
 
 	pushToResultSet(element, resultSet, source="") {
