@@ -118,7 +118,7 @@ class Arrays {
 		return result
 	}
 
-	catchUpSetA(resultSet) {
+	catchUpSetA(result) {
 		while (VennData.indexA < VennData.setA.maxIndex()
 				&& (VennData.setA[VennData.indexA])
 				.compare(VennData.setB[VennData.indexB]
@@ -128,13 +128,13 @@ class Arrays {
 					== Arrays.OPERATION_SYMMETRIC_DIFFERENCE
 					|| VennData.operation
 					== Arrays.OPERATION_RELAVIVE_COMPLEMENT) {
-				resultSet := Arrays
+				result := Arrays
 						.pushToResultSet(VennData.setA[VennData.indexA]
-						, resultSet, "A")
+						, result, "A")
 			}
 			VennData.indexA++
 		}
-		return resultSet
+		return result
 	}
 
 	catchUpSetB(resultSet) {
