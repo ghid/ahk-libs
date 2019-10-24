@@ -103,8 +103,7 @@ class Arrays {
 		VarSetCapacity(HIGH, 64, 0xff)
 		VennData.setA.push(HIGH)
 		VennData.setB.push(HIGH)
-		resultSet := Arrays.processSetAAndSetB()
-		return resultSet
+		return Arrays.processSetAAndSetB()
 	}
 
 	processSetAAndSetB() {
