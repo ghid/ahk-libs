@@ -325,17 +325,20 @@ class Arrays {
 		resultString := ""
 		while (index <= anArray.maxIndex()) {
 			element := anArray[index++]
-			if (element.maxIndex() == "") {
-				resultString .= (resultString != ""
-						? separateWithText
-						: "") element
-			} else {
-				resultString .= (resultString != ""
-						? separateWithText
-						: "") Arrays.toString(element, separateWithText)
-			}
+			resultString .= Arrays.appendElementToString(resultString
+					, separateWithText, element)
 		}
 		return resultString
+	}
+
+	appendElementToString(currentString, separateWithText, element) {
+		result := (currentString != "" ? separateWithText : "")
+		if (element.maxIndex() == "") {
+			result .= element
+		} else {
+			result .= Arrays.toString(element, separateWithText)
+		}
+		return result
 	}
 
 	index(anArray) {
