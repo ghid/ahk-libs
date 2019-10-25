@@ -113,10 +113,7 @@ class Arrays {
 	}
 
 	distinct(anArray) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		distinctValuesInArray := []
 		for i, value in anArray {
 			if (!distinctValuesInArray.hasKey(value)) {
