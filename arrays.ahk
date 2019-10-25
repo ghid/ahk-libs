@@ -140,10 +140,7 @@ class Arrays {
 	}
 
 	shift(anArray, shiftByElements=1) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		if (shiftByElements < 1) {
 			numberOfShifts := 1
 		} else if (shiftByElements > anArray.maxIndex()) {
