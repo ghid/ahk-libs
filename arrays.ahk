@@ -123,7 +123,7 @@ class Arrays {
 		return Arrays.keys(distinctValuesInArray)
 	}
 
-	removeValue(anArray="", valueToRemove="", caseSensitive=false) {
+	removeValue(anArray, theValueToRemove, caseSensitive=false) {
 		if (!IsObject(anArray)) {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")
@@ -131,8 +131,8 @@ class Arrays {
 		result := 0
 		index := anArray.minIndex()
 		while (index <= anArray.maxIndex()) {
-			if ((!caseSensitive && anArray[index] = valueToRemove)
-					|| (caseSensitive && anArray[index] == valueToRemove)) {
+			if ((!caseSensitive && anArray[index] = theValueToRemove)
+					|| (caseSensitive && anArray[index] == theValueToRemove)) {
 				anArray.remove(index)
 				result++
 			} else {

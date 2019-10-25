@@ -125,7 +125,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_removeValue() {
-		this.assertException(Arrays, "removeValue", "", "", "")
+		this.assertException(Arrays, "removeValue",,, 0, 1)
 		a := [1,2,3,4,3,2,1,3,2,3,1,2,3,1,5,3]
 		this.assertEquals(Arrays.removeValue(a, 2), 4)
 		this.assertTrue(Arrays.equal(a, [1,3,4,3,1,3,3,1,3,1,5,3]))
