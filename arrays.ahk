@@ -81,13 +81,17 @@ class Arrays {
 	countOccurences(anArray, lookUpValue, caseSensitive=false) {
 		Arrays.isArray(anArray)
 		result := 0
-		for i, value in anArray {
-			if ((!caseSensitive && value = lookUpValue)
-					|| (caseSensitive && value == lookUpValue)) {
-				result++
-			}
+		loop % anArray.count() {
+			result += Arrays.areValuesEqual(anArray[A_Index], lookUpValue
+					, caseSensitive)
 		}
 		return result
+	}
+
+	areValuesEqual(aValue, anotherValue, caseSensitive) {
+		return (!caseSensitive && aValue = anotherValue)
+				|| (caseSensitive && aValue == anotherValue)
+				? 1 : 0
 	}
 
 	keys(anArray="") {
