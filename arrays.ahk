@@ -55,12 +55,8 @@ class Arrays {
 	}
 
 	equal(anArray, anArrayToCompareWith) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array", -1)
-		}
-		if (!IsObject(anArrayToCompareWith)) {
-			throw Exception("Parameter #2 is no valid array", -1)
-		}
+		Arrays.isArray(anArray)
+		Arrays.isArray(anArrayToCompareWith)
 		if (!(anArray.maxIndex() == anArrayToCompareWith.maxIndex())) {
 			return false
 		}
