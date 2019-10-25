@@ -80,14 +80,14 @@ class Arrays {
 
 	countOccurences(anArray, lookUpValue, caseSensitive=false) {
 		Arrays.isArray(anArray)
-		count := 0
+		result := 0
 		for i, value in anArray {
 			if ((!caseSensitive && value = lookUpValue)
 					|| (caseSensitive && value == lookUpValue)) {
-				count++
+				result++
 			}
 		}
-		return count
+		return result
 	}
 
 	keys(anArray="") {
