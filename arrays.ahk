@@ -161,7 +161,7 @@ class Arrays {
 	append(anArray, anotherArray) {
 		Arrays.isArray(anArray)
 		Arrays.isArray(anotherArray)
-		for key, value in anotherArray {
+		for _, value in anotherArray {
 			anArray.push(value)
 		}
 		return anArray.maxIndex()
