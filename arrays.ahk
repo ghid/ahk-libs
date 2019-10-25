@@ -104,10 +104,7 @@ class Arrays {
 	}
 
 	values(anArray) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		result := []
 		for key, value in anArray {
 			result.push(value)
