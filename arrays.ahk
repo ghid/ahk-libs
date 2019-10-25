@@ -79,10 +79,7 @@ class Arrays {
 	}
 
 	countOccurences(anArray, lookUpValue, caseSensitive=false) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		count := 0
 		for i, value in anArray {
 			if ((!caseSensitive && value = lookUpValue)
