@@ -192,13 +192,13 @@ class Arrays {
 			return ""
 		}
 		index := anArray.minIndex()
-		resultString := ""
+		result := ""
 		while (index <= anArray.maxIndex()) {
 			element := anArray[index++]
-			resultString .= Arrays.appendElementToString(resultString
+			result .= Arrays.appendElementToString(result
 					, separateWithText, element)
 		}
-		return resultString
+		return result
 	}
 
 	appendElementToString(currentString, separateWithText, element) {
