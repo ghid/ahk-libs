@@ -169,10 +169,7 @@ class Arrays {
 
 	wrap(anArray, textWidth, indentWithText="", indent1stElementWithText=""
 			, replace1stIndent=false) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		wrappedText := ""
 		index := anArray.minIndex()
 		while (index <= anArray.maxIndex()) {
