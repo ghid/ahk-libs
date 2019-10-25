@@ -34,7 +34,8 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_equal() {
-		this.assertException(Arrays, "equal", "", "", "")
+		this.assertException(Arrays, "equal",,, 0, [])
+		this.assertException(Arrays, "equal",,, [], 0)
 		this.assertTrue(Arrays.equal([], []))
 		this.assertTrue(Arrays.equal([0], [0]))
 		this.assertFalse(Arrays.equal([0, 1], [0]))

@@ -54,18 +54,18 @@ class Arrays {
 				. "' ist not allowed", -1)
 	}
 
-	equal(anArray="", arrayToCompareWith="") {
+	equal(anArray, anArrayToCompareWith) {
 		if (!IsObject(anArray)) {
 			throw Exception("Parameter #1 is no valid array", -1)
 		}
-		if (!IsObject(arrayToCompareWith)) {
+		if (!IsObject(anArrayToCompareWith)) {
 			throw Exception("Parameter #2 is no valid array", -1)
 		}
-		if (!(anArray.maxIndex() == arrayToCompareWith.maxIndex())) {
+		if (!(anArray.maxIndex() == anArrayToCompareWith.maxIndex())) {
 			return false
 		}
 		loop % anArray.maxIndex() {
-			if (!(anArray[A_Index] == arrayToCompareWith[A_Index])) {
+			if (!(anArray[A_Index] == anArrayToCompareWith[A_Index])) {
 				return false
 			}
 		}
