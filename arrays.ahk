@@ -57,10 +57,10 @@ class Arrays {
 	equal(anArray, anArrayToCompareWith) {
 		Arrays.isArray(anArray)
 		Arrays.isArray(anArrayToCompareWith)
-		if (!(anArray.maxIndex() == anArrayToCompareWith.maxIndex())) {
+		if (!(anArray.count() == anArrayToCompareWith.count())) {
 			return false
 		}
-		loop % anArray.maxIndex() {
+		loop % anArray.count() {
 			if (!(anArray[A_Index] == anArrayToCompareWith[A_Index])) {
 				return false
 			}
