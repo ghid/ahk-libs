@@ -187,14 +187,14 @@ class Arrays {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")
 		}
-		result := 0
+		count := 0
 		for i, value in anArray {
 			if ((!caseSensitive && value = lookUpValue)
 					|| (caseSensitive && value == lookUpValue)) {
-				result++
+				count++
 			}
 		}
-		return result
+		return count
 	}
 
 	keys(anArray="") {
