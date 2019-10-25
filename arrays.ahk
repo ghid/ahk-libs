@@ -103,7 +103,7 @@ class Arrays {
 		return result
 	}
 
-	values(anArray="") {
+	values(anArray) {
 		if (!IsObject(anArray)) {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")

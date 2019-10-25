@@ -110,7 +110,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_values() {
-		this.assertException(Arrays, "values", "", "", "")
+		this.assertException(Arrays, "values",,, 0)
 		this.assertTrue(Arrays.equal(Arrays.values([0,3,6,9,12]), [0,3,6,9,12]))
 		this.assertTrue(Arrays.equal(Arrays.values({1: 3, 3: 6, 6: 9, 9: 12})
 				, [3,6,9,12]))
