@@ -94,7 +94,7 @@ class Arrays {
 				? 1 : 0
 	}
 
-	keys(anArray="") {
+	keys(anArray) {
 		if (!IsObject(anArray)) {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")
