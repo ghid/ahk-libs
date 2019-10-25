@@ -128,9 +128,9 @@ class Arrays {
 		result := 0
 		index := anArray.minIndex()
 		while (index <= anArray.maxIndex()) {
-			if ((!caseSensitive && anArray[index] = theValueToRemove)
-					|| (caseSensitive && anArray[index] == theValueToRemove)) {
-				anArray.remove(index)
+			if (Arrays.areValuesEqual(anArray[index], theValueToRemove
+					, caseSensitive)) {
+				anArray.removeAt(index)
 				result++
 			} else {
 				index++
