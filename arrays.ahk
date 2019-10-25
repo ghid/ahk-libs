@@ -240,18 +240,18 @@ class Arrays {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")
 		}
-		numberOfRemovedValues := 0
+		result := 0
 		index := anArray.minIndex()
 		while (index <= anArray.maxIndex()) {
 			if ((!caseSensitive && anArray[index] = valueToRemove)
 					|| (caseSensitive && anArray[index] == valueToRemove)) {
 				anArray.remove(index)
-				numberOfRemovedValues++
+				result++
 			} else {
 				index++
 			}
 		}
-		return numberOfRemovedValues
+		return result
 	}
 
 	shift(anArray, shiftByElements=1) {
