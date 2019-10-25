@@ -124,10 +124,7 @@ class Arrays {
 	}
 
 	removeValue(anArray, theValueToRemove, caseSensitive=false) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		result := 0
 		index := anArray.minIndex()
 		while (index <= anArray.maxIndex()) {
