@@ -45,7 +45,8 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_intersection() {
-		this.assertException(Arrays, "intersection", "", "", "")
+		this.assertException(Arrays, "intersection",,, 0, [])
+		this.assertException(Arrays, "intersection",,, [], 0)
 		this.assertTrue(Arrays.equal(Arrays.intersection([], []), []))
 		this.assertTrue(IsObject(Arrays.intersection([1], [2])))
 		this.assertTrue(Arrays.equal(Arrays.intersection([1,2,3,4], [3,4,5,6])

@@ -73,8 +73,8 @@ class Arrays {
 				, Arrays.Venn.OPERATION_UNION, compareAsType)
 	}
 
-	intersection(anArray="", arrayToIntersectWith="", compareAsType=0) {
-		return Arrays.Venn.operation(anArray, arrayToIntersectWith
+	intersection(anArray, anArrayToIntersectWith, compareAsType=0) {
+		return Arrays.Venn.operation(anArray, anArrayToIntersectWith
 				, Arrays.Venn.OPERATION_INERSECTION, compareAsType)
 	}
 
