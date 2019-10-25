@@ -68,8 +68,8 @@ class Arrays {
 		return true
 	}
 
-	union(anArray="", arrayToUnionWith="", compareAsType=0) {
-		return Arrays.Venn.operation(anArray, arrayToUnionWith
+	union(anArray, anArrayToUnionWith, compareAsType=0) {
+		return Arrays.Venn.operation(anArray, anArrayToUnionWith
 				, Arrays.Venn.OPERATION_UNION, compareAsType)
 	}
 
