@@ -150,7 +150,7 @@ class Arrays {
 		}
 		shiftedElements := []
 		loop %numberOfShifts% {
-			shiftedElements.push(anArray.remove(anArray.minIndex()))
+			shiftedElements.push(anArray.removeAt(anArray.minIndex()))
 		}
 		if (shiftByElements != 1) {
 			return shiftedElements
