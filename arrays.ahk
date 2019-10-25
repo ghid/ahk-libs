@@ -106,7 +106,7 @@ class Arrays {
 	values(anArray) {
 		Arrays.isArray(anArray)
 		result := []
-		for key, value in anArray {
+		for _, value in anArray {
 			result.push(value)
 		}
 		return result
