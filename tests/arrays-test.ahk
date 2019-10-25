@@ -117,7 +117,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_distinct() {
-		this.assertException(Arrays, "distinct", "", "", "")
+		this.assertException(Arrays, "distinct",,, 0)
 		this.assertTrue(Arrays.equal(Arrays
 				.distinct([1,2,3,4,3,2,1,3,2,3,1,2,3,1,5,3]), [1,2,3,4,5]))
 		this.assertTrue(Arrays.equal(Arrays

@@ -112,13 +112,13 @@ class Arrays {
 		return result
 	}
 
-	distinct(pArray="") {
-		if (!IsObject(pArray)) {
+	distinct(anArray) {
+		if (!IsObject(anArray)) {
 			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" pArray ">")
+					, -1, "<" anArray ">")
 		}
 		distinctValuesInArray := []
-		for i, value in pArray {
+		for i, value in anArray {
 			if (!distinctValuesInArray.hasKey(value)) {
 				distinctValuesInArray[value] := true
 			}
