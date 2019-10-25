@@ -187,10 +187,7 @@ class Arrays {
 	}
 
 	toString(anArray, separateWithText=" ") {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
+		Arrays.isArray(anArray)
 		if (!anArray.maxIndex()) {
 			return ""
 		}
