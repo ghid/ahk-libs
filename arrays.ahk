@@ -1,13 +1,8 @@
 ; ahk: console
-#Include %A_LineFile%\..\modules\arrays\
-#Include VennData.ahk
-
 class Arrays {
 
-	static OPERATION_INERSECTION := 1
-	static OPERATION_UNION := 2
-	static OPERATION_SYMMETRIC_DIFFERENCE := 3
-	static OPERATION_RELAVIVE_COMPLEMENT := 4
+	#Include %A_LineFile%\..\modules\arrays\
+	#Include Venn.ahk
 
 	; ahklint-ignore-begin: W002,W007,W004
 	class Quicksort {
@@ -78,108 +73,13 @@ class Arrays {
 	}
 
 	union(anArray="", arrayToUnionWith="", compareAsType=0) {
-		return Arrays.venn(anArray, arrayToUnionWith
-				, Arrays.OPERATION_UNION, compareAsType)
+		return Arrays.Venn.operation(anArray, arrayToUnionWith
+				, Arrays.Venn.OPERATION_UNION, compareAsType)
 	}
 
 	intersection(anArray="", arrayToIntersectWith="", compareAsType=0) {
-		return Arrays.venn(anArray, arrayToIntersectWith
-				, Arrays.OPERATION_INERSECTION, compareAsType)
-	}
-
-	venn(setA, setB, operation, compareAsType=0) {
-		if (!IsObject(setA)) {
-			throw Exception("Parameter #1 is no valid array", -1)
-		}
-		if (!IsObject(setB)) {
-			throw Exception("Parameter #2 is no valid array", -1)
-		}
-		VennData.setA := setA.clone()
-		VennData.setB := setB.clone()
-		VennData.indexA := VennData.setA.minIndex()
-		VennData.indexB := VennData.setB.minIndex()
-		VennData.operation := operation
-		VennData.compareAsType := compareAsType
-		VarSetCapacity(HIGH, 64, 0xff)
-		VennData.setA.push(HIGH)
-		VennData.setB.push(HIGH)
-		return Arrays.processSetAAndSetB()
-	}
-
-	processSetAAndSetB() {
-		result := []
-		while ((VennData.indexA != "" && VennData.indexB != "")
-				&& (VennData.indexA < VennData.setA.maxIndex()
-				|| VennData.indexB < VennData.setB.maxIndex())) {
-			result := Arrays.catchUpSetA(result)
-			result := Arrays.catchUpSetB(result)
-			result := Arrays.processElementsContainedInBothSets(result)
-		}
-		return result
-	}
-
-	catchUpSetA(result) {
-		while (VennData.indexA < VennData.setA.maxIndex()
-				&& (VennData.setA[VennData.indexA])
-				.compare(VennData.setB[VennData.indexB]
-				, VennData.compareAsType) < 0) {
-			if (VennData.operation == Arrays.OPERATION_UNION
-					|| VennData.operation
-					== Arrays.OPERATION_SYMMETRIC_DIFFERENCE
-					|| VennData.operation
-					== Arrays.OPERATION_RELAVIVE_COMPLEMENT) {
-				result := Arrays
-						.pushToResultSet(VennData.setA[VennData.indexA]
-						, result, "A")
-			}
-			VennData.indexA++
-		}
-		return result
-	}
-
-	catchUpSetB(result) {
-		while (VennData.indexB < VennData.setB.maxIndex()
-				&& (VennData.setB[VennData.indexB])
-				.compare(VennData.setA[VennData.indexA]
-				, VennData.compareAsType) < 0) {
-			if (VennData.operation == Arrays.OPERATION_UNION
-					|| VennData.operation
-					== Arrays.OPERATION_SYMMETRIC_DIFFERENCE) {
-				result := Arrays
-						.pushToResultSet(VennData.setB[VennData.indexB]
-						, result, "B")
-			}
-			VennData.indexB++
-		}
-		return result
-	}
-
-	processElementsContainedInBothSets(result) {
-		while ((VennData.indexA < VennData.setA.maxIndex()
-				|| VennData.indexB < VennData.setB.maxIndex())
-				&& (VennData.setA[VennData.indexA])
-				.compare(VennData.setB[VennData.indexB]
-				, VennData.compareAsType) == 0) {
-			if (VennData.operation == Arrays.OPERATION_INERSECTION
-					|| VennData.operation == Arrays.OPERATION_UNION) {
-				result := Arrays
-						.pushToResultSet(VennData.setA[VennData.indexA]
-						, result, "A")
-				result := Arrays
-						.pushToResultSet(VennData.setB[VennData.indexB]
-						, result, "B")
-			}
-			if (VennData.operation != Arrays.OPERATION_RELAVIVE_COMPLEMENT) {
-				VennData.indexB++
-			}
-			VennData.indexA++
-		}
-		return result
-	}
-
-	pushToResultSet(element, resultSet, source="") {
-		resultSet.push((VennData.printSource ? "(" source ") " : "") element)
-		return resultSet
+		return Arrays.Venn.operation(anArray, arrayToIntersectWith
+				, Arrays.Venn.OPERATION_INERSECTION, compareAsType)
 	}
 
 	countOccurences(anArray="", lookUpValue="", caseSensitive=false) {

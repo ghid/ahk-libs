@@ -223,7 +223,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_unionWithSource() {
-		VennData.printSource := true
+		Arrays.VennData.printSource := true
 		this.assertTrue(Arrays.equal(Arrays
 				.union(["abc","def","ghi","jkl"], ["abc","mno"])
 				, ["(A) abc","(B) abc","(A) def"
