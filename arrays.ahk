@@ -159,14 +159,8 @@ class Arrays {
 	}
 
 	append(anArray, anotherArray) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" anArray ">")
-		}
-		if (!IsObject(anotherArray)) {
-			throw Exception("Parameter #2 is no valid array"
-					, -1, "<" anotherArray ">")
-		}
+		Arrays.isArray(anArray)
+		Arrays.isArray(anotherArray)
 		for key, value in anotherArray {
 			anArray.push(value)
 		}
