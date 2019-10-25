@@ -202,11 +202,11 @@ class Arrays {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")
 		}
-		allKeysInArray := []
+		result := []
 		for key, value in anArray {
-			allKeysInArray.push(key)
+			result.push(key)
 		}
-		return allKeysInArray
+		return result
 	}
 
 	values(anArray="") {
