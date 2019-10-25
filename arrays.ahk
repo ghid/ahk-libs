@@ -115,7 +115,7 @@ class Arrays {
 	distinct(anArray) {
 		Arrays.isArray(anArray)
 		distinctValuesInArray := []
-		for i, value in anArray {
+		for _, value in anArray {
 			if (!distinctValuesInArray.hasKey(value)) {
 				distinctValuesInArray[value] := true
 			}
