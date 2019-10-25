@@ -85,7 +85,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_countOccurences() {
-		this.assertException(Arrays, "countOccurences", "", "", "")
+		this.assertException(Arrays, "countOccurences",,, 0, 1)
 		this.assertEquals(Arrays.countOccurences([], ""), 0)
 		this.assertEquals(Arrays.countOccurences([1], 1), 1)
 		this.assertEquals(Arrays.countOccurences([1,1,1], 1), 3)

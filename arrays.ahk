@@ -78,7 +78,7 @@ class Arrays {
 				, Arrays.Venn.OPERATION_INERSECTION, compareAsType)
 	}
 
-	countOccurences(anArray="", lookUpValue="", caseSensitive=false) {
+	countOccurences(anArray, lookUpValue, caseSensitive=false) {
 		if (!IsObject(anArray)) {
 			throw Exception("Parameter #1 is no valid array"
 					, -1, "<" anArray ">")
