@@ -28,10 +28,14 @@ class ArraysTest extends TestCase {
 		this.assertTrue(IsFunc(Arrays.append))
 		this.assertTrue(IsFunc(Arrays.copyOf))
 		this.assertTrue(IsFunc(Arrays.flatten))
+		this.assertTrue(IsFunc(Arrays.forEach))
+		this.assertTrue(IsFunc(Arrays.map))
+		this.assertTrue(IsFunc(Arrays.reduce))
 	}
 
 	@Test_equal() {
-		this.assertException(Arrays, "equal", "", "", "")
+		this.assertException(Arrays, "equal",,, 0, [])
+		this.assertException(Arrays, "equal",,, [], 0)
 		this.assertTrue(Arrays.equal([], []))
 		this.assertTrue(Arrays.equal([0], [0]))
 		this.assertFalse(Arrays.equal([0, 1], [0]))
@@ -41,7 +45,8 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_intersection() {
-		this.assertException(Arrays, "intersection", "", "", "")
+		this.assertException(Arrays, "intersection",,, 0, [])
+		this.assertException(Arrays, "intersection",,, [], 0)
 		this.assertTrue(Arrays.equal(Arrays.intersection([], []), []))
 		this.assertTrue(IsObject(Arrays.intersection([1], [2])))
 		this.assertTrue(Arrays.equal(Arrays.intersection([1,2,3,4], [3,4,5,6])
@@ -80,7 +85,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_countOccurences() {
-		this.assertException(Arrays, "countOccurences", "", "", "")
+		this.assertException(Arrays, "countOccurences",,, 0, 1)
 		this.assertEquals(Arrays.countOccurences([], ""), 0)
 		this.assertEquals(Arrays.countOccurences([1], 1), 1)
 		this.assertEquals(Arrays.countOccurences([1,1,1], 1), 3)
@@ -98,21 +103,21 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_keys() {
-		this.assertException(Arrays, "keys", "", "", "")
+		this.assertException(Arrays, "keys",,, 0)
 		this.assertTrue(Arrays.equal(Arrays.keys([0,3,6,9,12]), [1,2,3,4,5]))
 		this.assertTrue(Arrays.equal(Arrays.keys({1: 3, 3: 6, 6: 9, 9: 12})
 				, [1,3,6,9]))
 	}
 
 	@Test_values() {
-		this.assertException(Arrays, "values", "", "", "")
+		this.assertException(Arrays, "values",,, 0)
 		this.assertTrue(Arrays.equal(Arrays.values([0,3,6,9,12]), [0,3,6,9,12]))
 		this.assertTrue(Arrays.equal(Arrays.values({1: 3, 3: 6, 6: 9, 9: 12})
 				, [3,6,9,12]))
 	}
 
 	@Test_distinct() {
-		this.assertException(Arrays, "distinct", "", "", "")
+		this.assertException(Arrays, "distinct",,, 0)
 		this.assertTrue(Arrays.equal(Arrays
 				.distinct([1,2,3,4,3,2,1,3,2,3,1,2,3,1,5,3]), [1,2,3,4,5]))
 		this.assertTrue(Arrays.equal(Arrays
@@ -120,7 +125,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_removeValue() {
-		this.assertException(Arrays, "removeValue", "", "", "")
+		this.assertException(Arrays, "removeValue",,, 0, 1)
 		a := [1,2,3,4,3,2,1,3,2,3,1,2,3,1,5,3]
 		this.assertEquals(Arrays.removeValue(a, 2), 4)
 		this.assertTrue(Arrays.equal(a, [1,3,4,3,1,3,3,1,3,1,5,3]))
@@ -220,7 +225,7 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_unionWithSource() {
-		VennData.printSource := true
+		Arrays.VennData.printSource := true
 		this.assertTrue(Arrays.equal(Arrays
 				.union(["abc","def","ghi","jkl"], ["abc","mno"])
 				, ["(A) abc","(B) abc","(A) def"
@@ -261,6 +266,14 @@ class ArraysTest extends TestCase {
 		this.assertEquals(result.count(), 0)
 	}
 
+	@Test_isArray() {
+		this.assertException(Arrays, "isArray",,, 0)
+	}
+
+	@Test_isCallbackFunction() {
+		this.assertException(Arrays, "isCallbackFunction",,, "aMissingFunction")
+	}
+
 	@Test_reduce() {
 		this.assertException(Arrays, "reduce",,, 0, "sum", 0)
 		this.assertException(Arrays, "reduce",,, [], "aMissingFunction", 0)
@@ -282,6 +295,73 @@ class ArraysTest extends TestCase {
 
 	enumeration(accumulator, element) {
 		return accumulator ";" element
+	}
+
+	@Test_forEach() {
+		this.assertException(Arrays, "forEach",,, 0, "copyItems")
+		this.assertException(Arrays, "forEach",,, [], "aMissingFunction")
+		items := ["item1", "item2", "item3"]
+		copy := []
+		Arrays.forEach(items, ArraysTest.copyItems.bind(ArraysTest, copy))
+		this.assertEquals(copy.count(), 3)
+		this.assertEquals(copy[1], items[1])
+		this.assertEquals(copy[2], items[2])
+		this.assertEquals(copy[3], items[3])
+		; Just to demonstrate another use-case:
+		Arrays.forEach(copy, ArraysTest.logItems.bind(ArraysTest))
+	}
+
+	copyItems(copy, item) {
+		copy.push(item)
+	}
+
+	logItems(item, index) {
+		OutputDebug % "`n" index ": " item
+	}
+
+	@Test_filter() {
+		this.assertException(Arrays, "filter",,, 0, "findLongWords")
+		this.assertException(Arrays, "filter",,, [], "aMissingFunction")
+		words := ["spray", "limit", "elite", "exubertant", "destruction", "present"] ; ahklint-ignore: W002
+		this.assertTrue(Arrays.equal(Arrays.filter(words
+				, ArraysTest.findLongWords.bind(ArraysTest))
+				, ["exubertant", "destruction", "present"]))
+	}
+
+	findLongWords(word) {
+		return StrLen(word) > 6
+	}
+
+	@Test_sort() {
+		this.assertException(Arrays, "sort",,, 0)
+		this.assertException(Arrays, "sort",,, [], "missingFunction")
+		months := ["Mar", "Jan", "Feb", "Dec"]
+		this.assertTrue(Arrays.equal(Arrays.sort(months)
+				, ["Dec", "Feb", "Jan", "Mar"]))
+		array1 := [1, 30, 4, 21, 100000]
+		this.assertTrue(Arrays.equal(Arrays.sort(array1)
+				, [1, 100000, 21, 30, 4]))
+		this.assertTrue(Arrays.equal(Arrays.sort(months
+				, ArraysTest.sortDescending.bind(ArraysTest))
+				, ["Mar", "Jan", "Feb", "Dec"]))
+		months := ["Mar", "Jan", "Feb", "Dec"]
+		this.assertTrue(Arrays.equal(Arrays.sort(months
+				, ArraysTest.sortDescending.bind(ArraysTest)*-1)
+				, ["Dec", "Feb", "Jan", "Mar"]))
+		this.assertTrue(Arrays.equal(Arrays.sort(array1
+				, ArraysTest.sortDescending.bind(ArraysTest))
+				, [4, 30, 21, 100000, 1]))
+		this.assertTrue(Arrays.equal(Arrays.sort(array1
+				, ArraysTest.sortNumbers.bind(ArraysTest))
+				, [1, 4, 21, 30, 100000]))
+	}
+
+	sortDescending(firstElement, secondElement) {
+		return Arrays.Quicksort.compareStrings(firstElement, secondElement) * -1
+	}
+
+	sortNumbers(firstElement, secondElement) {
+		return firstElement - secondElement
 	}
 }
 
