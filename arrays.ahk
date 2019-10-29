@@ -3,51 +3,7 @@ class Arrays {
 
 	#Include %A_LineFile%\..\modules\arrays\
 	#Include Venn.ahk
-
-	; ahklint-ignore-begin: W002,W007,W004
-	class Quicksort {
-
-		sort(poData, paSortOrder, piLeft, piRight) {
-			if (piLeft < piRight) {
-				iPivot := Arrays.Quicksort.Divide(poData, paSortOrder, piLeft, piRight)
-				Arrays.Quicksort.Sort(poData, paSortOrder, piLeft, iPivot-1)
-				Arrays.Quicksort.Sort(poData, paSortOrder, iPivot+1, piRight)
-			}
-		}
-
-		Divide(poData, paSortOrder, piLeft, piRight) {
-			i := piLeft
-			j := piRight - 1
-			_pivot := poData[piRight]
-
-			loop {
-				while (Arrays.compare(paSortOrder, poData[i], _pivot)
-						<= 0 && i < piRight) {
-					i++
-				}
-				while (Arrays.compare(paSortOrder, poData[j], _pivot)
-						>= 0 && j > piLeft) {
-					j--
-				}
-				if (i < j) {
-					Arrays.Quicksort.Swap(poData, i, j)
-				} else {
-					break
-				}
-			}
-
-			Arrays.Quicksort.Swap(poData, i, piRight)
-
-			return i
-		}
-
-		Swap(poData, pi, pj) {
-			_temp := poData[pi]
-			poData[pi] := poData[pj]
-			poData[pj] := _temp
-		}
-	}
-	; ahklint-ignore-end
+	#Include Quicksort.ahk
 
 	__new() {
 		throw Exception("Instatiation of class '" this.__Class
@@ -194,9 +150,8 @@ class Arrays {
 		index := anArray.minIndex()
 		result := ""
 		while (index <= anArray.maxIndex()) {
-			element := anArray[index++]
-			result .= Arrays.appendElementToString(result
-					, separateWithText, element)
+			result .= Arrays.appendElementToString(result, separateWithText
+					, anArray[index++])
 		}
 		return result
 	}
@@ -239,16 +194,19 @@ class Arrays {
 		return copyOfArray
 	}
 
-	sort(anArray) {
-		if (!IsObject(anArray)) {
-			throw Exception("Parameter #1 is no valid array"
-					, -1, "<" pArray ">")
+	sort(anArray, compareFunc="") {
+		Arrays.isArray(anArray)
+		if (compareFunc == "") {
+			compareFunc := Arrays.Quicksort.compareStrings.bind(Arrays)
 		}
+		Arrays.isCallbackFunction(compareFunc)
+		return Arrays.Quicksort.sort(anArray, compareFunc
+				, anArray.minIndex(), anArray.maxIndex())
 	}
 
 	flatten(anArray, reset=true) {
 		static flatArray
-
+		Arrays.isArray(anArray)
 		if (reset) {
 			flatArray := []
 		}

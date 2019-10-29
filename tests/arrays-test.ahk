@@ -331,6 +331,38 @@ class ArraysTest extends TestCase {
 	findLongWords(word) {
 		return StrLen(word) > 6
 	}
+
+	@Test_sort() {
+		this.assertException(Arrays, "sort",,, 0)
+		this.assertException(Arrays, "sort",,, [], "missingFunction")
+		months := ["Mar", "Jan", "Feb", "Dec"]
+		this.assertTrue(Arrays.equal(Arrays.sort(months)
+				, ["Dec", "Feb", "Jan", "Mar"]))
+		array1 := [1, 30, 4, 21, 100000]
+		this.assertTrue(Arrays.equal(Arrays.sort(array1)
+				, [1, 100000, 21, 30, 4]))
+		this.assertTrue(Arrays.equal(Arrays.sort(months
+				, ArraysTest.sortDescending.bind(ArraysTest))
+				, ["Mar", "Jan", "Feb", "Dec"]))
+		months := ["Mar", "Jan", "Feb", "Dec"]
+		this.assertTrue(Arrays.equal(Arrays.sort(months
+				, ArraysTest.sortDescending.bind(ArraysTest)*-1)
+				, ["Dec", "Feb", "Jan", "Mar"]))
+		this.assertTrue(Arrays.equal(Arrays.sort(array1
+				, ArraysTest.sortDescending.bind(ArraysTest))
+				, [4, 30, 21, 100000, 1]))
+		this.assertTrue(Arrays.equal(Arrays.sort(array1
+				, ArraysTest.sortNumbers.bind(ArraysTest))
+				, [1, 4, 21, 30, 100000]))
+	}
+
+	sortDescending(firstElement, secondElement) {
+		return Arrays.Quicksort.compareStrings(firstElement, secondElement) * -1
+	}
+
+	sortNumbers(firstElement, secondElement) {
+		return firstElement - secondElement
+	}
 }
 
 enrich(anArray) {
