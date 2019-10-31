@@ -40,12 +40,14 @@ class Quicksort {
 	}
 
 	compareStrings(firstElement, secondElement) {
-		if (firstElement "$" > secondElement "$") {
-			return 1
-		}
-		if (firstElement "$" < secondElement "$") {
-			return -1
-		}
-		return 0
+		scs := A_StringCaseSense
+		StringCaseSense on
+		firstElement .= "$"
+		secondElement .= "$"
+		result := (firstElement == secondElement ? 0
+				: firstElement < secondElement ? -1
+				: +1)
+		StringCaseSense %scs%
+		return result
 	}
 }

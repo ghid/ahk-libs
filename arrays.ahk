@@ -1,6 +1,10 @@
 ; ahk: console
 class Arrays {
 
+	requires() {
+		return [String]
+	}
+
 	#Include %A_LineFile%\..\modules\arrays\
 	#Include Venn.ahk
 	#Include Quicksort.ahk
@@ -22,16 +26,6 @@ class Arrays {
 			}
 		}
 		return true
-	}
-
-	union(anArray, anArrayToUnionWith, compareAsType=0) {
-		return Arrays.Venn.operation(anArray, anArrayToUnionWith
-				, Arrays.Venn.OPERATION_UNION, compareAsType)
-	}
-
-	intersection(anArray, anArrayToIntersectWith, compareAsType=0) {
-		return Arrays.Venn.operation(anArray, anArrayToIntersectWith
-				, Arrays.Venn.OPERATION_INERSECTION, compareAsType)
 	}
 
 	countOccurences(anArray, lookUpValue, caseSensitive=false) {
