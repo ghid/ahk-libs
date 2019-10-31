@@ -21,5 +21,6 @@ class App {
 				exitapp -1
 			}
 		}
+		return forClass
 	}
 }

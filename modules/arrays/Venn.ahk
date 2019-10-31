@@ -1,118 +1,142 @@
+class Union extends Arrays.Venn {
+	processOperation() {
+		base.retrieveElementsInSetA()
+		base.retrieveElementsInSetB()
+		base.retrieveElementsContainedInBothSets()
+	}
+}
+
+class Intersection extends Arrays.Venn {
+	processOperation() {
+		base.catchUpSetA()
+		base.catchUpSetB()
+		base.retrieveElementsContainedInBothSets()
+	}
+}
+
+class SymmetricDifference extends Arrays.Venn {
+	processOperation() {
+		base.retrieveElementsInSetA()
+		base.retrieveElementsInSetB()
+		base.catchUpBothSets()
+	}
+}
+
+class RelativeComplement extends Arrays.Venn {
+	processOperation() {
+		base.retrieveElementsInSetA()
+		base.catchUpSetB()
+		base.catchUpSetAForElementsContainedInBothSets()
+	}
+}
+
 class Venn {
+	setA := []
+	setB := []
+	indexA := 0
+	indexB := 0
+	compareFunc := Arrays.Quicksort.compareStrings.bind(this)					; TODO: Use a method from String class
+	printSource := false
+	resultSet := []
 
-	static OPERATION_INERSECTION := 1
-	static OPERATION_UNION := 2
-	static OPERATION_SYMMETRIC_DIFFERENCE := 3
-	static OPERATION_RELAVIVE_COMPLEMENT := 4
-
-	operation(setA, setB, operation, compareAsType=0) {
-		if (!IsObject(setA)) {
-			throw Exception("Parameter #1 is no valid array", -1)
-		}
-		if (!IsObject(setB)) {
-			throw Exception("Parameter #2 is no valid array", -1)
-		}
-		Arrays.VennData.setA := setA.clone()
-		Arrays.VennData.setB := setB.clone()
-		Arrays.VennData.indexA := Arrays.VennData.setA.minIndex()
-		Arrays.VennData.indexB := Arrays.VennData.setB.minIndex()
-		Arrays.VennData.operation := operation
-		Arrays.VennData.compareAsType := compareAsType
+	__new(setA, setB, compareFunc="", printSource=false) {
+		Arrays.isArray(setA)
+		Arrays.isArray(setB)
+		this.compareFunc := (compareFunc != ""
+				? compareFunc
+				: Arrays.Quicksort.compareStrings.bind(this))
+		Arrays.isCallbackFunction(this.compareFunc)
+		this.setA := setA.clone()
+		this.setB := setB.clone()
+		this.indexA := this.setA.minIndex()
+		this.indexB := this.setB.minIndex()
 		VarSetCapacity(HIGH, 64, 0xff)
-		Arrays.VennData.setA.push(HIGH)
-		Arrays.VennData.setB.push(HIGH)
-		return Arrays.Venn.processSetAAndSetB()
+		this.setA.push(HIGH)
+		this.setB.push(HIGH)
+		this.printSource := printSource
+		this.processSetAAndSetB()
+	}
+
+	result() {
+		return this.resultSet
 	}
 
 	processSetAAndSetB() {
-		result := []
-		while ((Arrays.VennData.indexA != "" && Arrays.VennData.indexB != "")
-				&& (Arrays.VennData.indexA < Arrays.VennData.setA.maxIndex()
-				|| Arrays.VennData.indexB < Arrays.VennData.setB.maxIndex())) {
-			result := Arrays.Venn.catchUpSetA(result)
-			result := Arrays.Venn.catchUpSetB(result)
-			result := Arrays.Venn.processElementsContainedInBothSets(result)
+		while ((this.indexA != "" && this.indexB != "")
+				&& (this.indexA < this.setA.maxIndex()
+				|| this.indexB < this.setB.maxIndex())) {
+			this.processOperation()
 		}
-		return result
 	}
 
-	catchUpSetA(result) {
-		while (Arrays.VennData.indexA < Arrays.VennData.setA.maxIndex()
-				&& (Arrays.VennData.setA[Arrays.VennData.indexA])
-				.compare(Arrays.VennData.setB[Arrays.VennData.indexB]
-				, Arrays.VennData.compareAsType) < 0) {
-			if (Arrays.VennData.operation == Arrays.Venn.OPERATION_UNION
-					|| Arrays.VennData.operation
-					== Arrays.Venn.OPERATION_SYMMETRIC_DIFFERENCE
-					|| Arrays.VennData.operation
-					== Arrays.Venn.OPERATION_RELAVIVE_COMPLEMENT) {
-				result := Arrays.Venn.pushToResultSet(Arrays.VennData
-						.setA[Arrays.VennData.indexA]
-						, result, "A")
-			}
-			Arrays.VennData.indexA++
+	catchUpSetA() {
+		while (this.indexA < this.setA.maxIndex()
+				&& (this.compareFunc.call(this.setA[this.indexA]
+				, this.setB[this.indexB])) < 0) {
+			this.indexA++
 		}
-		return result
 	}
 
-	catchUpSetB(result) {
-		while (Arrays.VennData.indexB < Arrays.VennData.setB.maxIndex()
-				&& (Arrays.VennData.setB[Arrays.VennData.indexB])
-				.compare(Arrays.VennData.setA[Arrays.VennData.indexA]
-				, Arrays.VennData.compareAsType) < 0) {
-			if (Arrays.VennData.operation == Arrays.Venn.OPERATION_UNION
-					|| Arrays.VennData.operation
-					== Arrays.Venn.OPERATION_SYMMETRIC_DIFFERENCE) {
-				result := Arrays.Venn.pushToResultSet(Arrays.VennData
-						.setB[Arrays.VennData.indexB]
-						, result, "B")
-			}
-			Arrays.VennData.indexB++
+	retrieveElementsInSetA() {
+		while (this.indexA < this.setA.maxIndex()
+				&& (this.compareFunc.call(this.setA[this.indexA]
+				, this.setB[this.indexB])) < 0) {
+			this.pushToResultSet(this.setA[this.indexA], "A")
+			this.indexA++
 		}
-		return result
 	}
 
-	processElementsContainedInBothSets(result) {
-		while ((Arrays.VennData.indexA < Arrays.VennData.setA.maxIndex()
-				|| Arrays.VennData.indexB < Arrays.VennData.setB.maxIndex())
-				&& (Arrays.VennData.setA[Arrays.VennData.indexA])
-				.compare(Arrays.VennData.setB[Arrays.VennData.indexB]
-				, Arrays.VennData.compareAsType) == 0) {
-			if (Arrays.VennData.operation == Arrays.Venn.OPERATION_INERSECTION
-					|| Arrays.VennData.operation
-					== Arrays.Venn.OPERATION_UNION) {
-				result := Arrays.Venn.pushToResultSet(Arrays.VennData
-						.setA[Arrays.VennData.indexA]
-						, result, "A")
-				result := Arrays.Venn.pushToResultSet(Arrays.VennData
-						.setB[Arrays.VennData.indexB]
-						, result, "B")
-			}
-			if (Arrays.VennData.operation
-					!= Arrays.Venn.OPERATION_RELAVIVE_COMPLEMENT) {
-				Arrays.VennData.indexB++
-			}
-			Arrays.VennData.indexA++
+	catchUpSetB() {
+		while (this.indexB < this.setB.maxIndex()
+				&& (this.compareFunc.call(this.setB[this.indexB]
+				, this.setA[this.indexA])) < 0) {
+			this.indexB++
 		}
-		return result
 	}
 
-	pushToResultSet(element, resultSet, source="") {
-		resultSet.push((Arrays.VennData.printSource
-				? "(" source ") "
-				: "") element)
-		return resultSet
+	retrieveElementsInSetB() {
+		while (this.indexB < this.setB.maxIndex()
+				&& (this.compareFunc.call(this.setB[this.indexB]
+				, this.setA[this.indexA])) < 0) {
+			this.pushToResultSet(this.setB[this.indexB], "B")
+			this.indexB++
+		}
+	}
+
+	catchUpBothSets() {
+		while ((this.indexA < this.setA.maxIndex()
+				|| this.indexB < this.setB.maxIndex())
+				&& (this.compareFunc.call(this.setA[this.indexA]
+				, this.setB[this.indexB])) == 0) {
+			this.indexB++
+			this.indexA++
+		}
+	}
+
+	retrieveElementsContainedInBothSets() {
+		while ((this.indexA < this.setA.maxIndex()
+				|| this.indexB < this.setB.maxIndex())
+				&& (this.compareFunc.call(this.setA[this.indexA]
+				, this.setB[this.indexB])) == 0) {
+			this.pushToResultSet(this.setA[this.indexA], "A")
+			this.indexA++
+			this.pushToResultSet(this.setB[this.indexB], "B")
+			this.indexB++
+		}
+	}
+
+	catchUpSetAForElementsContainedInBothSets() {
+		while ((this.indexA < this.setA.maxIndex()
+				|| this.indexB < this.setB.maxIndex())
+				&& (this.compareFunc.call(this.setA[this.indexA]
+				, this.setB[this.indexB])) == 0) {
+			this.indexA++
+		}
+	}
+
+	pushToResultSet(element, source="") {
+		this.resultSet.push((this.printSource
+				? "(" source ") " : "")
+				. element)
 	}
 }
-
-class VennData {
-
-	static setA := []
-	static setB := []
-	static indexA := 0
-	static indexB := 0
-	static operation := ""
-	static compareAsType := 0
-	static printSource := false
-}
-

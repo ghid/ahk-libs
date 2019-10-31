@@ -9,16 +9,20 @@
 #Include <object>
 #Include <string>
 #Include <testcase>
+#Include <app>
 
 #Include %A_ScriptDir%\..\arrays.ahk
 
 class ArraysTest extends TestCase {
 
+	requires() {
+		return [TestCase, Arrays]
+	}
+
 	@Test_class() {
 		this.assertTrue(IsObject(Arrays))
 		this.assertException(Arrays, "__new")
 		this.assertTrue(IsFunc(Arrays.equal))
-		this.assertTrue(IsFunc(Arrays.intersection))
 		this.assertTrue(IsFunc(Arrays.countOccurences))
 		this.assertTrue(IsFunc(Arrays.keys))
 		this.assertTrue(IsFunc(Arrays.values))
@@ -45,43 +49,82 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_intersection() {
-		this.assertException(Arrays, "intersection",,, 0, [])
-		this.assertException(Arrays, "intersection",,, [], 0)
-		this.assertTrue(Arrays.equal(Arrays.intersection([], []), []))
-		this.assertTrue(IsObject(Arrays.intersection([1], [2])))
-		this.assertTrue(Arrays.equal(Arrays.intersection([1,2,3,4], [3,4,5,6])
-				, [3,3,4,4]))
+		this.assertException(Arrays.Intersection, "__new",,, 0, [])
+		this.assertException(Arrays.Intersection, "__new",,, [], 0)
+		this.assertTrue(Arrays.equal(new Arrays.Intersection([], []).result()
+				, []))
+		this.assertTrue(IsObject(new Arrays.Intersection([1], [2])))
+		this.assertTrue(Arrays.equal(new Arrays.Intersection([1,2,3,4]
+				, [3,4,5,6]).result(), [3,3,4,4]))
 		a1 := [1,2,3,4], a2 := [3,4,5,6]
-		a3 := Arrays.intersection(a1, a2)
+		a3 := new Arrays.Intersection(a1, a2).result()
 		this.assertTrue(Arrays.equal(a1, [1,2,3,4]))
 		this.assertTrue(Arrays.equal(a2, [3,4,5,6]))
 		this.assertTrue(Arrays.equal(a3, [3,3,4,4]))
-		this.assertTrue(Arrays.equal(Arrays
-				.intersection(["abc", "def", "ghi", "jkl"], ["abc", "mno"])
-				, ["abc", "abc"]))
-		this.assertTrue(Arrays.equal(Arrays.intersection([1,2,3,4], [5,6,7])
+		this.assertTrue(Arrays.equal(new Arrays
+				.Intersection(["abc", "def", "ghi", "jkl"]
+				, ["abc", "mno"]).result(), ["abc", "abc"]))
+		this.assertTrue(Arrays.equal(new Arrays.Intersection([1,2,3,4], [5,6,7])
+				.result()
 				, []))
-		this.assertTrue(Arrays.equal(Arrays.intersection([2,2,3], [2,3,3])
+		this.assertTrue(Arrays.equal(new Arrays.Intersection([2,2,3], [2,3,3])
+				.result()
 				, [2,2,3,3]))
-		this.assertTrue(Arrays.equal(Arrays
-				.intersection([2,11,23,31,41], [2,3,7,41,601]), [2,2,41,41]))
-		this.assertTrue(Arrays.equal(Arrays.intersection(["g", "h", "I"]
-				, ["h", "i", "j"], String.COMPARE_AS_STRING)
-				, ["h", "h", "I", "i"]))
+		this.assertTrue(Arrays.equal(new Arrays
+				.Intersection([2,11,23,31,41], [2,3,7,41,601]
+				, ArraysTest.compareNumbers.bind(ArraysTest)).result()
+				, [2,2,41,41]))
+		this.assertTrue(Arrays.equal(new Arrays.Intersection(["g", "h", "I"]
+				, ["h", "i", "j"]).result(), ["h", "h"]))
 	}
 
 	@Test_union() {
-		this.assertTrue(Arrays.equal(Arrays.union([], []), []))
-		this.assertTrue(Arrays.equal(Arrays.union([1], [2]), [1,2]))
-		this.assertTrue(Arrays.equal(Arrays.union([1,2,3,4], [3,4,5,6])
-				, [1,2,3,3,4,4,5,6]))
-		this.assertTrue(Arrays.equal(Arrays
-				.union(["abc","def","ghi","jkl"], ["abc","mno"])
+		this.assertTrue(Arrays.equal(new Arrays.Union([], []).result(), []))
+		this.assertTrue(Arrays.equal(new Arrays.Union([1], [2]).result()
+				, [1,2]))
+		this.assertTrue(Arrays.equal(new Arrays.Union([1,2,3,4], [3,4,5,6])
+				.result(), [1,2,3,3,4,4,5,6]))
+		this.assertTrue(Arrays.equal(new Arrays
+				.Union(["abc","def","ghi","jkl"], ["abc","mno"]).result()
 				, ["abc","abc","def","ghi","jkl","mno"]))
-		this.assertTrue(Arrays.equal(Arrays.union([1,2,3,4], [5,6,7])
-				, [1,2,3,4,5,6,7]))
-		this.assertTrue(Arrays.equal(Arrays.union([2,2,3], [2,3,3])
-				, [2,2,2,3,3,3]))
+		this.assertTrue(Arrays.equal(new Arrays.Union([1,2,3,4], [5,6,7])
+				.result(), [1,2,3,4,5,6,7]))
+		this.assertTrue(Arrays.equal(new Arrays.Union([2,2,3], [2,3,3])
+				.result(), [2,2,2,3,3,3]))
+	}
+
+	@Test_symmetricDifference() {
+		this.assertTrue(Arrays.equal(new Arrays
+				.SymmetricDifference([1,2,3], [3,4]).result(), [1,2,4]))
+		this.assertTrue(Arrays.equal(new Arrays
+				.SymmetricDifference(["A","B","C","H","f","i"]
+				, ["A","C","D","G","I","e","f"]
+				, ArraysTest.compareCaseSense.bind(this)).result()
+				, ["B","D","G","H","I","e","i"]))
+	}
+
+	@Test_relativeComplement() {
+		this.assertTrue(Arrays.equal(new Arrays.RelativeComplement([1,2,3]
+				,[2,3,4]).result(), [1]))
+		this.assertTrue(Arrays.equal(new Arrays.RelativeComplement([2,3,4]
+				,[1,2,3]).result(), [4]))
+		this.assertTrue(Arrays.equal(new Arrays
+				.relativeComplement(["A","B","C","H","f","i"]
+				, ["A","C","D","G","I","e","f"]
+				, ArraysTest.compareCaseSense.bind(this)).result()
+				, ["B","H","i"]))
+	}
+
+	compareCaseSense(firstElement, secondElement) {
+		scs := A_StringCaseSense
+		StringCaseSense on
+		firstElement .= "$"
+		secondElement .= "$"
+		result := (firstElement == secondElement ? 0
+				: firstElement > secondElement ? +1
+				: -1)
+		StringCaseSense %scs%
+		return result
 	}
 
 	@Test_countOccurences() {
@@ -225,12 +268,12 @@ class ArraysTest extends TestCase {
 	}
 
 	@Test_unionWithSource() {
-		Arrays.VennData.printSource := true
-		this.assertTrue(Arrays.equal(Arrays
-				.union(["abc","def","ghi","jkl"], ["abc","mno"])
+		this.assertTrue(Arrays.equal(new Arrays
+				.Union(["abc","def","ghi","jkl"], ["abc","mno"],, true).result()
 				, ["(A) abc","(B) abc","(A) def"
 				,"(A) ghi","(A) jkl","(B) mno"]))
-		this.assertTrue(Arrays.equal(Arrays.union([1,2,3,4], [3,4,5,6])
+		this.assertTrue(Arrays.equal(new Arrays.Union([1,2,3,4]
+				, [3,4,5,6],, true).result()
 				, ["(A) 1","(A) 2","(A) 3","(B) 3"
 				,"(A) 4","(B) 4","(B) 5","(B) 6"]))
 	}
@@ -352,7 +395,7 @@ class ArraysTest extends TestCase {
 				, ArraysTest.sortDescending.bind(ArraysTest))
 				, [4, 30, 21, 100000, 1]))
 		this.assertTrue(Arrays.equal(Arrays.sort(array1
-				, ArraysTest.sortNumbers.bind(ArraysTest))
+				, ArraysTest.compareNumbers.bind(ArraysTest))
 				, [1, 4, 21, 30, 100000]))
 	}
 
@@ -360,8 +403,32 @@ class ArraysTest extends TestCase {
 		return Arrays.Quicksort.compareStrings(firstElement, secondElement) * -1
 	}
 
-	sortNumbers(firstElement, secondElement) {
+	compareNumbers(firstElement, secondElement) {
 		return firstElement - secondElement
+	}
+
+	@Test_sortByProperty() {
+		employees
+				:= [{name: "Alice", salary: 2300.00}
+				, {name: "Bob", salary: 1950.00}
+				, {name: "Charlie", salary: 2160.00}
+				, {name: "Dave", salary: 2000.00}]
+
+		salaryList := Arrays.sort(employees
+				, ArraysTest.compareBySalaryProperty.bind(ArraysTest))
+		this.assertEquals(salaryList.count(), 4)
+		this.assertEquals(salaryList[1].name, "Bob")
+		this.assertEquals(salaryList[1].salary, 1950.00)
+		this.assertEquals(salaryList[2].name, "Dave")
+		this.assertEquals(salaryList[2].salary, 2000.00)
+		this.assertEquals(salaryList[3].name, "Charlie")
+		this.assertEquals(salaryList[3].salary, 2160.00)
+		this.assertEquals(salaryList[4].name, "Alice")
+		this.assertEquals(salaryList[4].salary, 2300.00)
+	}
+
+	compareBySalaryProperty(a, b) {
+		return a.salary - b.salary
 	}
 }
 
