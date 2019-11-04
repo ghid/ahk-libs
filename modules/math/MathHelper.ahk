@@ -41,14 +41,18 @@ class MathHelper {
 		if (pnValue1 < pnValue2) {
 			Math.swap(pnValue1, pnValue2)
 		}
-		return MathHelper.GCDEuklidRecursion(pnValue1, pnValue2)
+		return MathHelper.GCDEuklidRecursion(pnValue1, pnValue2) ; ahklint-ignore: W009
 	}
 
 	GCDEuklidRecursion(pnValue1, pnValue2) { ; ahklint-ignore: W007
 		_remain := Mod(pnValue1, pnValue2)
 		if (_remain > 0) {
-			return MathHelper.GCDEuklidRecursion(pnValue2, _remain)
+			return MathHelper.GCDEuklidRecursion(pnValue2, _remain) ; ahklint-ignore: W009
 		}
 		return pnValue2
+	}
+
+	compareNumbers(a, b) {
+		return a - b
 	}
 }

@@ -31,7 +31,7 @@ class ArraysTest extends TestCase {
 		this.assertTrue(IsFunc(Arrays.shift))
 		this.assertTrue(IsFunc(Arrays.append))
 		this.assertTrue(IsFunc(Arrays.copyOf))
-		this.assertTrue(IsFunc(Arrays.flatten))
+		this.assertTrue(IsFunc(Arrays.flat))
 		this.assertTrue(IsFunc(Arrays.forEach))
 		this.assertTrue(IsFunc(Arrays.map))
 		this.assertTrue(IsFunc(Arrays.reduce))
@@ -46,6 +46,8 @@ class ArraysTest extends TestCase {
 		this.assertFalse(Arrays.equal([1], [2, 3]))
 		this.assertFalse(Arrays.equal([0, 1], [1, 0]))
 		this.assertTrue(Arrays.equal([3, 4], [3, 4]))
+		this.assertTrue(Arrays.equal([1,2,3,3,[4,5],6], [1,2,3,3,[4,5],6]))
+		this.assertTrue(Arrays.equal([1,2,3,4,[5,6],6], [1,2,3,3,[4,5],6]))
 	}
 
 	@Test_intersection() {
@@ -204,6 +206,18 @@ class ArraysTest extends TestCase {
 				, ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]))
 	}
 
+	@Test_concat() {
+		wd := ["Mo", "Di", "Mi", "Do", "Fr"]
+		we := ["Sa", "So"]
+		w := Arrays.concat(wd, we)
+		this.assertEquals(w.count(), 7)
+		this.assertTrue(Arrays.equal(w
+				, ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]))
+		a1 := [1,2,3]
+		a2 := [3,[4,5],6]
+		this.assertTrue(Arrays.equal(Arrays.concat(a1, a2), [1,2,3,3,[4,5],6]))
+	}
+
 	@Test_wrap() {
 		this.assertEquals(Arrays.wrap(["this is a test", "this is another test"]
 				, 10), "this is a`ntest`nthis is`nanother`ntest`n")
@@ -248,23 +262,6 @@ class ArraysTest extends TestCase {
 		this.assertTrue(Arrays.equal(b, [0, 1, 2, 3, -1, -1]))
 		b := Arrays.copyOf(a, 0)
 		this.assertTrue(Arrays.equal(b, []))
-	}
-
-	@Test_flatten() {
-		a := [1, [2, 3, [4, 5], 6, 7, 8], 9, 10]
-		f := Arrays.flatten(a)
-		this.assertEquals(f.minIndex(), 1)
-		this.assertEquals(f.maxIndex(), 10)
-		this.assertEquals(f[1], 1)
-		this.assertEquals(f[2], 2)
-		this.assertEquals(f[3], 3)
-		this.assertEquals(f[4], 4)
-		this.assertEquals(f[5], 5)
-		this.assertEquals(f[6], 6)
-		this.assertEquals(f[7], 7)
-		this.assertEquals(f[8], 8)
-		this.assertEquals(f[9], 9)
-		this.assertEquals(f[10], 10)
 	}
 
 	@Test_unionWithSource() {
@@ -429,6 +426,25 @@ class ArraysTest extends TestCase {
 
 	compareBySalaryProperty(a, b) {
 		return a.salary - b.salary
+	}
+
+	@Test_flat() {
+		this.assertException(Arrays, "flat",,, 0)
+		arr1 := [1,2,[3,4]]
+		arr1 := Arrays.flat(arr1)
+		this.assertTrue(Arrays.equal(arr1, [1,2,3,4]))
+		arr1 := [1,2,[3,4]]
+		arr1 := Arrays.flat(arr1, 1)
+		this.assertTrue(Arrays.equal(arr1, [1,2,3,4]))
+		arr2 := [1,2,3,[1,2,3,4,[2,[1,2],3,4]]]
+		arr2 := Arrays.flat(arr2, 4)
+		this.assertTrue(Arrays.equal(arr2, [1,2,3,1,2,3,4,2,1,2,3,4]))
+		arr2 := [1,2,3,[1,2,3,4,[2,[1,2],3,4]]]
+		arr2 := Arrays.flat(arr2, 1)
+		this.assertTrue(Arrays.equal(arr2, [1,2,3,1,2,3,4,[2,[1,2],3,4]]))
+		arr3 := [1,2,[3,4,[5,6]]]
+		arr3 := Arrays.flat(arr3, 1)
+		this.assertTrue(Arrays.equal(arr3, [1,2,3,4,[5,6]]))
 	}
 }
 
