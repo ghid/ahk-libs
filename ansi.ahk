@@ -239,7 +239,7 @@ class Ansi {
 
 	setGraphic(value*) {
 		ansiGraphicCodes := ""
-		listOfValues := Arrays.flatten(value)
+		listOfValues := Arrays.flat(value, Math.MAX_INT)
 		while (A_Index <= listOfValues.maxIndex()) {
 			ansiGraphicCodes .= (A_Index = 1 ? "" : ";") listOfValues[A_Index]
 		}

@@ -17,11 +17,19 @@ class Arrays {
 	equal(anArray, anArrayToCompareWith) {
 		Arrays.isArray(anArray)
 		Arrays.isArray(anArrayToCompareWith)
-		if (!(anArray.count() == anArrayToCompareWith.count())) {
+		if (anArray.count() != anArrayToCompareWith.count()) {
 			return false
 		}
 		loop % anArray.count() {
-			if (!(anArray[A_Index] == anArrayToCompareWith[A_Index])) {
+			currentValue := anArray[A_Index]
+			currentOtherValue := anArrayToCompareWith[A_Index]
+			if (currentValue.count() != currentOtherValue.count()) {
+				return false
+			}
+			if (currentValue.count() != "") {
+				return Arrays.equal(currentValue, currentOtherValue)
+			}
+			if (!currentValue == currentOtherValue) {
 				return false
 			}
 		}
@@ -109,12 +117,26 @@ class Arrays {
 	}
 
 	append(anArray, anotherArray) {
+		OutputDebug %A_ThisFunc% is deprecated. Use Arrays.concat() instead
 		Arrays.isArray(anArray)
 		Arrays.isArray(anotherArray)
 		for _, value in anotherArray {
 			anArray.push(value)
 		}
 		return anArray.maxIndex()
+	}
+
+	concat(anArray, anotherValue) {
+		Arrays.isArray(anArray)
+		result := anArray.clone()
+		if (anotherValue.count() != "") {
+			for _, value in anotherValue {
+				result.push(value)
+			}
+		} else {
+			result.push(anotherValue)
+		}
+		return result
 	}
 
 	wrap(anArray, textWidth, indentWithText="", indent1stElementWithText=""
@@ -198,24 +220,20 @@ class Arrays {
 				, anArray.minIndex(), anArray.maxIndex())
 	}
 
-	flatten(anArray, reset=true) {
-		static flatArray
+	flat(anArray, depth=1) {
+		static currentDepth := 0
 		Arrays.isArray(anArray)
-		if (reset) {
-			flatArray := []
+		result := []
+		currentDepth++
+		for _, currentValue in anArray {
+			result := (currentValue.count() != "" && currentDepth < depth
+					? Arrays.concat(result, Arrays.flat(currentValue, depth))
+					: Arrays.concat(result, currentValue))
 		}
-		index := anArray.minIndex()
-		loop {
-			if (anArray[index].minIndex() != "") {
-				Arrays.flatten(anArray[index], false)
-			} else {
-				flatArray.push(anArray[index])
-			}
-			index++
-		} until (index > anArray.maxIndex())
-		return flatArray
+		currentDepth--
+		return result
 	}
-
+	
 	map(anArray, callbackFunc) {
 		Arrays.isArray(anArray)
 		Arrays.isCallbackFunction(callbackFunc)

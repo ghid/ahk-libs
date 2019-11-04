@@ -37,13 +37,13 @@ class Math {
 	}
 
 	min(elements*) {
-		flatElements := Arrays.flatten([elements])
+		flatElements := Arrays.flat([elements], Math.MAX_INT)
 		return Arrays.reduce(flatElements, Func("min")
 				, flatElements[flatElements.minIndex()])
 	}
 
 	max(elements*) {
-		flatElements := Arrays.flatten([elements])
+		flatElements := Arrays.flat([elements], Math.MAX_INT)
 		return Arrays.reduce(flatElements, Func("max")
 				, flatElements[flatElements.minIndex()])
 	}
@@ -192,16 +192,17 @@ class Math {
 					, -1, "<" secondNumber ">")
 		}
 		if (useEuklidsAlgorithm) {
-			return MathHelper.GCDEuklid(firstNumber, secondNumber)
+			return MathHelper.GCDEuklid(firstNumber, secondNumber) ; ahklint-ignore: W009
 		}
 		greatestCommonDivisor := 1
 		listOfPrimeFactorsForFirstNumber
 				:= Math.integerFactorization(firstNumber).getList()
 		listOfPrimeFactorsForSecondNumber
 				:= Math.integerFactorization(secondNumber).getList()
-		intersectionOfPrimeFactors := Arrays.distinct(Arrays
-				.intersection(listOfPrimeFactorsForFirstNumber
-				, listOfPrimeFactorsForSecondNumber))
+		intersectionOfPrimeFactors := Arrays.distinct(new Arrays
+				.Intersection(listOfPrimeFactorsForFirstNumber
+				, listOfPrimeFactorsForSecondNumber
+				, MathHelper.compareNumbers.bind(MathHelper)).result())
 		while (A_Index <= intersectionOfPrimeFactors.maxIndex()) {
 			greatestCommonDivisor *= intersectionOfPrimeFactors[A_Index]
 		}

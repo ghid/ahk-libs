@@ -11,7 +11,7 @@ class PrintfHelper {
 	static placeHolder := {}
 
 	printf(patternText, placeHolderValues*) {
-		PrintfHelper.values := Arrays.flatten(placeHolderValues)
+		PrintfHelper.values := Arrays.flat(placeHolderValues, 9999)
 		p := 1
 		PrintfHelper.placeHolderIndex := 0
 		loop {
