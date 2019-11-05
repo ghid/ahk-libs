@@ -250,19 +250,18 @@ class Math {
 		return lowestCommonMultiple
 	}
 
+	; see also: https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.19
 	zeroFillShiftR(number, shift) {
-		if (shift = 0) {
-			return number
+		if (number == 0) {
+			return 0
 		}
-		if (shift < 0) {
-			return ~(-1 << (shift*-1))
+		if (number > 0x7fffffffffffffff) {
+			number := (number & ~0x7fffffffffffffff) - 1
 		}
-		isNegativeNumber := number<0
-		number := number >> shift
-		if (isNegativeNumber) {
-			number &= Math.MAX_LONG
+		if (number > 0) {
+			return number >> shift
 		}
-		return number
+		return (number >> shift) + (2 << ~shift)
 	}
 
 	numberOfLeadingZeros(number) {
@@ -328,6 +327,7 @@ class Math {
 		if (y != 0) {
 			n := n - 2, x := y
 		}
+		_x := UI(x << 1)
 		return n - (Math.zeroFillShiftR(UI(x << 1), 31))
 	}
 }
@@ -355,5 +355,26 @@ US(s) {
 
 UL(l) {
 	return l & 0xffffffffffffffff
+}
+
+SI(i) {
+	if (i < 0) {
+		return i
+	}
+	return i-(0xffffffff+1)
+}
+
+SS(s) {
+	if (s < 0) {
+		return s
+	}
+	return s-(0xffff+1)
+}
+
+SL(l) {
+	if (l < 0) {
+		return l
+	}
+	return l-(0xffffffffffffffff+1)
 }
 ; ahklint-ignore-end
