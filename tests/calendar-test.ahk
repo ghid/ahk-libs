@@ -715,6 +715,17 @@ class CalendarTest extends TestCase {
 		this.assertEquals(new Calendar(20131115132517)
 				.formatTime("dd.MM.yyyy HH:mm:ss"), "15.11.2013 13:25:17")
 	}
+
+	@Test_sunriseAndSunset() {
+		this.assertEquals(new Calendar(20190130).sunrise(13.5, 52.5)
+				.formatTime("Time"), "07:50")
+		this.assertEquals(new Calendar(20190130).sunset(13.5, 52.5, 1)
+				.formatTime("Time"), "16:47")
+		this.assertEquals(new Calendar(20191105).sunrise(8.38, 51.5, 1)
+				.formatTime("Time"), "07:26")
+		this.assertEquals(new Calendar(20191105).sunset(8.38, 51.5, 1)
+				.formatTime("Time"), "16:53")
+	}
 }
 
 exitapp CalendarTest.runTests()
