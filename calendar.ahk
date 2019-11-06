@@ -1,10 +1,9 @@
 #Include <modules\struct\TIME_ZONE_INFORMATION>
 
-
 class Calendar {
 
 	#Include %A_LineFile%\..\modules\calendar
-	#Include CalendarHelper.ahk
+	#Include Helper.ahk
 	#Include SunriseSunset.ahk
 	
 	requires() {
@@ -44,7 +43,7 @@ class Calendar {
 
 	__new(dateTime="") {
 		try {
-			this.timeStamp := Calendar.CalendarHelper.validTime(dateTime)
+			this.timeStamp := Calendar.Helper.validTime(dateTime)
 		} catch _ex {
 			throw _ex
 		}
@@ -93,7 +92,7 @@ class Calendar {
 	asJulian() {
 		julianDateTime := 0
 		loop % this.asMonth() - 1 {
-			julianDateTime += Calendar.CalendarHelper.daysInMonth(this.timeStamp
+			julianDateTime += Calendar.Helper.daysInMonth(this.timeStamp
 					, A_Index)
 		}
 		julianDateTime += this.asDay()
@@ -105,15 +104,15 @@ class Calendar {
 			throw Exception("Invalid data type - integer expected"
 					, -1 , "<" newJulianDateTime ">")
 		}
-		daysInYear := 337 + Calendar.CalendarHelper.daysInMonth(this.timeStamp, 2)
+		daysInYear := 337 + Calendar.Helper.daysInMonth(this.timeStamp, 2)
 		if (newJulianDateTime < 1 || newJulianDateTime > daysInYear) {
 			throw Exception("Julian day must be between 1 and " daysInYear
 					, -1, "<" newJulianDateTime ">")
 		}
 		dayOfJulianDateTime := newJulianDateTime
-		while (dayOfJulianDateTime > Calendar.CalendarHelper.daysInMonth(this.timeStamp
+		while (dayOfJulianDateTime > Calendar.Helper.daysInMonth(this.timeStamp
 				, A_Index)) {
-			dayOfJulianDateTime -= Calendar.CalendarHelper.daysInMonth(this.timeStamp
+			dayOfJulianDateTime -= Calendar.Helper.daysInMonth(this.timeStamp
 					, A_Index)
 			monthOfJulianDateTime := A_Index + 1
 		}
@@ -135,7 +134,7 @@ class Calendar {
 	}
 
 	setAsDate(newDate) {
-		validNewDate := Calendar.CalendarHelper.validTime(newDate)
+		validNewDate := Calendar.Helper.validTime(newDate)
 		this.timeStamp := SubStr(validNewDate, 1, 8) SubStr(this.timeStamp, 9)
 		return this
 	}
@@ -153,7 +152,7 @@ class Calendar {
 	}
 
 	setAsTime(newTime) {
-		validNewTime := Calendar.CalendarHelper.validTime(16010101 newTime)
+		validNewTime := Calendar.Helper.validTime(16010101 newTime)
 		this.timeStamp := SubStr(this.timeStamp, 1, 8) SubStr(validNewTime, 9)
 		return this
 	}
@@ -171,7 +170,7 @@ class Calendar {
 	}
 
 	setAsYear(newYear) {
-		validNewYear := Calendar.CalendarHelper.validTime(newYear)
+		validNewYear := Calendar.Helper.validTime(newYear)
 		this.timeStamp := SubStr(validNewYear, 1, 4) SubStr(this.timeStamp, 5)
 		return this
 	}
@@ -189,7 +188,8 @@ class Calendar {
 	}
 
 	setAsMonth(newMonth) {
-		validNewMonth := Calendar.CalendarHelper.validTime(1601 SubStr("0" newMonth, -1))
+		validNewMonth := Calendar.Helper.validTime(1601
+				. SubStr("0" newMonth, -1))
 		this.timeStamp := SubStr(this.timeStamp, 1, 4)
 				. SubStr(validNewMonth, 5, 2)
 				. SubStr(this.timeStamp, 7)
@@ -209,7 +209,7 @@ class Calendar {
 	}
 
 	setAsDay(newDay) {
-		validNewDay := Calendar.CalendarHelper.validTime(160101 SubStr("0" newDay, -1))
+		validNewDay := Calendar.Helper.validTime(160101 SubStr("0" newDay, -1))
 		this.timeStamp := SubStr(this.timeStamp, 1, 6)
 				. SubStr(validNewDay, 7, 2)
 				. SubStr(this.timeStamp, 9)
@@ -230,7 +230,7 @@ class Calendar {
 	}
 
 	setAsHour(newHour) {
-		newValidHour := Calendar.CalendarHelper.validTime(16010101
+		newValidHour := Calendar.Helper.validTime(16010101
 				. SubStr("0" newHour, -1))
 		this.timeStamp := SubStr(this.timeStamp, 1, 8)
 				. SubStr(newValidHour, 9, 2)
@@ -251,7 +251,7 @@ class Calendar {
 	}
 
 	setAsMinutes(newMinutes) {
-		validNewMinutes := Calendar.CalendarHelper.validTime(1601010100
+		validNewMinutes := Calendar.Helper.validTime(1601010100
 				. SubStr("0" newMinutes, -1))
 		this.timeStamp := SubStr(this.timeStamp, 1, 10)
 				. SubStr(validNewMinutes, 11, 2)
@@ -272,7 +272,7 @@ class Calendar {
 	}
 
 	setAsSeconds(newSeconds) {
-		newValidSeconds := Calendar.CalendarHelper.validTime(160101010000
+		newValidSeconds := Calendar.Helper.validTime(160101010000
 				. SubStr("0" newSeconds, -1))
 		this.timeStamp := SubStr(this.timeStamp, 1, 12)
 				. SubStr(newValidSeconds, 13, 2)
@@ -297,7 +297,7 @@ class Calendar {
 	}
 
 	daysInMonth() {
-		return Calendar.CalendarHelper.daysInMonth(this.timeStamp, this.asMonth())
+		return Calendar.Helper.daysInMonth(this.timeStamp, this.asMonth())
 	}
 
 	dayOfWeek() {
@@ -354,16 +354,16 @@ class Calendar {
 
 	adjust(adjustYears=0, adjustMonths=0, adjustDays=0, adjustHours=0
 			, adjustMinutes=0, adjustSeconds=0) {
-		Calendar.CalendarHelper.testForValidInteger(adjustYears, "Invalid years")
-		Calendar.CalendarHelper.testForValidInteger(adjustMonths, "Invalid months")
-		Calendar.CalendarHelper.testForValidInteger(adjustDays, "Invalid days")
-		Calendar.CalendarHelper.testForValidInteger(adjustHours, "Invalid hours")
-		Calendar.CalendarHelper.testForValidInteger(adjustMinutes, "Invalid minutes")
-		Calendar.CalendarHelper.testForValidInteger(adjustSeconds, "Invalid seconds")
+		Calendar.Helper.testForValidInteger(adjustYears, "Invalid years")
+		Calendar.Helper.testForValidInteger(adjustMonths, "Invalid months")
+		Calendar.Helper.testForValidInteger(adjustDays, "Invalid days")
+		Calendar.Helper.testForValidInteger(adjustHours, "Invalid hours")
+		Calendar.Helper.testForValidInteger(adjustMinutes, "Invalid minutes")
+		Calendar.Helper.testForValidInteger(adjustSeconds, "Invalid seconds")
 		yearsToAdjust := adjustYears + adjustMonths // 12
 		this.setAsYear(this.asYear() + yearsToAdjust)
 		monthsToAdjust := Mod(adjustMonths, 12)
-		Calendar.CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(this
+		Calendar.Helper.adjustMonthAndHandleUnderFlowOrOverFlow(this
 				, monthsToAdjust)
 		ts := this.timeStamp
 		ts += adjustDays, Days
@@ -375,16 +375,16 @@ class Calendar {
 	}
 
 	findWeekDay(dayOfWeek=1, occurenceAndDirection=0.1) {
-		Calendar.CalendarHelper.testForValidWeekDay(dayOfWeek)
-		Calendar.CalendarHelper.testForValidNumber(occurenceAndDirection)
-		if (Calendar.CalendarHelper
+		Calendar.Helper.testForValidWeekDay(dayOfWeek)
+		Calendar.Helper.testForValidNumber(occurenceAndDirection)
+		if (Calendar.Helper
 				.findNextOrFirstOccurenceOfWeekDay(occurenceAndDirection)) {
 			occurenceOfWeekDay
-					:= Calendar.CalendarHelper.findNextOccurenceOfWeekDay(this.clone()
+					:= Calendar.Helper.findNextOccurenceOfWeekDay(this.clone()
 					, dayOfWeek, occurenceAndDirection)
 		} else {
 			occurenceOfWeekDay
-					:= Calendar.CalendarHelper.findRecentOccurenceOfWeekDay(this.clone()
+					:= Calendar.Helper.findRecentOccurenceOfWeekDay(this.clone()
 					, dayOfWeek, occurenceAndDirection)
 		}
 		return occurenceOfWeekDay
