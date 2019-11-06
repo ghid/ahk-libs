@@ -106,152 +106,152 @@ class CalendarTest extends TestCase {
 	}
 
 	@Test_helperClass() {
-		this.assertTrue(IsObject(CalendarHelper))
-		this.assertException(CalendarHelper, "__New")
-		this.assertTrue(IsFunc(CalendarHelper.validTime))
+		this.assertTrue(IsObject(Calendar.CalendarHelper))
+		this.assertException(Calendar.CalendarHelper, "__New")
+		this.assertTrue(IsFunc(Calendar.CalendarHelper.validTime))
 	}
 
 	@Test_testForValidYear() {
-		this.assertEquals(CalendarHelper.testForValidYear(A_Now), A_Now)
-		this.assertException(CalendarHelper, "testForValidYear",,, 1600)
+		this.assertEquals(Calendar.CalendarHelper.testForValidYear(A_Now), A_Now)
+		this.assertException(Calendar.CalendarHelper, "testForValidYear",,, 1600)
 	}
 
 	@Test_testForValidMonth() {
-		this.assertEquals(CalendarHelper.testForValidMonth(A_Now), A_Now)
-		this.assertEquals(CalendarHelper.testForValidMonth(2019), 201901)
-		this.assertException(CalendarHelper, "testForValidMonth",,, 201900)
-		this.assertException(CalendarHelper, "testForValidMonth",,, 201913)
+		this.assertEquals(Calendar.CalendarHelper.testForValidMonth(A_Now), A_Now)
+		this.assertEquals(Calendar.CalendarHelper.testForValidMonth(2019), 201901)
+		this.assertException(Calendar.CalendarHelper, "testForValidMonth",,, 201900)
+		this.assertException(Calendar.CalendarHelper, "testForValidMonth",,, 201913)
 	}
 
 	@Test_testForValidDay() {
-		this.assertEquals(CalendarHelper.testForValidDay(A_Now), A_Now)
-		this.assertEquals(CalendarHelper.testForValidDay(20190812), 20190812)
-		this.assertEquals(CalendarHelper.testForValidDay(201908), 20190801)
-		this.assertException(CalendarHelper, "testForValidDay",,, 20190800)
-		this.assertException(CalendarHelper, "testForValidDay",,, 20190631)
-		this.assertException(CalendarHelper, "testForValidDay",,, 20191232)
-		this.assertException(CalendarHelper, "testForValidDay",,, 20190229)
+		this.assertEquals(Calendar.CalendarHelper.testForValidDay(A_Now), A_Now)
+		this.assertEquals(Calendar.CalendarHelper.testForValidDay(20190812), 20190812)
+		this.assertEquals(Calendar.CalendarHelper.testForValidDay(201908), 20190801)
+		this.assertException(Calendar.CalendarHelper, "testForValidDay",,, 20190800)
+		this.assertException(Calendar.CalendarHelper, "testForValidDay",,, 20190631)
+		this.assertException(Calendar.CalendarHelper, "testForValidDay",,, 20191232)
+		this.assertException(Calendar.CalendarHelper, "testForValidDay",,, 20190229)
 	}
 
 	@Test_testForValidHour() {
-		this.assertEquals(CalendarHelper.testForValidHour(A_Now), A_Now)
-		this.assertEquals(CalendarHelper.testForValidHour(2019081208)
+		this.assertEquals(Calendar.CalendarHelper.testForValidHour(A_Now), A_Now)
+		this.assertEquals(Calendar.CalendarHelper.testForValidHour(2019081208)
 				, 2019081208)
-		this.assertEquals(CalendarHelper.testForValidHour(2019081200)
+		this.assertEquals(Calendar.CalendarHelper.testForValidHour(2019081200)
 				, 2019081200)
-		this.assertEquals(CalendarHelper.testForValidHour(2019081223)
+		this.assertEquals(Calendar.CalendarHelper.testForValidHour(2019081223)
 				, 2019081223)
-		this.assertException(CalendarHelper, "testForValidHour",,, 2019081224)
+		this.assertException(Calendar.CalendarHelper, "testForValidHour",,, 2019081224)
 	}
 
 	@Test_testForValidMinutes() {
-		this.assertEquals(CalendarHelper.testForValidMinutes(A_Now), A_Now)
-		this.assertEquals(CalendarHelper.testForValidMinutes(201908120848)
+		this.assertEquals(Calendar.CalendarHelper.testForValidMinutes(A_Now), A_Now)
+		this.assertEquals(Calendar.CalendarHelper.testForValidMinutes(201908120848)
 				, 201908120848)
-		this.assertEquals(CalendarHelper.testForValidMinutes(201908120859)
+		this.assertEquals(Calendar.CalendarHelper.testForValidMinutes(201908120859)
 				, 201908120859)
-		this.assertEquals(CalendarHelper.testForValidMinutes(2019081208)
+		this.assertEquals(Calendar.CalendarHelper.testForValidMinutes(2019081208)
 				, 201908120800)
-		this.assertException(CalendarHelper, "testForValidMinutes"
+		this.assertException(Calendar.CalendarHelper, "testForValidMinutes"
 				,,, 201908120860)
 	}
 
 	@Test_testForValidSeconds() {
-		this.assertEquals(CalendarHelper.testForValidSeconds(A_Now), A_Now)
-		this.assertEquals(CalendarHelper.testForValidSeconds(20190812084836)
+		this.assertEquals(Calendar.CalendarHelper.testForValidSeconds(A_Now), A_Now)
+		this.assertEquals(Calendar.CalendarHelper.testForValidSeconds(20190812084836)
 				, 20190812084836)
-		this.assertEquals(CalendarHelper.testForValidSeconds(20190812085900)
+		this.assertEquals(Calendar.CalendarHelper.testForValidSeconds(20190812085900)
 				, 20190812085900)
-		this.assertEquals(CalendarHelper.testForValidSeconds(20190812085959)
+		this.assertEquals(Calendar.CalendarHelper.testForValidSeconds(20190812085959)
 				, 20190812085959)
-		this.assertEquals(CalendarHelper.testForValidSeconds(201908120859)
+		this.assertEquals(Calendar.CalendarHelper.testForValidSeconds(201908120859)
 				, 20190812085900)
-		this.assertException(CalendarHelper, "testForValidSeconds"
+		this.assertException(Calendar.CalendarHelper, "testForValidSeconds"
 				,,, 20190812085160)
 	}
 
 	@Test_returnMaxDaysForFebruary() {
-		this.assertEquals(CalendarHelper.returnMaxDaysForFebruary(2019), 28)
-		this.assertEquals(CalendarHelper.returnMaxDaysForFebruary(2020), 29)
-		this.assertEquals(CalendarHelper.returnMaxDaysForFebruary(2100), 28)
+		this.assertEquals(Calendar.CalendarHelper.returnMaxDaysForFebruary(2019), 28)
+		this.assertEquals(Calendar.CalendarHelper.returnMaxDaysForFebruary(2020), 29)
+		this.assertEquals(Calendar.CalendarHelper.returnMaxDaysForFebruary(2100), 28)
 	}
 
 	@Test_CalendarHelper_daysInMonth() {
-		this.assertEquals(CalendarHelper.daysInMonth(201901, 01), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(201902, 02), 28)
-		this.assertEquals(CalendarHelper.daysInMonth(201903, 03), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(201904, 04), 30)
-		this.assertEquals(CalendarHelper.daysInMonth(201905, 05), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(201906, 06), 30)
-		this.assertEquals(CalendarHelper.daysInMonth(201907, 07), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(201908, 08), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(201909, 09), 30)
-		this.assertEquals(CalendarHelper.daysInMonth(201910, 10), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(201911, 11), 30)
-		this.assertEquals(CalendarHelper.daysInMonth(201912, 12), 31)
-		this.assertEquals(CalendarHelper.daysInMonth(202002, 02), 29)
-		this.assertEquals(CalendarHelper.daysInMonth(210002, 02), 28)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201901, 01), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201902, 02), 28)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201903, 03), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201904, 04), 30)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201905, 05), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201906, 06), 30)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201907, 07), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201908, 08), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201909, 09), 30)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201910, 10), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201911, 11), 30)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(201912, 12), 31)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(202002, 02), 29)
+		this.assertEquals(Calendar.CalendarHelper.daysInMonth(210002, 02), 28)
 	}
 
 	@Test_testForValidInteger() {
-		this.assertTrue(CalendarHelper.testForValidInteger(0))
-		this.assertTrue(CalendarHelper.testForValidInteger(123))
-		this.assertTrue(CalendarHelper.testForValidInteger(-123))
-		this.assertException(CalendarHelper, "testForValidInteger",,, "abc")
+		this.assertTrue(Calendar.CalendarHelper.testForValidInteger(0))
+		this.assertTrue(Calendar.CalendarHelper.testForValidInteger(123))
+		this.assertTrue(Calendar.CalendarHelper.testForValidInteger(-123))
+		this.assertException(Calendar.CalendarHelper, "testForValidInteger",,, "abc")
 	}
 
 	@Test_testForValidNumber() {
-		this.assertTrue(CalendarHelper.testForValidNumber(0))
-		this.assertTrue(CalendarHelper.testForValidNumber(123))
-		this.assertTrue(CalendarHelper.testForValidNumber(-123))
-		this.assertTrue(CalendarHelper.testForValidNumber(123.))
-		this.assertTrue(CalendarHelper.testForValidNumber(-123.))
-		this.assertTrue(CalendarHelper.testForValidNumber(123.0))
-		this.assertTrue(CalendarHelper.testForValidNumber(123.9))
-		this.assertTrue(CalendarHelper.testForValidNumber(123.456))
-		this.assertTrue(CalendarHelper.testForValidNumber(-123.456))
-		this.assertTrue(CalendarHelper.testForValidNumber(.456))
-		this.assertTrue(CalendarHelper.testForValidNumber(-.456))
-		this.assertTrue(CalendarHelper.testForValidNumber(-0.456))
-		this.assertTrue(CalendarHelper.testForValidNumber(+123.456))
-		this.assertTrue(CalendarHelper.testForValidNumber(-.0))
-		this.assertTrue(CalendarHelper.testForValidNumber(-0.))
-		this.assertException(CalendarHelper, "testForValidNumber",,, "abc")
-		this.assertException(CalendarHelper, "testForValidNumber",,, "-1,5")
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(0))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(123))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-123))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(123.))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-123.))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(123.0))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(123.9))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(123.456))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-123.456))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(.456))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-.456))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-0.456))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(+123.456))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-.0))
+		this.assertTrue(Calendar.CalendarHelper.testForValidNumber(-0.))
+		this.assertException(Calendar.CalendarHelper, "testForValidNumber",,, "abc")
+		this.assertException(Calendar.CalendarHelper, "testForValidNumber",,, "-1,5")
 	}
 
 	@Test_testForValidWeekDay() {
 		loop 7 {
-			this.assertTrue(CalendarHelper.testForValidWeekDay(A_Index))
+			this.assertTrue(Calendar.CalendarHelper.testForValidWeekDay(A_Index))
 		}
-		this.assertException(CalendarHelper, "testForValidWeekDay",,, 0)
-		this.assertException(CalendarHelper, "testForValidWeekDay",,, 8)
+		this.assertException(Calendar.CalendarHelper, "testForValidWeekDay",,, 0)
+		this.assertException(Calendar.CalendarHelper, "testForValidWeekDay",,, 8)
 	}
 
 	@Test_adjustMonthAndHandleUnderFlowOrOverFlow() {
 		ts := new Calendar("20190121")
-		CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, -1)
+		Calendar.CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, -1)
 		this.assertEquals(ts.asDate(), "20181221")
-		CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 1)
+		Calendar.CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 1)
 		this.assertEquals(ts.asDate(), "20190121")
-		CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 1)
+		Calendar.CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 1)
 		this.assertEquals(ts.asDate(), "20190221")
-		CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 6)
+		Calendar.CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 6)
 		this.assertEquals(ts.asDate(), "20190821")
-		CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 10)
+		Calendar.CalendarHelper.adjustMonthAndHandleUnderFlowOrOverFlow(ts, 10)
 		this.assertEquals(ts.asDate(), "20200621")
 	}
 
 	@Test_findNextOrFirstOccurenceOfWeekDay() {
-		this.assertTrue(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(0))
-		this.assertTrue(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(0.1))
-		this.assertTrue(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(0.5))
-		this.assertTrue(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(1))
-		this.assertTrue(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(3))
-		this.assertFalse(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-.1))
-		this.assertFalse(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-.9))
-		this.assertFalse(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-1))
-		this.assertFalse(CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-3))
+		this.assertTrue(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(0))
+		this.assertTrue(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(0.1))
+		this.assertTrue(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(0.5))
+		this.assertTrue(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(1))
+		this.assertTrue(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(3))
+		this.assertFalse(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-.1))
+		this.assertFalse(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-.9))
+		this.assertFalse(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-1))
+		this.assertFalse(Calendar.CalendarHelper.findNextOrFirstOccurenceOfWeekDay(-3))
 	}
 
 	@Test_new() {
@@ -453,7 +453,7 @@ class CalendarTest extends TestCase {
 		this.assertEquals(new Calendar(201211).daysInMonth(), 30)
 		this.assertEquals(new Calendar(201212).daysInMonth(), 31)
 		this.assertEquals(new Calendar(201102).daysInMonth(), 28)
-		this.assertException(CalendarHelper, "daysInMonth",,, "abc")
+		this.assertException(Calendar.CalendarHelper, "daysInMonth",,, "abc")
 	}
 
 	@Test_easterSunday() {

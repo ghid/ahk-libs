@@ -18,18 +18,18 @@ class CalendarHelper {
 					. "Provide at least a year between 1601 and 9999"
 					, -1, "<" dateTime ":" dateTime.Len() ">")
 		} else {
-			dateTimeWithYear := CalendarHelper.testForValidYear(dateTime)
-			CalendarHelper.MAX_DAY_OF_MONTH[2]
-					:= CalendarHelper.returnMaxDaysForFebruary(dateTimeWithYear)
+			dateTimeWithYear := Calendar.CalendarHelper.testForValidYear(dateTime)
+			Calendar.CalendarHelper.MAX_DAY_OF_MONTH[2]
+					:= Calendar.CalendarHelper.returnMaxDaysForFebruary(dateTimeWithYear)
 			dateTimeWithMonth
-					:= CalendarHelper.testForValidMonth(dateTimeWithYear)
-			dateTimeWithDay := CalendarHelper.testForValidDay(dateTimeWithMonth)
+					:= Calendar.CalendarHelper.testForValidMonth(dateTimeWithYear)
+			dateTimeWithDay := Calendar.CalendarHelper.testForValidDay(dateTimeWithMonth)
 			dateTimeWithHours
-					:= CalendarHelper.testForValidHour(dateTimeWithDay)
+					:= Calendar.CalendarHelper.testForValidHour(dateTimeWithDay)
 			dateTimeWithMinutes
-					:= CalendarHelper.testForValidMinutes(dateTimeWithHours)
+					:= Calendar.CalendarHelper.testForValidMinutes(dateTimeWithHours)
 			dateTimeWithSeconds
-					:= CalendarHelper.testForValidSeconds(dateTimeWithMinutes)
+					:= Calendar.CalendarHelper.testForValidSeconds(dateTimeWithMinutes)
 			validDateTime := dateTimeWithSeconds
 		}
 		return validDateTime
@@ -73,12 +73,12 @@ class CalendarHelper {
 		else {
 			month := SubStr(dateTime, 5, 2)
 			year := SubStr(dateTime, 1, 4)
-			CalendarHelper.MAX_DAY_OF_MONTH[2]
-					:= CalendarHelper.returnMaxDaysForFebruary(year)
+			Calendar.CalendarHelper.MAX_DAY_OF_MONTH[2]
+					:= Calendar.CalendarHelper.returnMaxDaysForFebruary(year)
 			if (dayToTest < 01
-					|| dayToTest > CalendarHelper.MAX_DAY_OF_MONTH[month]) {
+					|| dayToTest > Calendar.CalendarHelper.MAX_DAY_OF_MONTH[month]) {
 				throw Exception("Day of month must be between 01 and "
-						. CalendarHelper.MAX_DAY_OF_MONTH[month]
+						. Calendar.CalendarHelper.MAX_DAY_OF_MONTH[month]
 						, -1, "<" dayToTest ">")
 			}
 		}
@@ -123,11 +123,11 @@ class CalendarHelper {
 
 	daysInMonth(dateTime="", month="") {
 		try {
-			CalendarHelper.validTime(dateTime)
+			Calendar.CalendarHelper.validTime(dateTime)
 		} catch _ex {
 			throw _ex
 		}
-		return CalendarHelper.MAX_DAY_OF_MONTH[month]
+		return Calendar.CalendarHelper.MAX_DAY_OF_MONTH[month]
 	}
 
 	testForValidInteger(value, additionalInfo="") {
@@ -165,7 +165,7 @@ class CalendarHelper {
 			calendar.setAsMonth(calendar.asMonth() + monthsToAdjust)
 		}
 		maxDaysInAdjustedMonth
-				:= CalendarHelper.daysInMonth(new Calendar(calendar.asYear()
+				:= Calendar.CalendarHelper.daysInMonth(new Calendar(calendar.asYear()
 				. calendar.asMonth()).get(), calendar.asMonth())
 		if (calendar.asDay() > maxDaysInAdjustedMonth) {
 			calendar.setAsDay(maxDaysInAdjustedMonth)
