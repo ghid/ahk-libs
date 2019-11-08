@@ -737,18 +737,7 @@ class CalendarTest extends TestCase {
 				.formatTime("dd.MM.yyyy HH:mm:ss"), "15.11.2013 13:25:17")
 	}
 
-	@Test_sunriseAndSunset() {
-		this.assertEquals(new Calendar(20190130, 1).sunrise(13.5, 52.5)
-				.formatTime("Time"), "07:50")
-		this.assertEquals(new Calendar(20190130, 1).sunset(13.5, 52.5, 1)
-				.formatTime("Time"), "16:47")
-		this.assertEquals(new Calendar(20191105, 1).sunrise(8.38, 51.5, 1)
-				.formatTime("Time"), "07:26")
-		this.assertEquals(new Calendar(20191105, 1).sunset(8.38, 51.5, 1)
-				.formatTime("Time"), "16:53")
-	}
-
-	@Test_shiftTime() {
+	@Test_timeShiftsForLocalAndUTC() {
 		this.assertEquals(new Calendar(20191108134516).timeLocal(-1).get()
 				, 20191108124516)
 		this.assertEquals(new Calendar(20191108134516).timeLocal(+11).get()
@@ -757,6 +746,17 @@ class CalendarTest extends TestCase {
 				, 20191108134516)
 		this.assertEquals(new Calendar(20191108144516, -2).timeUTC().get()
 				, 20191108164516)
+	}
+
+	@Test_sunriseAndSunset() {
+		this.assertEquals(new Calendar(20190130, 1).sunrise(13.5, 52.5)
+				.timeLocal().formatTime("Time"), "07:50")
+		this.assertEquals(new Calendar(20190130, 1).sunset(13.5, 52.5, 1)
+				.timeLocal().formatTime("Time"), "16:47")
+		this.assertEquals(new Calendar(20191105, 1).sunrise(8.38, 51.5, 1)
+				.timeLocal().formatTime("Time"), "07:26")
+		this.assertEquals(new Calendar(20191105, 1).sunset(8.38, 51.5, 1)
+				.timeLocal().formatTime("Time"), "16:53")
 	}
 }
 
