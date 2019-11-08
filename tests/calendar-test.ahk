@@ -105,6 +105,21 @@ class CalendarTest extends TestCase {
 		this.assertEquals(new Calendar.TimeZone().bias, -60)
 	}
 
+	@Test_timeZoneForYear() {
+		this.assertEquals(new Calendar.TimeZone().forYear(2018)
+				.beginOfDaylighSavingTime().get(), "20180325020000")
+		this.assertEquals(new Calendar.TimeZone().forYear(2018)
+				.endOfDaylighSavingTime().get(), "20181028030000")
+		this.assertEquals(new Calendar.TimeZone().forYear(2019)
+				.beginOfDaylighSavingTime().get(), "20190331020000")
+		this.assertEquals(new Calendar.TimeZone().forYear(2019)
+				.endOfDaylighSavingTime().get(), "20191027030000")
+		this.assertEquals(new Calendar.TimeZone().forYear(2020)
+				.beginOfDaylighSavingTime().get(), "20200329020000")
+		this.assertEquals(new Calendar.TimeZone().forYear(2020)
+				.endOfDaylighSavingTime().get(), "20201025030000")
+	}
+
 	@Test_helperClass() {
 		this.assertTrue(IsObject(Calendar.Helper))
 		this.assertException(Calendar.Helper, "__New")
@@ -275,6 +290,12 @@ class CalendarTest extends TestCase {
 		this.assertEquals(new Calendar(20120229).get(), 20120229000000)
 		this.assertEquals(new Calendar(20000229).get(), 20000229000000)
 		this.assertEquals(new Calendar(ts := A_Now).get(), ts)
+		ts := new Calendar(A_Now, -5)
+		this.assertEquals(ts.deviationFromUTC, -5)
+		ts := new Calendar(A_Now, 2)
+		this.assertEquals(ts.deviationFromUTC, 2)
+		ts.deviationFromUTC--
+		this.assertEquals(ts.deviationFromUTC, 1)
 	}
 
 	@Test_isLeapYear() {
@@ -717,14 +738,25 @@ class CalendarTest extends TestCase {
 	}
 
 	@Test_sunriseAndSunset() {
-		this.assertEquals(new Calendar(20190130).sunrise(13.5, 52.5)
+		this.assertEquals(new Calendar(20190130, 1).sunrise(13.5, 52.5)
 				.formatTime("Time"), "07:50")
-		this.assertEquals(new Calendar(20190130).sunset(13.5, 52.5, 1)
+		this.assertEquals(new Calendar(20190130, 1).sunset(13.5, 52.5, 1)
 				.formatTime("Time"), "16:47")
-		this.assertEquals(new Calendar(20191105).sunrise(8.38, 51.5, 1)
+		this.assertEquals(new Calendar(20191105, 1).sunrise(8.38, 51.5, 1)
 				.formatTime("Time"), "07:26")
-		this.assertEquals(new Calendar(20191105).sunset(8.38, 51.5, 1)
+		this.assertEquals(new Calendar(20191105, 1).sunset(8.38, 51.5, 1)
 				.formatTime("Time"), "16:53")
+	}
+
+	@Test_shiftTime() {
+		this.assertEquals(new Calendar(20191108134516).timeLocal(-1).get()
+				, 20191108124516)
+		this.assertEquals(new Calendar(20191108134516).timeLocal(+11).get()
+				, 20191109004516)
+		this.assertEquals(new Calendar(20191108144516, 1).timeUTC().get()
+				, 20191108134516)
+		this.assertEquals(new Calendar(20191108144516, -2).timeUTC().get()
+				, 20191108164516)
 	}
 }
 

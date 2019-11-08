@@ -37,6 +37,15 @@ class Helper {
 		return validDateTime
 	}
 
+	validTimeZone(timeShift) {
+		if (timeShift == "" || (timeShift >= -12 && timeShift <= 14)) {
+			return timeShift
+		}
+		throw Exception("Invalid time shift. "
+				. "Provide a time shift between -12 and 14"
+				, -1, "<" timeShift ">")
+	}
+
 	returnMaxDaysForFebruary(dateTime) {
 		yearToTest := SubStr(dateTime, 1, 4)
 		if ((Mod(yearToTest, 4) == 0 && Mod(yearToTest, 100) != 0)

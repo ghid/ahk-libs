@@ -1,10 +1,13 @@
 #Include <modules\struct\TIME_ZONE_INFORMATION>
+#Include <modules\struct\DYNAMIC_TIME_ZONE_INFORMATION>
 
 class Calendar {
 
 	#Include %A_LineFile%\..\modules\calendar
 	#Include Helper.ahk
 	#Include SunriseSunset.ahk
+	#Include TimeZone.ahk
+	#Include Units.ahk
 	
 	requires() {
 		return [Struct]
@@ -36,18 +39,16 @@ class Calendar {
 	static FIND_NEXT_OR_FIRST_OCCURENCE_OF_WEEKDAY := 0
 
 	timeStamp := A_Now
+	deviationFromUTC := ""
 
-	#Include %A_LineFile%\..\modules\calendar\
-	#Include Units.ahk
-	#Include TimeZone.ahk
-
-	__new(dateTime="") {
+	__new(dateTime="", deviationFromUTC="") {
 		try {
 			this.timeStamp := Calendar.Helper.validTime(dateTime)
+			this.deviationFromUTC
+					:= Calendar.Helper.validTimeZone(deviationFromUTC)
 		} catch _ex {
 			throw _ex
 		}
-		return this
 	}
 
 	get() {
@@ -406,5 +407,19 @@ class Calendar {
 		sunsetSeconds := new Calendar.SunriseSunset(this, longitude, latitude
 				, differenceToUTC).sunset() * 3600
 		return this.adjust(0, 0, 0, 0, 0, Floor(sunsetSeconds))
+	}
+
+	timeLocal(timeShift="") {
+		timeShift := (timeShift == ""
+				? new Calendar.TimeZone().getBias() * -1
+				: Calendar.Helper.validTimeZone(timeShift) * 60)
+		return this.adjust(0, 0, 0, 0, timeShift)
+	}
+
+	timeUTC() {
+		timeShift := (this.deviationFromUTC == ""
+				? new Calendar.TimeZone().getBias()
+				: this.deviationFromUTC * -60)
+		return this.adjust(0, 0, 0, 0, timeShift)
 	}
 }

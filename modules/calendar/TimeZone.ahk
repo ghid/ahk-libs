@@ -7,6 +7,7 @@ class TimeZone {
 
 	iD := 0
 	bias := 0
+	year := 0
 
 	; ahklint-ignore-begin: W003
 	setting
@@ -14,6 +15,7 @@ class TimeZone {
 			, name: ""
 			, date: { day: 0
 				, dayOfWeek: 0
+				, year: 0
 				, month: 0
 				, hour: 0
 				, minute: 0 } }
@@ -21,6 +23,7 @@ class TimeZone {
 			, name: ""
 			, date: { Day: 0
 				, dayOfWeek: 0
+				, year: 0
 				, month: 0
 				, hour: 0
 				, minute: 0 } } }
@@ -48,6 +51,51 @@ class TimeZone {
 			this.Setting.Daylight.Date.minute    := tzi.DaylightDate.wMinute
 		}
 		return this
+	}
+
+	forYear(aYear="") {
+		this.year := (aYear != "" ? aYear : A_Year)
+		VarSetCapacity(_tzi, sizeOf(TIME_ZONE_INFORMATION))
+		if (DllCall("GetTimeZoneInformationForYear", "UShort", aYear
+				, "UInt", 0, "UInt", &_tzi, "UChar")) {
+			tzi := new TIME_ZONE_INFORMATION(_tzi)
+			this.bias := tzi.bias
+			this.Setting.Standard.bias := tzi.StandardBias
+			this.Setting.Standard.name := tzi.StandardName
+			this.Setting.Standard.Date.day := tzi.StandardDate.wDay
+			this.Setting.Standard.Date.dayOfWeek := tzi.StandardDate.wDayOfWeek
+			this.Setting.Standard.Date.year := tzi.StandardDate.wYear
+			this.Setting.Standard.Date.month := tzi.StandardDate.wMonth
+			this.Setting.Standard.Date.hour := tzi.StandardDate.wHour
+			this.Setting.Standard.Date.minute := tzi.StandardDate.wMinute
+			this.Setting.Daylight.bias := tzi.DaylightBias
+			this.Setting.Daylight.name := tzi.DaylightName
+			this.Setting.Daylight.Date.day := tzi.DaylightDate.wDay
+			this.Setting.Daylight.Date.dayOfWeek := tzi.DaylightDate.wDayOfWeek
+			this.Setting.Daylight.Date.year := tzi.DaylightDate.wYear
+			this.Setting.Daylight.Date.month := tzi.DaylightDate.wMonth
+			this.Setting.Daylight.Date.hour := tzi.DaylightDate.wHour
+			this.Setting.Daylight.Date.minute := tzi.DaylightDate.wMinute
+		}
+		return this
+	}
+
+	beginOfDaylighSavingTime() {
+		return this.getTimestampFromSetting(this.Setting.Daylight.Date)
+	}
+
+	endOfDaylighSavingTime() {
+		return this.getTimestampFromSetting(this.Setting.Standard.Date)
+	}
+
+	getTimestampFromSetting(aSettingDate) {
+		ts := new Calendar(this.year)
+				.setAsMonth(aSettingDate.month)
+				.setAsDay(1)
+				.setAsHour(aSettingDate.hour)
+				.setAsMinutes(aSettingDate.minute)
+		return ts.findWeekDay(aSettingDate.dayOfWeek + 1
+				, (aSettingDate.day != 5 ? aSettingDate.day : -1))
 	}
 
 	getBias() {
