@@ -69,6 +69,8 @@ class TestCaseTest extends TestCase {
 		this.assertException(TestCase, "assertEquals",,, "A", "B")
 		this.assertException(TestCase, "assertEquals",,, "A", "a")
 		this.assertException(TestCase, "assertEquals",,, 42, 43)
+		this.assertException(TestCase, "assertEquals",,, "6", "06"
+				, TestCase.compareAsString.bind(TestCase))
 	}
 
 	@Test_assertEqualsIgnoreCase() {
@@ -113,9 +115,9 @@ class TestCaseTest extends TestCase {
 
 	@Test_getAssertionSource() {
 		this.assertEquals(TestCase.getAssertionSource("@Test_assertNotEmpty", 6)
-				, "111: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
+				, "113: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
 		this.assertEquals(TestCase.getAssertionSource("@Test_assertNotEmpty", 7)
-				, "111: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
+				, "113: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
 	}
 
 	@Test_fail() {

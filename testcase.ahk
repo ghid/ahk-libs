@@ -343,11 +343,16 @@ class TestCase {
 		return true
 	}
 
-	assertEquals(actualValue, expectedValue, messageText="AssertionError") {
+	assertEquals(actualValue, expectedValue, callbackFunction=""
+			, messageText="AssertionError") {
 		TestData.assertionCounter++
-		areBothValuesFromTheSameType := ((actualValue + 0) == actualValue)
-				== ((expectedValue + 0) == expectedValue)
-		if (!areBothValuesFromTheSameType || !(actualValue == expectedValue)) {
+		if (!callbackFunction) {
+			callbackFunction := TestCase.compareSimple.bind(TestCase)
+		}
+		if (!IsFunc(callbackFunction) && !IsObject(callbackFunction)) {
+			throw Exception("Callback function not found " callbackFunction)
+		}
+		if (callbackFunction.call(actualValue, expectedValue) == false) {
 			TestCase.reportError(actualValue, expectedValue, messageText)
 		}
 		return actualValue
@@ -355,12 +360,31 @@ class TestCase {
 
 	assertEqualsIgnoreCase(actualValue, expectedValue
 			, messageText="AssertionError") {
-		StringUpper actualValueUpCase, actualValue
-		StringUpper expectedValueUpCase, expectedValue
-		if (TestCase.assertEquals(actualValueUpCase, expectedValueUpCase
-				, messageText)) {
+		if (TestCase.assertEquals(actualValue, expectedValue
+				, TestCase.compareIgnoreCase.bind(TestCase), messageText)) {
 			return actualValue
 		}
+	}
+
+	compareSimple(actualValue, expectedValue) {
+		areBothValuesFromTheSameType := ((actualValue + 0) == actualValue)
+				== ((expectedValue + 0) == expectedValue)
+		return areBothValuesFromTheSameType && (actualValue == expectedValue)
+	}
+
+	compareIgnoreCase(actualValue, expectedValue) {
+		return TestCase.compareSimple(Format("{:U}", actualValue)
+				, Format("{:U}", expectedValue))
+	}
+
+	compareAsString(actualValue, expectedValue) {
+		scs := A_StringCaseSense
+		StringCaseSense on
+		actualValue .= "$"
+		expectedValue .= "$"
+		result := (actualValue == expectedValue)
+		StringCaseSense %scs%
+		return result
 	}
 
 	assertTrue(expression="", messageText="AssertionError") {
