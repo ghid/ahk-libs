@@ -49,14 +49,10 @@ class Math {
 	}
 
 	limitTo(number, minimum, maximum) {
-		if (number >= minimum && number <= maximum) {
-			return number
+		if (minimum > maximum) {
+			throw Exception("minimun > maximum: " minimum " > " maximum)
 		}
-		if (number > maximum) {
-			return maximum
-		} else {
-			return minimum
-		}
+		return Min(Max(minimum, number), maximum)
 	}
 
 	isEven(number) {

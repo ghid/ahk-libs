@@ -103,9 +103,15 @@ class MathTest extends TestCase {
 	}
 
 	@Test_limitTo() {
+		this.assertEquals(Math.limitTo(0, 0, 0), 0)
+		this.assertEquals(Math.limitTo(100, 100, 100), 100)
 		this.assertEquals(Math.limitTo(7, 3, 13), 7)
 		this.assertEquals(Math.limitTo(0, 3, 13), 3)
 		this.assertEquals(Math.limitTo(100, 3, 13), 13)
+		this.assertEquals(Math.limitTo(799048771, 638452606, 1878981903)
+				, 799048771)
+		this.assertEquals(Math.limitTo(112602810, 833467483, 1892472937)
+				, 833467483)
 	}
 
 	@Test_oddEven() {
