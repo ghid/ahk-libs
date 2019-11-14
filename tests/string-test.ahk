@@ -12,6 +12,8 @@
 
 #Include %A_ScriptDir%\..\string.ahk
 
+global compareAsString := TestCase.compareAsString.bind(TestCase)
+
 class StringTest extends TestCase {
 
 	@Test_Constants() {
@@ -93,26 +95,26 @@ class StringTest extends TestCase {
 		this.assertEquals("test".pad(String.PAD_LEFT, 10, "xyz"), "xxxxxxtest")
 		this.assertEquals("test".padLeft(10, "xyz"), "xxxxxxtest")
 		this.assertEquals("123".pad(String.PAD_NUMBER, 5)
-				, "00123", TestCase.AS_STRING)
-		this.assertEquals("123".padNumber(5), "00123", TestCase.AS_STRING)
+				, "00123", compareAsString)
+		this.assertEquals("123".padNumber(5), "00123", compareAsString)
 		this.assertEquals("123".pad(String.PAD_NUMBER, 5, " ")
-				, "  123", TestCase.AS_STRING)
-		this.assertEquals("123".padNumber(5, " "), "  123", TestCase.AS_STRING)
+				, "  123", compareAsString)
+		this.assertEquals("123".padNumber(5, " "), "  123", compareAsString)
 		this.assertEquals("-123".pad(String.PAD_NUMBER, 5)
-				, "-0123", TestCase.AS_STRING)
-		this.assertEquals("-123".padNumber(5), "-0123", TestCase.AS_STRING)
+				, "-0123", compareAsString)
+		this.assertEquals("-123".padNumber(5), "-0123", compareAsString)
 		this.assertEquals("+123".pad(String.PAD_NUMBER, 5)
-				, "+0123", TestCase.AS_STRING)
-		this.assertEquals("+123".padNumber(5), "+0123", TestCase.AS_STRING)
+				, "+0123", compareAsString)
+		this.assertEquals("+123".padNumber(5), "+0123", compareAsString)
 		this.assertEquals("123".pad(String.PAD_NUMBER, 2)
-				, "123", TestCase.AS_STRING)
-		this.assertEquals("123".padNumber(2), "123", TestCase.AS_STRING)
+				, "123", compareAsString)
+		this.assertEquals("123".padNumber(2), "123", compareAsString)
 		this.assertEquals("+1".pad(String.PAD_NUMBER, 3, " ")
-				, " +1", TestCase.AS_STRING)
-		this.assertEquals("+1".padNumber(3, " "), " +1", TestCase.AS_STRING)
+				, " +1", compareAsString)
+		this.assertEquals("+1".padNumber(3, " "), " +1", compareAsString)
 		this.assertEquals("1416".pad(String.PAD_RIGHT, 2, "0")
-				, "14", TestCase.AS_STRING)
-		this.assertEquals("1416".padRight(2, "0"), "14", TestCase.AS_STRING)
+				, "14", compareAsString)
+		this.assertEquals("1416".padRight(2, "0"), "14", compareAsString)
 		x := 1
 		this.assertEquals(x.padNumber(3), "  1")
 	}
@@ -223,24 +225,24 @@ class StringTest extends TestCase {
 
 	@Test_asHex() {
 		this.assertException("".base, "asHex", "", "", "abc")
-		this.assertEquals((x := 0).asHex(), "0x0", TestCase.AS_STRING)
+		this.assertEquals((x := 0).asHex(), "0x0", compareAsString)
 		this.assertEquals((x := 13).asHex(String.ASHEX_UPPER), "0xD"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals((x := 14).asHex(String.ASHEX_UPPER
-				|String.ASHEX_2DIGITS), "0x0E", TestCase.AS_STRING)
+				|String.ASHEX_2DIGITS), "0x0E", compareAsString)
 		this.assertEquals((x := 15).asHex(String.ASHEX_NOPREFIX)
-				, "f", TestCase.AS_STRING)
+				, "f", compareAsString)
 		this.assertEquals((x := 15).asHex(String.ASHEX_NOPREFIX
-				|String.ASHEX_2DIGITS), "0f", TestCase.AS_STRING)
+				|String.ASHEX_2DIGITS), "0f", compareAsString)
 		this.assertEquals((x := 10).asHex(String.ASHEX_UPPER
 				|String.ASHEX_NOPREFIX
-				|String.ASHEX_2DIGITS), "0A", TestCase.AS_STRING)
+				|String.ASHEX_2DIGITS), "0A", compareAsString)
 		this.assertEquals("-9223372036854775808".asHex()
-				, "-0x8000000000000000", TestCase.AS_STRING)
+				, "-0x8000000000000000", compareAsString)
 		this.assertEquals("9223372036854775807".asHex(String.ASHEX_UPPER)
-				, "0x7FFFFFFFFFFFFFFF", TestCase.AS_STRING)
+				, "0x7FFFFFFFFFFFFFFF", compareAsString)
 		this.assertEquals("9223372036854775807".asHex(String.ASHEX_2DIGITS)
-				, "0x7fffffffffffffff", TestCase.AS_STRING)
+				, "0x7fffffffffffffff", compareAsString)
 		this.assertEquals((x := 15).asHex(String.ASHEX_NOPREFIX, 7), "000000f")
 	}
 
@@ -638,22 +640,22 @@ class StringTest extends TestCase {
 		this.assertEquals("%3s".printf("abcde"), "abcde")
 		this.assertEquals("%i".printf(123), "123")
 		this.assertEquals("%i".printf(-123), "-123")
-		this.assertEquals("%+i".printf(123), "+123", TestCase.AS_STRING)
-		this.assertEquals("% i".printf(123), "123", TestCase.AS_STRING)
-		this.assertEquals("%0i".printf(123), "123", TestCase.AS_STRING)
-		this.assertEquals("%05i".printf(123), "00123", TestCase.AS_STRING)
-		this.assertEquals("%05i".printf(-123), "-0123", TestCase.AS_STRING)
-		this.assertEquals("%+05i".printf(123), "+0123", TestCase.AS_STRING)
-		this.assertEquals("% 05i".printf(123), "00123", TestCase.AS_STRING)
-		this.assertEquals("% 05i".printf(-123), "00123", TestCase.AS_STRING)
-		this.assertEquals("%+3i".printf(12345), "+12345", TestCase.AS_STRING)
-		this.assertEquals("%+3i".printf(1234), "+1234", TestCase.AS_STRING)
-		this.assertEquals("%+3i".printf(123), "+123", TestCase.AS_STRING)
-		this.assertEquals("%+3i".printf(12), "+12", TestCase.AS_STRING)
-		this.assertEquals("%+3i".printf(1), " +1", TestCase.AS_STRING)
-		this.assertEquals("% 3i".printf(1), "  1", TestCase.AS_STRING)
-		this.assertEquals("% 3i".printf(-1), "  1", TestCase.AS_STRING)
-		this.assertEquals("%-5i".printf(123), "123  ", TestCase.AS_STRING)
+		this.assertEquals("%+i".printf(123), "+123", compareAsString)
+		this.assertEquals("% i".printf(123), "123", compareAsString)
+		this.assertEquals("%0i".printf(123), "123", compareAsString)
+		this.assertEquals("%05i".printf(123), "00123", compareAsString)
+		this.assertEquals("%05i".printf(-123), "-0123", compareAsString)
+		this.assertEquals("%+05i".printf(123), "+0123", compareAsString)
+		this.assertEquals("% 05i".printf(123), "00123", compareAsString)
+		this.assertEquals("% 05i".printf(-123), "00123", compareAsString)
+		this.assertEquals("%+3i".printf(12345), "+12345", compareAsString)
+		this.assertEquals("%+3i".printf(1234), "+1234", compareAsString)
+		this.assertEquals("%+3i".printf(123), "+123", compareAsString)
+		this.assertEquals("%+3i".printf(12), "+12", compareAsString)
+		this.assertEquals("%+3i".printf(1), " +1", compareAsString)
+		this.assertEquals("% 3i".printf(1), "  1", compareAsString)
+		this.assertEquals("% 3i".printf(-1), "  1", compareAsString)
+		this.assertEquals("%-5i".printf(123), "123  ", compareAsString)
 		this.assertEquals("%c".printf("a"), "a")
 		this.assertEquals("%c".printf("abc"), "a")
 		this.assertEquals("%c".printf(65), "A")
@@ -661,61 +663,63 @@ class StringTest extends TestCase {
 		this.assertEquals("%-5c".printf(65), "A    ")
 		this.assertEquals("%10.5s".printf("abcdefghijklmnop"), "     abcde")
 		this.assertEquals("%-10.5s".printf("abcdefghijklmnop"), "abcde     ")
-		this.assertEquals("%7.5i".printf(123), "  00123", TestCase.AS_STRING)
-		this.assertEquals("%7.5i".printf(-123), "  -0123", TestCase.AS_STRING)
-		this.assertEquals("%+7.5i".printf(123), "  +0123", TestCase.AS_STRING)
-		this.assertEquals("%+7.5i".printf(-123), "  -0123", TestCase.AS_STRING)
-		this.assertEquals("% 7.5i".printf(-123), "  00123", TestCase.AS_STRING)
-		this.assertEquals("%-7.5i".printf(-123), "-0123  ", TestCase.AS_STRING)
-		this.assertEquals("%-7.6i".printf(-123), "-00123 ", TestCase.AS_STRING)
-		this.assertEquals("%-7.0i".printf(-123), "-123   ", TestCase.AS_STRING)
-		this.assertEquals("%-7.3i".printf(0), "000    ", TestCase.AS_STRING)
-		this.assertEquals("%-7.1i".printf(0), "0      ", TestCase.AS_STRING)
-		this.assertEquals("%-7.0i".printf(0), "       ", TestCase.AS_STRING)
+		this.assertEquals("%7.5i".printf(123), "  00123", compareAsString)
+		this.assertEquals("%7.5i".printf(-123), "  -0123", compareAsString)
+		this.assertEquals("%+7.5i".printf(123), "  +0123", compareAsString)
+		this.assertEquals("%+7.5i".printf(-123), "  -0123", compareAsString)
+		this.assertEquals("% 7.5i".printf(-123), "  00123", compareAsString)
+		this.assertEquals("%-7.5i".printf(-123), "-0123  ", compareAsString)
+		this.assertEquals("%-7.6i".printf(-123), "-00123 ", compareAsString)
+		this.assertEquals("%-7.0i".printf(-123), "-123   ", compareAsString)
+		this.assertEquals("%-7.3i".printf(0), "000    ", compareAsString)
+		this.assertEquals("%-7.1i".printf(0), "0      ", compareAsString)
+		this.assertEquals("%-7.0i".printf(0), "       ", compareAsString)
 		this.assertEquals("%4.2f".printf(3.1416), "3.14")
-		this.assertEquals("%7.3f".printf(3.1416), "  3.141", TestCase.AS_STRING)
-		this.assertEquals("%7.1f".printf(3.1416), "    3.1", TestCase.AS_STRING)
+		this.assertEquals("%7.3f".printf(3.1416), "  3.141", compareAsString)
+		this.assertEquals("%7.1f".printf(3.1416), "    3.1", compareAsString)
 		this.assertEquals("%+7.1f".printf(3.1416), "   +3.1"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("%+9.4f".printf(-3.1416), "  -3.1416"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("%+09.4f".printf(-3.1416), "-003.1416"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("%+09.2f".printf(-3.1416), "-00003.14"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("% 09.2f".printf(-3.1416), "000003.14"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("% 9.4f".printf(-3.1416), "   3.1416"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("% 9.*f".printf(3, -3.1416), "    3.141"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("% *.*f".printf(8, 2, -3.1416), "    3.14"
-				, TestCase.AS_STRING)
-		; this.assertEquals("% 9.*f".printf(8, 2, -3.1416), "    3.14", TestCase.AS_STRING) ; FIXME: -> enless-loop
+				, compareAsString)
+		; this.assertEquals("% 9.*f".printf(8, 2, -3.1416), "    3.14", compareAsString) ; FIXME: -> enless-loop
 		this.assertEquals("Mit was %+09.2f drum herum".printf(-3.1416)
-				, "Mit was -00003.14 drum herum", TestCase.AS_STRING)
-		; this.assertEquals("%+09.2f".printf("Mit"), "???", TestCase.AS_STRING) ; FIXME: Ungültiges format -> endless-loop
+				, "Mit was -00003.14 drum herum", compareAsString)
+		; this.assertEquals("%+09.2f".printf("Mit"), "???", compareAsString) ; FIXME: Ungültiges format -> endless-loop
 		this.assertEquals("%s was %+09.2f drum %s"
 				.printf("Mit", -3.1416, "herum"), "Mit was -00003.14 drum herum"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("Width trick: %*d".printf(5, 10), "Width trick:    10"
-				, TestCase.AS_STRING)
+				, compareAsString)
 		this.assertEquals("Width trick: %*d".printf([5, 10])
-				, "Width trick:    10", TestCase.AS_STRING)
+				, "Width trick:    10", compareAsString)
 		this.assertEquals("Width trick: %*d".printf(5, [10])
-				, "Width trick:    10", TestCase.AS_STRING)
-		; this.assertEquals("%+.0e".Printf(3.1416), "+3e+000", TestCase.AS_STRING) ; TODO: FIXME "e" isn't supported yet
-		; this.assertEquals("%+E".Printf(3.1416), "+3.1416E+000", TestCase.AS_STRING) ; TODO: FIXME "E" isn't supported yet
+				, "Width trick:    10", compareAsString)
+		; this.assertEquals("%+.0e".Printf(3.1416), "+3e+000", compareAsString) ; TODO: FIXME "e" isn't supported yet
+		; this.assertEquals("%+E".Printf(3.1416), "+3.1416E+000", compareAsString) ; TODO: FIXME "E" isn't supported yet
 		; TODO: Add the following:
 	}
 
 	@Test_printf_20191009() {
 		this.assertEquals("%i".printf(47.00)
-				, "47", TestCase.AS_STRING)
+				, "47", compareAsString)
 		this.assertEquals("%-7.0i".printf(-47.00)
-				, "-47    ", TestCase.AS_STRING)
-		this.assertEquals("%-7.2i".printf(-47.00)
-				, "-0047  ", TestCase.AS_STRING)
+				, "-47    ", compareAsString)
+		this.assertEquals("%-7.5i".printf(-47)
+				, "-0047  ", compareAsString)
+		this.assertEquals("%-7.5i".printf(-47.00)
+				, "-0047  ", compareAsString) ; @fixme 19-4DD0C got not the expected result
 		this.assertEquals("You earned %i credits".printf(47.000)
 				, "You earned 47 credits")
 		this.assertEquals("Amount owed is $%.2f".printf(1730)
