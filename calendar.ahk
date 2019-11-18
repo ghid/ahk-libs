@@ -400,13 +400,13 @@ class Calendar {
 	sunrise(longitude, latitude, differenceToUTC="") {
 		sunriseSeconds := new Calendar.SunriseSunset(this, longitude, latitude
 				, differenceToUTC).sunrise() * 3600
-		return this.adjust(0, 0, 0, 0, 0, Floor(sunriseSeconds))
+		return this.setAsTime(0).adjust(0, 0, 0, 0, 0, Floor(sunriseSeconds))
 	}
 
 	sunset(longitude, latitude, differenceToUTC="") {
 		sunsetSeconds := new Calendar.SunriseSunset(this, longitude, latitude
 				, differenceToUTC).sunset() * 3600
-		return this.adjust(0, 0, 0, 0, 0, Floor(sunsetSeconds))
+		return this.setAsTime(0).adjust(0, 0, 0, 0, 0, Floor(sunsetSeconds))
 	}
 
 	timeLocal(timeShift="") {
