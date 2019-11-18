@@ -59,6 +59,7 @@ class Datum {
 		this.setSeconds(this.parseSeconds(dmsString, parsingExpressions))
 		this.setCardinalPoint(this.parseCardinalPoint(dmsString
 				, parsingExpressions))
+		return this
 	}
 
 	parseDegrees(dmsString, parsingExpressions) {
