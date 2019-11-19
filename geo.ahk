@@ -8,7 +8,7 @@ class Geo {
 			,   0: {1: "E", 0: "W"}}
 
 	requires() {
-		return [System, TestCase]
+		return [TestCase]
 	}
 
 	#Include %A_LineFile%\..\modules\geo
