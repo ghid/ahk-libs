@@ -10,7 +10,7 @@ class Calendar {
 	#Include Units.ahk
 	
 	requires() {
-		return [Struct]
+		return [Struct, Object]
 	}
 
 	static SUNDAY    := 1
@@ -397,14 +397,14 @@ class Calendar {
 		return dateTime
 	}
 
-	sunrise(longitude, latitude, differenceToUTC="") {
-		sunriseSeconds := new Calendar.SunriseSunset(this, longitude, latitude
+	sunrise(aGeoCoordinate, differenceToUTC="") {
+		sunriseSeconds := new Calendar.SunriseSunset(this, aGeoCoordinate
 				, differenceToUTC).sunrise() * 3600
 		return this.setAsTime(0).adjust(0, 0, 0, 0, 0, Floor(sunriseSeconds))
 	}
 
-	sunset(longitude, latitude, differenceToUTC="") {
-		sunsetSeconds := new Calendar.SunriseSunset(this, longitude, latitude
+	sunset(aGeoCoordinate, differenceToUTC="") {
+		sunsetSeconds := new Calendar.SunriseSunset(this, aGeoCoordinate
 				, differenceToUTC).sunset() * 3600
 		return this.setAsTime(0).adjust(0, 0, 0, 0, 0, Floor(sunsetSeconds))
 	}

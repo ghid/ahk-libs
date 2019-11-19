@@ -3,10 +3,15 @@
 #Warn All, StdOut
 
 #Include <testcase-libs>
+#Include <geo>
 
 #Include %A_ScriptDir%\..\calendar.ahk
 
 class CalendarTest extends TestCase {
+
+	requires() {
+		return [TestCase, Calendar, Geo, Object]
+	}
 
 	@Test_class() {
 		this.assertTrue(IsObject(Calendar))
@@ -749,13 +754,17 @@ class CalendarTest extends TestCase {
 	}
 
 	@Test_sunriseAndSunset() {
-		this.assertEquals(new Calendar(20190130, 1).sunrise(13.5, 52.5)
+		this.assertEquals(new Calendar(20190130, 1)
+				.sunrise(new Geo.Coordinate(52.5, 13.5))
 				.timeLocal().formatTime("Time"), "07:50")
-		this.assertEquals(new Calendar(20190130, 1).sunset(13.5, 52.5, 1)
+		this.assertEquals(new Calendar(20190130, 1)
+				.sunset(new Geo.Coordinate(52.5, 13.5, 1))
 				.timeLocal().formatTime("Time"), "16:47")
-		this.assertEquals(new Calendar(20191105, 1).sunrise(8.38, 51.5, 1)
+		this.assertEquals(new Calendar(20191105, 1)
+				.sunrise(new Geo.Coordinate(51.5, 8.38, 1))
 				.timeLocal().formatTime("Time"), "07:26")
-		this.assertEquals(new Calendar(20191105, 1).sunset(8.38, 51.5, 1)
+		this.assertEquals(new Calendar(20191105, 1)
+				.sunset(new Geo.Coordinate(51.5, 8.38, 1))
 				.timeLocal().formatTime("Time"), "16:53")
 	}
 }
