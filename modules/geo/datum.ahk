@@ -1,10 +1,10 @@
 class Datum {
 
-	axis := ""
+	cardinalPoint := ""
 	decimalDegrees := 0.0
 
-	__new(axis, decimalDegrees=0.0) {
-		this.axis := axis
+	__new(cardinalPoint=0, decimalDegrees=0.0) {
+		this.cardinalPoint := cardinalPoint
 		this.decimalDegrees := decimalDegrees
 	}
 
@@ -21,7 +21,7 @@ class Datum {
 	}
 
 	getCardinalPoint() {
-		return GEO.CARDIAL_POINTS[this.axis == GEO.HORIZONTAL
+		return GEO.CARDIAL_POINTS[this.cardinalPoint == GEO.HORIZONTAL
 				, this.decimalDegrees > 0]
 	}
 
@@ -44,9 +44,9 @@ class Datum {
 	setCardinalPoint(cardinalPoint) {
 		switch cardinalPoint {
 		case "N", "S":
-			this.axis := Geo.HORIZONTAL
+			this.cardinalPoint := Geo.HORIZONTAL
 		case "E", "O", "W":
-			this.axis := Geo.VERTICAL
+			this.cardinalPoint := Geo.VERTICAL
 		}
 	}
 
@@ -94,9 +94,9 @@ class Datum {
 				, parsingExpressions.cardinalPointExpr)
 		if (result) {
 			if (InStr("NS", result)) {
-				this.axis := Geo.HORIZONTAL
+				this.cardinalPoint := Geo.HORIZONTAL
 			} else {
-				this.axis := Geo.VERTICAL
+				this.cardinalPoint := Geo.VERTICAL
 			}
 		}
 	}
