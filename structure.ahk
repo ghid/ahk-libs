@@ -17,7 +17,7 @@ class Structure {
 
 	explode(ByRef data) {
 		byteArray := []
-		loop % this.sizeOf() {
+		loop % VarSetCapacity(data) {
 			byteArray.push(NumGet(data, A_Index-1, "UChar"))
 		}
 		this.traverse({onMember: Structure.getData.bind(this)
@@ -43,6 +43,7 @@ class Structure {
 			structMember := this.struct[A_Index]
 			member := { name: structMember[1]
 					,   type: structMember[2]
+					,   limit: structMember[3]
 					,   value: this[structMember[1]] }
 			if (this.hasKey(member.name)) {
 				result := this.handleMember(result, member, callbackFuncs)
@@ -82,34 +83,70 @@ class Structure {
 	doCallback(callbackFuncs, eventName, currentValue, member) {
 		if (callbackFuncs.hasKey(eventName)) {
 			return callbackFuncs[eventName].call(currentValue, member.name
-					, member.type, member.value)
+					, member.type, member.value, member.limit)
 		}
 		return currentValue
 	}
 
-	sizeOfMember(accumulator, memberName, memberType) {
-		return accumulator + Structure.typeLength(memberType)
+	sizeOfMember(accumulator, memberName, memberType, value, limit) {
+		return accumulator + this.isWide(limit > 0
+				? limit
+				: Structure.typeLength(memberType)
+				, memberType)
 	}
 
-	putData(aByteArray, memberName, memberType, value) {
+	putData(aByteArray, memberName, memberType, value, limit) {
 		len := Structure.typeLength(memberType)
-		VarSetCapacity(data, len, 0)
-		NumPut(value, data, 0, memberType)
+		if (len == 0) {
+			len := (limit > 0 ? limit : StrLen(value)) * (A_IsUnicode ? 2 : 1)
+			VarSetCapacity(data, len, 0)
+			StrPut(value, &data, len)
+		} else {
+			VarSetCapacity(data, len, 0)
+			NumPut(value, data, 0, memberType)
+		}
 		loop % len {
 			aByteArray.push(NumGet(data, A_Index-1, "UChar"))
 		}
 		return aByteArray
 	}
 
-	getData(aByteArray, memberName, memberType, anInstance) {
+	getData(aByteArray, memberName, memberType, anInstance, limit) {
 		len := Structure.typeLength(memberType)
-		VarSetCapacity(data, len, 0)
+		if (len == 0) {
+			len := this.isWide(limit > 0
+					? limit
+					: aByteArray.count()
+					, memberType)
+			VarSetCapacity(data, len + 1, 0)
+		} else {
+			VarSetCapacity(data, len, 0)
+		}
 		loop % len {
 			NumPut(aByteArray[1], data, A_Index-1, "UChar")
 			aByteArray.removeAt(1)
 		}
-		anInstance[memberName] := NumGet(data, 0, memberType)
+		switch memberType {
+		case "Str", "AStr", "WStr", "StrP", "AStrP", "WStrP"
+				, "Str*", "AStr*", "WStr*":
+			anInstance[memberName] := StrGet(&data, len)
+		default:
+			anInstance[memberName] := NumGet(data, 0, memberType)
+		}
 		return aByteArray
+	}
+
+	isWide(size, memberType="") {
+		switch memberType {
+		case "WStr", "WStrP", "WStr*":
+			return size * 2
+		case "AStr", "AStrP", "AStr*":
+			return size
+		case "Str", "StrP", "Str*":
+			return size * (A_IsUnicode ? 2 : 1)
+		default:
+			return size
+		}
 	}
 
 	dumpMember(accumulator, memberName, memberType, value) {
@@ -130,7 +167,8 @@ class Structure {
 
 	typeLength(type) {
 		switch type {
-		case "Str", "AStr", "WStr":
+		case "Str", "AStr", "WStr", "StrP", "AStrP", "WStrP"
+				, "Str*", "AStr*", "WStr*":
 			return 0
 		case "Char", "CharP", "Char*", "UChar", "UCharP", "UChar*":
 			return 1

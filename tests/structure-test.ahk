@@ -6,12 +6,18 @@
 #Include %ScriptDir%\..\structure.ahk
 
 #Include %ScriptDir%\..\modules\structure
-;#Include SMALL_RECT.ahk
+#Include CONSOLE_SCREEN_BUFFER_INFO.ahk
+#Include SMALL_RECT.ahk
+#Include SYSTEMTIME.ahk
+#Include TIME_ZONE_INFORMATION.ahk
 
 class StructureTest extends TestCase {
 
 	requires() {
-		return [Structure, Arrays]
+		return [Structure, Arrays
+				, CONSOLE_SCREEN_BUFFER_INFO, SMALL_RECT, SYSTEMTIME
+				, TIME_ZONE_INFORMATION]
+
 	}
 
 	@Test_typeLength() {
@@ -57,35 +63,54 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_sizeOfMember() {
-		this.assertEquals(Structure.sizeOfMember(5, "test", "Ptr")
+		this.assertEquals(Structure.sizeOfMember(0, "test", "Str", "", 32)
+				, 32 * (A_IsUnicode ? 2 : 1))
+		this.assertEquals(Structure.sizeOfMember(0, "test", "WStr", "", 32), 64)
+		this.assertEquals(Structure.sizeOfMember(5, "test", "Ptr", "", "")
 				, 5 + A_PtrSize)
-		this.assertException(Structure, "sizeOfMember",,, 5, "test", "Long")
+		this.assertException(Structure, "sizeOfMember",,
+				, 5, "test", "Long", "", "")
 	}
 
 	@Test_putData() {
 		ba := [1]
-		ba := Structure.putData(ba, "x", "Short", 770)
+		ba := Structure.putData(ba, "x", "Short", 770, "")
 		this.assertTrue(Arrays.equal(ba, [1,2,3]))
-		ba := Structure.putData(ba, "x", "UInt", 42)
+		ba := Structure.putData(ba, "x", "UInt", 42, "")
 		this.assertTrue(Arrays.equal(ba, [1,2,3,42,0,0,0]))
-		ba := Structure.putData(ba, "x", "Short", -1303)
+		ba := Structure.putData(ba, "x", "Short", -1303, "")
 		this.assertTrue(Arrays.equal(ba, [1,2,3,42,0,0,0,233,250]))
+		ba := []
+		ba := Structure.putData(ba, "x", "Str", "foo bar", "")
+		this.assertTrue(Arrays.equal(ba
+				, [102,0,111,0,111,0,32,0,98,0,97,0,114,0]))
+		ba := []
+		ba := Structure.putData(ba, "x", "Str", "foo bar", 3)
+		this.assertTrue(Arrays.equal(ba, [102,0,111,0,111,0]))
 	}
 
 	@Test_getData() {
 		obj := {}
 		ba := [1,2,3,42,0,0,0,233,250]
-		ba := Structure.getData(ba, "x", "UChar", obj)
+		ba := Structure.getData(ba, "x", "UChar", obj, "")
 		this.assertEquals(obj.x, 1)
 		this.assertTrue(Arrays.equal(ba, [2,3,42,0,0,0,233,250]))
-		ba := Structure.getData(ba, "y", "Short", obj)
+		ba := Structure.getData(ba, "y", "Short", obj, "")
 		this.assertEquals(obj.y, 770)
 		this.assertTrue(Arrays.equal(ba, [42,0,0,0,233,250]))
-		ba := Structure.getData(ba, "z", "UInt", obj)
+		ba := Structure.getData(ba, "z", "UInt", obj, "")
 		this.assertEquals(obj.z, 42)
 		this.assertTrue(Arrays.equal(ba, [233,250]))
-		ba := Structure.getData(ba, "q", "Short", obj)
+		ba := Structure.getData(ba, "q", "Short", obj, "")
 		this.assertEquals(obj.q, -1303)
+		this.assertTrue(Arrays.equal(ba, []))
+		ba := [102,0,111,0,111,0,32,0,98,0,97,0,114,0]
+		ba := Structure.getData(ba, "f", "Str", obj, "")
+		this.assertEquals(obj.f, "foo bar")
+		this.assertTrue(Arrays.equal(ba, []))
+		ba := [102,0,111,0,111,0,32,0]
+		ba := Structure.getData(ba, "f", "Str", obj, 4)
+		this.assertEquals(obj.f, "foo ")
 		this.assertTrue(Arrays.equal(ba, []))
 	}
 
@@ -114,6 +139,7 @@ class StructureTest extends TestCase {
 
 	@Test_sizeOf() {
 		z := new TESTSTRUCT_B()
+		this.assertEquals(z.sizeOf(), 14)
 		z.x.a := 1
 		z.x.b := 2
 		z.c := 3
@@ -173,7 +199,52 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_SMALL_RECT() {
-		sr := new SMALL_RECT()
+		sr1 := new SMALL_RECT()
+		this.assertEquals(sr1.sizeOf(), 8)
+		sr1.left := 1
+		sr1.top := 2
+		sr1.right := 3
+		sr1.bottom := 4
+		sr1.implode(_sr1)
+		sr2 := new SMALL_RECT()
+		sr2.explode(_sr1)
+		this.assertEquals(sr2.left, 1)
+		this.assertEquals(sr2.top, 2)
+		this.assertEquals(sr2.right, 3)
+		this.assertEquals(sr2.bottom, 4)
+	}
+
+	@Test_TIME_ZONE_INFORMATION() {
+		this.assertEquals(SYSTEMTIME.base.__Class, "Structure")
+		this.assertEquals(TIME_ZONE_INFORMATION.base.__Class, "Structure")
+		tzi := new TIME_ZONE_INFORMATION()
+		this.assertEquals(tzi.sizeOf(), 172)
+		tzi.implode(_tzi)
+		if (DllCall("GetTimeZoneInformation", "UInt", &_tzi, "UInt")) {
+			; TestCase.writeLine("`n" LoggingHelper.hexDump(&_tzi, 0, tzi.sizeOf())) ; ahklint-ignore: W002
+			tzi.explode(_tzi)
+			this.assertEquals(tzi.Bias, -60)
+			this.assertEquals(tzi.StandardName, "Mitteleuropäische Zeit")
+			this.assertEquals(tzi.StandardDate.wYear, 0)
+			this.assertEquals(tzi.StandardDate.wMonth, 10)
+			this.assertEquals(tzi.StandardDate.wDayOfWeek, 0)
+			this.assertEquals(tzi.StandardDate.wDay, 5)
+			this.assertEquals(tzi.StandardDate.wHour, 3)
+			this.assertEquals(tzi.StandardDate.wMinute, 0)
+			this.assertEquals(tzi.StandardDate.wSecond, 0)
+			this.assertEquals(tzi.StandardDate.wMilliseconds, 0)
+			this.assertEquals(tzi.StandardBias, 0)
+			this.assertEquals(tzi.DaylightName, "Mitteleuropäische Sommerzeit")
+			this.assertEquals(tzi.DaylightDate.wYear, 0)
+			this.assertEquals(tzi.DaylightDate.wMonth, 3)
+			this.assertEquals(tzi.DaylightDate.wDayOfWeek, 0)
+			this.assertEquals(tzi.DaylightDate.wDay, 5)
+			this.assertEquals(tzi.DaylightDate.wHour, 2)
+			this.assertEquals(tzi.DaylightDate.wMinute, 0)
+			this.assertEquals(tzi.DaylightDate.wSecond, 0)
+			this.assertEquals(tzi.DaylightDate.wMilliseconds, 0)
+			this.assertEquals(tzi.DaylightBias, -60)
+		}
 	}
 }
 

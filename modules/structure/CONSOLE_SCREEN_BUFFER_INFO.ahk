@@ -1,13 +1,21 @@
-class CONSOLE_SCREEN_BUFFER_INFO2 extends Structure {
-	
-	size := new COORD2()
-	cursorPosition := new COORD2()
-	windows := new SMALL_RECT2()
-	maximumWindowSize := new COORD2()
+#Include %A_LineFile%\..
+#Include COORD.ahk
+#Include SMALL_RECT.ahk
 
-	struct := [["size", "COORD2"]
-			,  ["cursorPosition", "COORD2"]
+class CONSOLE_SCREEN_BUFFER_INFO extends Structure {
+
+	requires() {
+		return [COORD, SMALL_RECT]
+	}
+	
+	size := new COORD()
+	cursorPosition := new COORD()
+	windows := new SMALL_RECT()
+	maximumWindowSize := new COORD()
+
+	struct := [["size", "COORD"]
+			,  ["cursorPosition", "COORD"]
 			,  ["attributes", "UShort"]
-			,  ["windows", "SMALL_RECT2"]
-			,  ["maximumWindowSize", "COORD2"]]
+			,  ["windows", "SMALL_RECT"]
+			,  ["maximumWindowSize", "COORD"]]
 }
