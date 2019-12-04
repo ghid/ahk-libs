@@ -2,21 +2,38 @@
 #NoEnv
 #Warn All, StdOut
 
-#Include <testcase-libs>
+; #Include <testcase-libs>
+#Include <ansi>
+#Include <arrays>
+#Include <console>
+#Include <datatable>
+#Include <object>
+#Include <string>
+#Include <system>
+#Include <testcase>
+
 #Include %ScriptDir%\..\structure.ahk
 
 #Include %ScriptDir%\..\modules\structure
 #Include CONSOLE_SCREEN_BUFFER_INFO.ahk
+#Include COORD.ahk
 #Include SMALL_RECT.ahk
 #Include SYSTEMTIME.ahk
 #Include TIME_ZONE_INFORMATION.ahk
+#Include DYNAMIC_TIME_ZONE_INFORMATION.ahk
+#Include LDAPAPIINFO.ahk
+#Include LDAPMod.ahk
 
 class StructureTest extends TestCase {
 
 	requires() {
 		return [Structure, Arrays
-				, CONSOLE_SCREEN_BUFFER_INFO, SMALL_RECT, SYSTEMTIME
-				, TIME_ZONE_INFORMATION]
+				, CONSOLE_SCREEN_BUFFER_INFO
+				, DYNAMIC_TIME_ZONE_INFORMATION
+				, SMALL_RECT, SYSTEMTIME
+				, TIME_ZONE_INFORMATION
+				, LDAPAPIINFO
+				, LDAPMod]
 
 	}
 
@@ -74,18 +91,18 @@ class StructureTest extends TestCase {
 
 	@Test_putData() {
 		ba := [1]
-		ba := Structure.putData(ba, "x", "Short", 770, "")
+		ba := Structure.putData(ba, "x", "Short", 770, "", "")
 		this.assertTrue(Arrays.equal(ba, [1,2,3]))
-		ba := Structure.putData(ba, "x", "UInt", 42, "")
+		ba := Structure.putData(ba, "x", "UInt", 42, "", "")
 		this.assertTrue(Arrays.equal(ba, [1,2,3,42,0,0,0]))
-		ba := Structure.putData(ba, "x", "Short", -1303, "")
+		ba := Structure.putData(ba, "x", "Short", -1303, "", "")
 		this.assertTrue(Arrays.equal(ba, [1,2,3,42,0,0,0,233,250]))
 		ba := []
-		ba := Structure.putData(ba, "x", "Str", "foo bar", "")
+		ba := Structure.putData(ba, "x", "Str", "foo bar", "", "")
 		this.assertTrue(Arrays.equal(ba
 				, [102,0,111,0,111,0,32,0,98,0,97,0,114,0]))
 		ba := []
-		ba := Structure.putData(ba, "x", "Str", "foo bar", 3)
+		ba := Structure.putData(ba, "x", "Str", "foo bar", 3, "")
 		this.assertTrue(Arrays.equal(ba, [102,0,111,0,111,0]))
 	}
 
@@ -215,11 +232,7 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_TIME_ZONE_INFORMATION() {
-		this.assertEquals(SYSTEMTIME.base.__Class, "Structure")
-		this.assertEquals(TIME_ZONE_INFORMATION.base.__Class, "Structure")
-		tzi := new TIME_ZONE_INFORMATION()
-		this.assertEquals(tzi.sizeOf(), 172)
-		tzi.implode(_tzi)
+		tzi := new TIME_ZONE_INFORMATION(_tzi)
 		if (DllCall("GetTimeZoneInformation", "UInt", &_tzi, "UInt")) {
 			; TestCase.writeLine("`n" LoggingHelper.hexDump(&_tzi, 0, tzi.sizeOf())) ; ahklint-ignore: W002
 			tzi.explode(_tzi)
@@ -245,6 +258,84 @@ class StructureTest extends TestCase {
 			this.assertEquals(tzi.DaylightDate.wMilliseconds, 0)
 			this.assertEquals(tzi.DaylightBias, -60)
 		}
+	}
+
+	@Test_DYNAMIC_TIME_ZONE_INFORMATION() {
+		dtzi := new DYNAMIC_TIME_ZONE_INFORMATION(_dtzi)
+		this.assertTrue(DllCall("api-ms-win-core-timezone-l1-1-0\"
+				. "EnumDynamicTimeZoneInformation"
+				, "UInt", 1
+				, "Ptr", &_dtzi) == 0)
+		dtzi.explode(_dtzi)
+		this.assertEquals(dtzi.StandardName, "Alaska Normalzeit")
+		this.assertEquals(dtzi.Bias, 540)
+		this.assertEquals(dtzi.StandardDate.wYear, 0)
+		this.assertEquals(dtzi.StandardDate.wMonth, 11)
+		this.assertEquals(dtzi.StandardDate.wDayOfWeek, 0)
+		this.assertEquals(dtzi.StandardDate.wDay, 1)
+		this.assertEquals(dtzi.StandardDate.wHour, 2)
+		this.assertEquals(dtzi.StandardDate.wMinute, 0)
+		this.assertEquals(dtzi.StandardDate.wSecond, 0)
+		this.assertEquals(dtzi.StandardDate.wMilliseconds, 0)
+		this.assertEquals(dtzi.StandardBias, 0)
+		this.assertEquals(dtzi.DaylightName, "Alaska Sommerzeit")
+		this.assertEquals(dtzi.DaylightDate.wYear, 0)
+		this.assertEquals(dtzi.DaylightDate.wMonth, 3)
+		this.assertEquals(dtzi.DaylightDate.wDayOfWeek, 0)
+		this.assertEquals(dtzi.DaylightDate.wDay, 2)
+		this.assertEquals(dtzi.DaylightDate.wHour, 2)
+		this.assertEquals(dtzi.DaylightDate.wMinute, 0)
+		this.assertEquals(dtzi.DaylightDate.wSecond, 0)
+		this.assertEquals(dtzi.DaylightDate.wMilliseconds, 0)
+		this.assertEquals(dtzi.DaylightBias, -60)
+		this.assertEquals(dtzi.TimeZoneKeyName, "Alaskan Standard Time")
+		this.assertEquals(dtzi.DynamicDaylighTimeDisabled, 0)
+	}
+
+	@Test_LDAPAPIINFO() {
+		lai := new LDAPAPIINFO()
+		this.assertEquals(lai.sizeOf(), 16+2*A_PtrSize)
+		lai.ldapai_info_version := 1
+		lai.ldapai_api_version := 42
+		lai.ldapai_protocol_version := 2
+		lai.ldapai_extensions := ["FIRST EXT", "SECOND EXT"]
+		lai.ldapai_vendor_name := "FooBar Inc."
+		lai.ldapai_vendor_version := 567
+		lai.implode(_lai)
+		lai2 := new LDAPAPIINFO()
+		lai2.explode(_lai)
+		this.assertEquals(lai.ldapai_info_version, lai2.ldapai_info_version)
+		this.assertEquals(lai.ldapai_api_version, lai2.ldapai_api_version)
+		this.assertEquals(lai.ldapai_protocol_version
+				, lai2.ldapai_protocol_version)
+		this.assertEquals(lai.ldapai_extensions_ptr, lai2.ldapai_extensions_ptr)
+		this.assertEquals(lai.ldapai_vendor_name, lai2.ldapai_vendor_name)
+		this.assertEquals(lai.ldapai_vendor_version, lai2.ldapai_vendor_version)
+		this.assertTrue(Arrays.equal(lai.ldapai_extensions
+				, lai2.ldapai_extensions))
+		lai2.ldapai_extensions.push("TEST2")
+		this.assertFalse(Arrays.equal(lai.ldapai_extensions
+				, lai2.ldapai_extensions))
+	}
+
+	@Test_LDAPMod() {
+		lm := new LDAPMod()
+		lm.mod_op := 2
+		lm.mod_type := "title"
+		lm.mod_vals := ["First Title", "Second Title", "Third Title"]
+		lm.implode(_lm)
+		this.assertEquals(StrGet(NumGet(lm.mod_vals_ptr+0))
+				, (lm.mod_vals)[1])
+		this.assertEquals(StrGet(NumGet(lm.mod_vals_ptr+A_PtrSize))
+				, (lm.mod_vals)[2])
+		this.assertEquals(StrGet(NumGet(lm.mod_vals_ptr+2*A_PtrSize))
+				, (lm.mod_vals)[3])
+		lm2 := new LDAPMod()
+		lm2.explode(_lm)
+		this.assertEquals(lm.mod_op, lm2.mod_op)
+		this.assertEquals(lm.mod_type, lm2.mod_type)
+		this.assertEquals(lm2.mod_vals.count(), 3)
+		this.assertTrue(Arrays.equal(lm.mod_vals, lm2.mod_vals))
 	}
 }
 

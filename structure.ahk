@@ -6,6 +6,10 @@ class Structure {
 
 	struct := []
 
+	__new(ByRef data="") {
+		this.implode(data)
+	}
+
 	implode(ByRef data) {
 		byteArray := this.traverse({onMember: Structure.putData.bind(this)
 				, onMissingMember: Structure.putData.bind(this)}, [])
@@ -22,6 +26,31 @@ class Structure {
 		}
 		this.traverse({onMember: Structure.getData.bind(this)
 				, onMissingMember: Structure.getData.bind(this)}, byteArray)
+	}
+
+	ptrListToStrArray(ptrListAddress) {
+		ofs := 0
+		strArray :=  []
+		loop {
+			if (addr := NumGet(ptrListAddress+ofs, "Ptr")) {
+				strArray.push(StrGet(addr))
+			}
+			ofs += A_PtrSize
+		} until (addr == 0)
+		return strArray
+	}
+
+	strArrayToPtrList(anArray, ptrListPropertyName) {
+		this.setCapacity(ptrListPropertyName, (anArray.count()+1)*A_PtrSize)
+		ptrListAddress := this.getAddress(ptrListPropertyName)
+		ofs := 0
+		for k, _ in anArray {
+			addr := anArray.getAddress(k)
+			NumPut(addr, ptrListAddress+ofs, "Ptr")
+			ofs += A_PtrSize
+		}
+		NumPut(0, ptrListAddress+ofs, "Ptr")
+		return anArray
 	}
 
 	sizeOf() {
@@ -44,7 +73,8 @@ class Structure {
 			member := { name: structMember[1]
 					,   type: structMember[2]
 					,   limit: structMember[3]
-					,   value: this[structMember[1]] }
+					,   value: this[structMember[1]]
+					,   addr: this.getAddress(structMember[1]) }
 			if (this.hasKey(member.name)) {
 				result := this.handleMember(result, member, callbackFuncs)
 			} else {
@@ -83,7 +113,7 @@ class Structure {
 	doCallback(callbackFuncs, eventName, currentValue, member) {
 		if (callbackFuncs.hasKey(eventName)) {
 			return callbackFuncs[eventName].call(currentValue, member.name
-					, member.type, member.value, member.limit)
+					, member.type, member.value, member.limit, member.addr)
 		}
 		return currentValue
 	}
@@ -95,7 +125,7 @@ class Structure {
 				, memberType)
 	}
 
-	putData(aByteArray, memberName, memberType, value, limit) {
+	putData(aByteArray, memberName, memberType, value, limit, valueAddress) {
 		len := Structure.typeLength(memberType)
 		if (len == 0) {
 			len := (limit > 0 ? limit : StrLen(value)) * (A_IsUnicode ? 2 : 1)
@@ -103,7 +133,12 @@ class Structure {
 			StrPut(value, &data, len)
 		} else {
 			VarSetCapacity(data, len, 0)
-			NumPut(value, data, 0, memberType)
+			switch memberType {
+			case "Str*":
+				NumPut(valueAddress, data, 0, "Ptr")
+			default:
+				NumPut(value, data, 0, memberType)
+			}
 		}
 		loop % len {
 			aByteArray.push(NumGet(data, A_Index-1, "UChar"))
@@ -127,9 +162,10 @@ class Structure {
 			aByteArray.removeAt(1)
 		}
 		switch memberType {
-		case "Str", "AStr", "WStr", "StrP", "AStrP", "WStrP"
-				, "Str*", "AStr*", "WStr*":
+		case "Str", "AStr", "WStr":
 			anInstance[memberName] := StrGet(&data, len)
+		case "StrP", "AStrP", "WStrP", "Str*", "AStr*", "WStr*":
+			anInstance[memberName] := StrGet(NumGet(data, 0, "Ptr"))
 		default:
 			anInstance[memberName] := NumGet(data, 0, memberType)
 		}
@@ -138,11 +174,11 @@ class Structure {
 
 	isWide(size, memberType="") {
 		switch memberType {
-		case "WStr", "WStrP", "WStr*":
+		case "WStr":
 			return size * 2
-		case "AStr", "AStrP", "AStr*":
+		case "AStr":
 			return size
-		case "Str", "StrP", "Str*":
+		case "Str":
 			return size * (A_IsUnicode ? 2 : 1)
 		default:
 			return size
@@ -150,7 +186,8 @@ class Structure {
 	}
 
 	dumpMember(accumulator, memberName, memberType, value) {
-		return accumulator "`n" memberName " -> " value
+		return accumulator "`n" memberName " -> "
+				. Format((memberType = "Ptr" ? "{:x}" :"{:s}"), value)
 	}
 
 	dumpStructureName(accumulator, memberName) {
@@ -167,9 +204,10 @@ class Structure {
 
 	typeLength(type) {
 		switch type {
-		case "Str", "AStr", "WStr", "StrP", "AStrP", "WStrP"
-				, "Str*", "AStr*", "WStr*":
+		case "Str", "AStr", "WStr":
 			return 0
+		case "StrP", "AStrP", "WStrP", "Str*", "AStr*", "WStr*":
+			return A_PtrSize
 		case "Char", "CharP", "Char*", "UChar", "UCharP", "UChar*":
 			return 1
 		case "Short", "ShortP", "Short*", "UShort", "UShortP", "UShort*":

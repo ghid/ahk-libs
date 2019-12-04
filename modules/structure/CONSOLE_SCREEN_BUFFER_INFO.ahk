@@ -1,7 +1,3 @@
-#Include %A_LineFile%\..
-#Include COORD.ahk
-#Include SMALL_RECT.ahk
-
 class CONSOLE_SCREEN_BUFFER_INFO extends Structure {
 
 	requires() {
