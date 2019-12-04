@@ -4,6 +4,7 @@ class Ansi {
 		return [Console, Math, Arrays]
 	}
 
+	static codePage := "cp850"
 	static ansiExit := Ansi.__onExit()
 	static stdOut := Ansi.__initStdOut()
 	static stdErr := Ansi.__initStdErr()
@@ -62,13 +63,13 @@ class Ansi {
 	static BACKGROUND_BRIGHT_WHITE := 107
 
 	__initStdOut() {
-		h := FileOpen("*", "w `n", "cp850")
+		h := FileOpen("*", "w `n", Ansi.codePage)
 		h.read(0)
 		return h
 	}
 
 	__initStdErr() {
-		h := FileOpen("**", "w", "cp850")
+		h := FileOpen("**", "w", Ansi.codePage)
 		h.read(0)
 		return h
 	}
@@ -77,7 +78,7 @@ class Ansi {
 		if (Console.hStdIn) {
 			Console.hStdIn.close()
 		}
-		h := FileOpen("*", "r `n", "cp850")
+		h := FileOpen("*", "r `n", Ansi.codePage)
 		h.write(0)
 		return h
 	}
@@ -98,6 +99,16 @@ class Ansi {
 		return "Ansi.ExitFunc"
 	}
 
+	setEncoding(codePage) {
+		Ansi.codePage := codePage
+		Ansi.setOut.close()
+		Ansi.stdOut := Ansi.__initStdOut()
+		Ansi.stdErr.close()
+		Ansi.stdErr := Ansi.__initStdErr()
+		Ansi.stdIn.close()
+		Ansi.stdIn := Ansi.__initStdIn()
+	}
+
 	exitFunc(reason=0, code=0) {
 		Ansi.write(Ansi.showCursor())
 		Ansi.flush()
@@ -106,17 +117,14 @@ class Ansi {
 
 	write(string, writeTo="") {
 		output := writeTo != "" ? writeTo : Ansi.stdOut
-		n := 0
 		if (Ansi.hasAnsiSupport) {
 			output.write(string)
 			if (Ansi.NO_BUFFER) {
 				Ansi.flush()
 			}
-			n := Ansi.plainStrLen(string)
-		} else {
-			n := Console.writeAndTranslateAnsiSequences(string)
+			return Ansi.plainStrLen(string)
 		}
-		return n
+		return Console.writeAndTranslateAnsiSequences(string)
 	}
 
 	writeLine(string="", flush_immediate=false, writeTo="") {
