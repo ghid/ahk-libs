@@ -18,6 +18,7 @@ class Ansi {
 			. "\x{001c}-\x{001f}"
 			. "\x{007f}-\x{ffff}]"
 	static NO_BUFFER := false
+	static CURSOR_HIDDEN := false
 
 	static ATTR_OFF := 0
 	static ATTR_BOLD := 1
@@ -110,7 +111,9 @@ class Ansi {
 	}
 
 	exitFunc(reason=0, code=0) {
-		Ansi.write(Ansi.showCursor())
+		if (Ansi.CURSOR_HIDDEN) {
+			Ansi.write(Ansi.showCursor())
+		}
 		Ansi.flush()
 		Ansi.stdOut.close()
 	}
@@ -255,10 +258,12 @@ class Ansi {
 	}
 
 	hideCursor() {
+		Ansi.CURSOR_HIDDEN := true
 		return Ansi.ESC "[?25l"
 	}
 
 	showCursor() {
+		Ansi.CURSOR_HIDDEN := false
 		return Ansi.ESC "[?25h"
 	}
 
