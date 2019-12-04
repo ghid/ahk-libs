@@ -1,6 +1,3 @@
-#Include <modules\struct\TIME_ZONE_INFORMATION>
-#Include <modules\struct\DYNAMIC_TIME_ZONE_INFORMATION>
-
 class Calendar {
 
 	#Include %A_LineFile%\..\modules\calendar
@@ -10,7 +7,10 @@ class Calendar {
 	#Include Units.ahk
 	
 	requires() {
-		return [Struct, Object]
+		return [Structure
+				, Object
+				, TIME_ZONE_INFORMATION
+				, DYNAMIC_TIME_ZONE_INFORMATION]
 	}
 
 	static SUNDAY    := 1

@@ -8,11 +8,21 @@
 #Include <math>
 #Include <object>
 #Include <string>
+#Include <structure>
 #Include <testcase>
+
+#Include %A_ScriptDir%\..\modules\structure
+#Include CONSOLE_SCREEN_BUFFER_INFO.ahk
+#Include COORD.ahk
+#Include SMALL_RECT.ahk
 
 #Include %A_ScriptDir%\..\ansi.ahk
 
 class AnsiTest extends TestCase {
+
+	requires() {
+		return [TestCase, Ansi]
+	}
 
 	@Test_PlainStrReplaceStr() {
 		testString := "iVGVBDfMHMdkjmglRfzUjZrNqHruIqcTxKCJtlmdGrzcwUFrGgzw"

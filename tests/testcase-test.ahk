@@ -8,6 +8,11 @@
 #Include <math>
 #Include <string>
 #Include <object>
+#Include <structure>
+
+#Include <modules\structure\CONSOLE_SCREEN_BUFFER_INFO>
+#Include <modules\structure\COORD>
+#Include <modules\structure\SMALL_RECT>
 
 #IncludeAgain %A_ScriptDir%\..\testcase.ahk
 

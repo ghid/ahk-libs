@@ -30,10 +30,11 @@ class TimeZone {
 	; ahklint-ignore-end
 
 	__new() {
-		VarSetCapacity(_tzi, sizeOf(TIME_ZONE_INFORMATION))
-		this.iD := DllCall("GetTimeZoneInformation", "UInt", &_tzi, "UInt")
+		tzi := new TIME_ZONE_INFORMATION()
+		tzi.implode(_tzi)
+		this.iD := DllCall("GetTimeZoneInformation", "Ptr", &_tzi)
 		if (this.iD != Calendar.TimeZone.INVALID) {
-			tzi := new TIME_ZONE_INFORMATION(_tzi)
+			tzi.explode(_tzi)
 			this.bias := tzi.bias
 			this.Setting.Standard.bias := tzi.StandardBias
 			this.Setting.Standard.name := tzi.StandardName
@@ -55,10 +56,10 @@ class TimeZone {
 
 	forYear(aYear="") {
 		this.year := (aYear != "" ? aYear : A_Year)
-		VarSetCapacity(_tzi, sizeOf(TIME_ZONE_INFORMATION))
+		tzi := new TIME_ZONE_INFORMATION(_tzi)
 		if (DllCall("GetTimeZoneInformationForYear", "UShort", aYear
-				, "UInt", 0, "UInt", &_tzi, "UChar")) {
-			tzi := new TIME_ZONE_INFORMATION(_tzi)
+				, "Ptr", 0, "Ptr", &_tzi, "UChar")) {
+			tzi.explode(_tzi)
 			this.bias := tzi.bias
 			this.Setting.Standard.bias := tzi.StandardBias
 			this.Setting.Standard.name := tzi.StandardName

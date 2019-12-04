@@ -8,8 +8,12 @@
 #Include <math>
 #Include <object>
 #Include <string>
+#Include <structure>
 #Include <testcase>
-#Include <app>
+
+#Include <modules\Structure\CONSOLE_SCREEN_BUFFER_INFO>
+#Include <modules\Structure\COORD>
+#Include <modules\Structure\SMALL_RECT>
 
 #Include %A_ScriptDir%\..\arrays.ahk
 

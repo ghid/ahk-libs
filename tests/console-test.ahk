@@ -7,11 +7,21 @@
 #Include <object>
 #Include <math>
 #Include <string>
+#Include <structure>
 #Include <testcase>
+
+#Include %A_ScriptDir%\..\modules\structure
+#Include CONSOLE_SCREEN_BUFFER_INFO.ahk
+#Include COORD.ahk
+#Include SMALL_RECT.ahk
 
 #Include %A_ScriptDir%\..\console.ahk
 
 class ConsoleTest extends TestCase {
+
+	requires() {
+		return [TestCase, Console]
+	}
 
 	@Test_Constants() {
 		this.assertEquals(Console.STD_INPUT_HANDLE,  -10)

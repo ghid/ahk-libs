@@ -9,8 +9,13 @@
 #Include <math>
 #Include <object>
 #Include <testcase>
+#Include <structure>
 
 #Include %A_ScriptDir%\..\string.ahk
+
+#Include <modules\structure\CONSOLE_SCREEN_BUFFER_INFO>
+#Include <modules\structure\COORD>
+#Include <modules\structure\SMALL_RECT>
 
 global compareAsString := TestCase.compareAsString.bind(TestCase)
 

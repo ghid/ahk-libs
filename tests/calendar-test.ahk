@@ -4,6 +4,12 @@
 
 #Include <testcase-libs>
 #Include <geo>
+#Include <structure>
+
+#Include %A_ScriptDir%\..\modules\structure
+#Include TIME_ZONE_INFORMATION.ahk
+#Include DYNAMIC_TIME_ZONE_INFORMATION.ahk
+#Include SYSTEMTIME.ahk
 
 #Include %A_ScriptDir%\..\calendar.ahk
 

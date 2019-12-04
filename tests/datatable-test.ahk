@@ -8,7 +8,12 @@
 #Include <math>
 #Include <object>
 #Include <string>
+#Include <structure>
 #Include <testcase>
+
+#Include <modules\structure\CONSOLE_SCREEN_BUFFER_INFO>
+#Include <modules\structure\COORD>
+#Include <modules\structure\SMALL_RECT>
 
 #Include %A_ScriptDir%\..\datatable.ahk
 

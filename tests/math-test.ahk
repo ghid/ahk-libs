@@ -9,6 +9,11 @@
 #Include <object>
 #Include <string>
 #Include <testcase>
+#Include <structure>
+
+#Include <modules\structure\CONSOLE_SCREEN_BUFFER_INFO>
+#Include <modules\structure\COORD>
+#Include <modules\structure\SMALL_RECT>
 
 #Include %A_ScriptDir%\..\math.ahk
 

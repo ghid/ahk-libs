@@ -1,8 +1,8 @@
-#Include <struct>
-
-#Include <modules\struct\CONSOLE_SCREEN_BUFFER_INFO>
-
 class Console {
+
+	requires() {
+		return [Structure, CONSOLE_SCREEN_BUFFER_INFO]
+	}
 
 	static STD_INPUT_HANDLE  = -10
 	static STD_OUTPUT_HANDLE = -11
@@ -24,81 +24,96 @@ class Console {
 		wAttributes := 0
 		strText := ""
 
-		static COLOR_REVERSE 	:= 0x10000
-		static COLOR_BOLD 		:= 0x20000
+		static FOREGROUND_BLUE := 0x0001
+		static FOREGROUND_GREEN := 0x0002
+		static FOREGROUND_RED := 0x0004
+		static BACKGROUND_BLUE := 0x0010
+		static BACKGROUND_GREEN := 0x0020
+		static BACKGROUND_RED := 0x0040
+		static FOREGROUND_INTENSITY := 0x0008
+		static BACKGROUND_INTENSITY := 0x0080
+		static COMMON_LVB_LEADING_BYTE := 0x0100
+		static COMMON_LVB_TRAILING_BYTE := 0x0200
+		static COMMON_LVB_GRID_HORIZONTAL := 0x0400
+		static COMMON_LVB_GRID_LVERTICAL := 0x0800
+		static COMMON_LVB_GRID_RVERTICAL := 0x1000
+		static COMMON_LVB_REVERSE_VIDEO := 0x4000
+		static COMMON_LVB_UNDERSCORE := 0x8000
+		static COLOR_REVERSE := 0x10000
+		static COLOR_BOLD := 0x20000
 		static COLOR_HIGHLIGHT	:= 0x40000
-		static COLOR_NORMAL 	:= 0x80000
+		static COLOR_NORMAL := 0x80000
 
 		class Foreground {
 			static BLACK := 0
-			static BLUE := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static GREEN := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-			static TURQUOISE := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static RED := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-			static PURPLE := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static OCHER := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-			static LIGHTGREY := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static DARKGREY := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-			static LIGHTBLUE := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static LIME := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-			static AUQA := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static LIGHTRED := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-			static MAGENTA := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
-			static YELLOW := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-			static WHITE := CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_BLUE
+			static BLUE := Console.Color.FOREGROUND_BLUE
+			static GREEN := Console.Color.FOREGROUND_GREEN
+			static TURQUOISE := Console.Color.FOREGROUND_GREEN
+					| Console.Color.FOREGROUND_BLUE
+			static RED := Console.Color.FOREGROUND_RED
+			static PURPLE := Console.Color.FOREGROUND_RED
+					| Console.Color.FOREGROUND_BLUE
+			static OCHER := Console.Color.FOREGROUND_RED
+					| Console.Color.FOREGROUND_GREEN
+			static LIGHTGREY := Console.Color.FOREGROUND_RED
+					| Console.Color.FOREGROUND_GREEN
+					| Console.Color.FOREGROUND_BLUE
+			static DARKGREY := Console.Color.FOREGROUND_INTENSITY
+			static LIGHTBLUE := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_BLUE
+			static LIME := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_GREEN
+			static AUQA := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_GREEN
+					| Console.Color.FOREGROUND_BLUE
+			static LIGHTRED := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_RED
+			static MAGENTA := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_RED
+					| Console.Color.FOREGROUND_BLUE
+			static YELLOW := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_RED
+					| Console.Color.FOREGROUND_GREEN
+			static WHITE := Console.Color.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_RED
+					| Console.Color.FOREGROUND_GREEN
+					| Console.Color.FOREGROUND_BLUE
 		}
 
 		class Background {
 			static BLACK := 0
-			static BLUE := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static GREEN := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-			static TURQUOISE := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static RED := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-			static PURPLE := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static OCHER := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-			static LIGHTGREY := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static DARKGREY := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-			static LIGHTBLUE := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static LIME := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-			static AUQA := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static LIGHTRED := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-			static MAGENTA := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
-			static YELLOW := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-			static WHITE := CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_RED
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_GREEN
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_BLUE
+			static BLUE := Console.Color.BACKGROUND_BLUE
+			static GREEN := Console.Color.BACKGROUND_GREEN
+			static TURQUOISE := Console.Color.BACKGROUND_GREEN
+					| Console.Color.BACKGROUND_BLUE
+			static RED := Console.Color.BACKGROUND_RED
+			static PURPLE := Console.Color.BACKGROUND_RED
+					| Console.Color.BACKGROUND_BLUE
+			static OCHER := Console.Color.BACKGROUND_RED
+					| Console.Color.BACKGROUND_GREEN
+			static LIGHTGREY := Console.Color.BACKGROUND_RED
+					| Console.Color.BACKGROUND_GREEN
+					| Console.Color.BACKGROUND_BLUE
+			static DARKGREY := Console.Color.BACKGROUND_INTENSITY
+			static LIGHTBLUE := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_BLUE
+			static LIME := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_GREEN
+			static AUQA := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_GREEN
+					| Console.Color.BACKGROUND_BLUE
+			static LIGHTRED := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_RED
+			static MAGENTA := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_RED
+					| Console.Color.BACKGROUND_BLUE
+			static YELLOW := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_RED
+					| Console.Color.BACKGROUND_GREEN
+			static WHITE := Console.Color.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_RED
+					| Console.Color.BACKGROUND_GREEN
+					| Console.Color.BACKGROUND_BLUE
 		}
 
 		__new(pwAttributes, pstrText="") {
@@ -119,21 +134,21 @@ class Console {
 				pwAttributes := Console.getBufferInfo().wAttributes
 			}
 			return pwAttributes & 0x0f
-					| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY
+					| Console.Color.FOREGROUND_INTENSITY
 		}
 
 		highlight() {
 			bi := Console.getBufferInfo()
 			return bi.wAttributes
-					| CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY
+					| Console.Color.BACKGROUND_INTENSITY
 		}
 
 		normal() {
 			bi := Console.getBufferInfo()
 			return (bi.foregroundColor()
-					& ~CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY)
+					& ~Console.Color.FOREGROUND_INTENSITY)
 					| (bi.backgroundColor()
-					& ~CONSOLE_SCREEN_BUFFER_INFO.BACKGROUND_INTENSITY)
+					& ~Console.Color.BACKGROUND_INTENSITY)
 		}
 	}
 
@@ -142,11 +157,12 @@ class Console {
 	}
 
 	__initBufferInfo() {
-		VarSetCapacity(_csbi, sizeof(CONSOLE_SCREEN_BUFFER_INFO), 0)
+		csbi := new CONSOLE_SCREEN_BUFFER_INFO(_csbi)
 		_ret := DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi)
 		if (_ret != 0) {
-			return new CONSOLE_SCREEN_BUFFER_INFO(_csbi)
+			csbi.explode(_csbi)
+			return csbi
 		}
 		return ""
 	}
@@ -195,6 +211,7 @@ class Console {
 
 	writeAndTranslateAnsiSequences(string) {
 		p := 1
+		n := 0
 		while (RegExMatch(string, "(.*?)" Console.ANSI_SEQ_REGEX, $, p)) {
 			p += StrLen($)
 			OutputDebug ::: %A_ThisFunc% ::: p=%p% -- $=%$% / $1=%$1% / $2=%$2% / $3=%$3% ; ahklint-ignore: W002
@@ -250,7 +267,7 @@ class Console {
 								:= Console.bufferInfo.wAttributes
 					} else if (value = 1) {
 						consoleColor.wAttributes := consoleColor.wAttributes
-								| CONSOLE_SCREEN_BUFFER_INFO.FOREGROUND_INTENSITY ; ahklint-ignore: W002
+								| Console.Color.FOREGROUND_INTENSITY ; ahklint-ignore: W002
 					} else if (value = 7) {
 						hb := consoleColor.wAttributes & 0xf0
 						lb := consoleColor.wAttributes & 0xf
@@ -298,16 +315,16 @@ class Console {
 		if (_rbhn) {
 			psAttributes := psAttributes & ~_rbhn
 			if (_rbhn & Console.Color.COLOR_BOLD) {
-				psAttributes := Console.Color.Bold(psAttributes)
+				psAttributes := Console.Color.bold(psAttributes)
 			}
 			if (_rbhn & Console.Color.COLOR_HIGHLIGHT) {
-				psAttributes := Console.Color.Highlight(psAttributes)
+				psAttributes := Console.Color.highlight(psAttributes)
 			}
 			if (_rbhn & Console.Color.COLOR_REVERSE) {
-				psAttributes := Console.Color.Reverse(psAttributes)
+				psAttributes := Console.Color.reverse(psAttributes)
 			}
 			if (_rbhn & Console.Color.COLOR_NORMAL) {
-				psAttributes := Console.Color.Normal(psAttributes)
+				psAttributes := Console.Color.normal(psAttributes)
 			}
 		}
 		if (phHandle) {
@@ -407,10 +424,12 @@ class Console {
 	}
 
 	getBufferInfo() {
-		VarSetCapacity(_csbi, sizeof(CONSOLE_SCREEN_BUFFER_INFO), 0)
+		csbi := new CONSOLE_SCREEN_BUFFER_INFO()
+		csbi.implode(_csbi)
 		DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi, "Int")
-		return new CONSOLE_SCREEN_BUFFER_INFO(_csbi)
+		csbi.explode(_csbi)
+		return csbi
 	}
 
 	fillWithCharacter(pcChar=" ", pnLength=1, piX=0, piY=0) {

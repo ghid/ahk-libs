@@ -6,6 +6,10 @@
 #Include <random>
 #Include <calendar>
 
+#Include <modules\structure\TIME_ZONE_INFORMATION>
+#Include <modules\structure\DYNAMIC_TIME_ZONE_INFORMATION>
+#Include <modules\structure\SYSTEMTIME>
+
 #Include %A_ScriptDir%\..\flimsydata.ahk
 
 class FlimsyDataTestClass extends TestCase {

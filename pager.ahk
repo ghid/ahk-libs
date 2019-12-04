@@ -1,13 +1,10 @@
-#Include <struct>
-#Include <modules\struct\CONSOLE_SCREEN_BUFFER_INFO>
-
 #Include %A_LineFile%\..\modules\pager\
 #Include actions.ahk
 
 class Pager {
 
 	requires() {
-		return []
+		return [Structure, CONSOLE_SCREEN_BUFFER_INFO]
 	}
 
 	static TEST_CONSOLE_HEIGHT := 24
