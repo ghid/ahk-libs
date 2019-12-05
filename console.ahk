@@ -157,7 +157,7 @@ class Console {
 	}
 
 	__initBufferInfo() {
-		csbi := new CONSOLE_SCREEN_BUFFER_INFO(_csbi)
+		csbi := new CONSOLE_SCREEN_BUFFER_INFO(_csbi := "")
 		_ret := DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi)
 		if (_ret != 0) {
