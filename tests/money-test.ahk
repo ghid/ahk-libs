@@ -10,7 +10,7 @@
 #Include <structure>
 #Include <object>
 
-#Include <modules\structure\CONSOLE_SCREEN_BUFFFER_INFO>
+#Include <modules\structure\CONSOLE_SCREEN_BUFFER_INFO>
 #Include <modules\structure\COORD>
 #Include <modules\structure\SMALL_RECT>
 
