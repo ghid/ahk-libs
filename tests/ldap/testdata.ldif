@@ -1,0 +1,126 @@
+dn: dc=example,dc=com
+dc: example
+objectclass: domain
+objectclass: top
+
+dn: ou=groups,dc=example,dc=com
+ou: groups
+objectclass: top
+objectclass: organizationalUnit
+
+dn: cn=The Brown's Pets,ou=groups,dc=example,dc=com
+cn: The Brown's Pets
+objectClass: top
+objectClass: groupOfNames
+member: cn=Snoopy,dc=example,dc=com
+member: cn=Woodstock,dc=example,dc=com
+
+dn: cn=Peanuts,ou=groups,dc=example,dc=com
+cn: Peanuts
+objectClass: top
+objectClass: groupOfNames
+member: cn=Some Others,ou=groups,dc=example,dc=com
+member: cn=The Brown's,ou=groups,dc=example,dc=com
+member: cn=The van Pelt's,ou=groups,dc=example,dc=com
+
+dn: cn=The van Pelt's,ou=groups,dc=example,dc=com
+cn: The van Pelt's
+objectClass: top
+objectClass: groupOfNames
+member: cn=Linus van Pelt,dc=example,dc=com
+member: cn=Lucy van Pelt,dc=example,dc=com
+
+dn: cn=John Doe,dc=example,dc=com
+sn: Doe
+cn: John Doe
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: John
+title: User
+
+dn: cn=Some Others,ou=groups,dc=example,dc=com
+cn: Some Others
+objectClass: top
+objectClass: groupOfNames
+member: cn=Peppermint Patty,dc=example,dc=com
+
+dn: cn=Charlie Brown,dc=example,dc=com
+sn: Brown
+cn: Charlie Brown
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: Charlie
+
+dn: cn=Lucy van Pelt,dc=example,dc=com
+sn: van Pelt
+cn: Lucy van Pelt
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: Lucy
+
+dn: cn=Linus van Pelt,dc=example,dc=com
+sn: van Pelt
+cn: Linus van Pelt
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: Linus
+
+dn: cn=Snoopy,dc=example,dc=com
+sn: Snoopy
+cn: Snoopy
+cn: The Red Baron
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+
+dn: cn=Sally Brown,dc=example,dc=com
+sn: Brown
+cn: Sally Brown
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: Sally
+
+dn: cn=Peppermint Patty,dc=example,dc=com
+sn: Reichhardt
+cn: Peppermint Patty
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: Patricia
+
+dn: cn=Jeff Smith,dc=example,dc=com
+sn: Smith
+cn: Jeff Smith
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson
+givenName: Jeff
+title: Developer
+
+dn: cn=The Brown's,ou=groups,dc=example,dc=com
+cn: The Brown's
+objectClass: top
+objectClass: groupOfNames
+member: cn=Charlie Brown,dc=example,dc=com
+member: cn=Sally Brown,dc=example,dc=com
+member: cn=The Brown's Pets,ou=groups,dc=example,dc=com
+
+dn: cn=Woodstock,dc=example,dc=com
+sn: Woodstock
+cn: Woodstock
+objectClass: top
+objectClass: inetOrgPerson
+objectClass: person
+objectClass: organizationalPerson

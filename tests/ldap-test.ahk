@@ -6,14 +6,16 @@ SetBatchLines -1
 
 #Include <testcase-libs>
 #Include <system>
+#Include <structure>
 
 #Include %A_ScriptDir%\..\ldap.ahk
-#Include c:\work\ahk\projects\Struct\modules\struct\LDAPAPIInfo.ahk
+#Include <modules\structure\LDAPAPIInfo>
+#Include <modules\structure\LDAPMod>
 
 class LdapTest extends TestCase {
 
 	requires() {
-		return [TestCase, Ldap, LDAPAPIInfo, LDAPMod]
+		return [TestCase, Ldap]
 	}
 
 	static SERVER := "localhost"
@@ -28,7 +30,7 @@ class LdapTest extends TestCase {
 		for ldap_svc in ComObjGet("winmgmts:")
 				.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
 			if (ldap_svc.state != "Running") {
-				OutputDebug Starting apacheds-default service...
+				TestCase.writeLine("Starting apacheds-default service...")
 				LdapTest.COVER_SERVICE := true
 				if ((ldap_rc := ldap_svc.startService()) != 0) {
 					this.fail("*** FATAL: apacheds-default service "
@@ -47,10 +49,10 @@ class LdapTest extends TestCase {
 					this.fail("*** FATAL: apacheds-default service "
 							. "could not be startet in an adequate time",, true)
 				} else {
-					OutputDebug apacheds-default service has been started
+					TestCase.writeLine("apacheds-default service has been started") ; ahklint-ignore: W002
 				}
 			} else {
-				OutputDebug apacheds-default service is already running
+				TestCase.writeLine("apacheds-default service is already running") ; ahklint-ignore: W002
 			}
 			break
 		}
@@ -61,7 +63,7 @@ class LdapTest extends TestCase {
 			for ldap_svc in ComObjGet("winmgmts:")
 					.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
 				if (ldap_svc.state = "Running") {
-					OutputDebug Stopping apacheds-default service...
+					TestCase.writeLine("Stopping apacheds-default service...") ; ahklint-ignore: W002
 					if ((ldap_rc := ldap_svc.stopService()) != 0) {
 						this.fail("*** FATAL: apacheds-default service "
 								. "could not be stopped: " ldap_rc,, true)
@@ -81,10 +83,10 @@ class LdapTest extends TestCase {
 								,, true)
 					}
 					else {
-						OutputDebug apacheds-default service has been stopped
+						TestCase.writeLine("apacheds-default service has been stopped") ; ahklint-ignore: W002
 					}
 				} else {
-					OutputDebug apacheds-default service has already been stopped ; ahklint-ignore: W002
+					TestCase.writeLine("apacheds-default service has already been stopped") ; ahklint-ignore: W002
 				}
 				break
 			}
@@ -203,7 +205,7 @@ class LdapTest extends TestCase {
 		}
 	}
 
-	@Test_ReconnectWithV3() {
+	@Test_reconnectWithV3() {
 		this.assertEquals(LdapTest.ld.setOption(Ldap.OPT_VERSION
 				, Ldap.VERSION3), 0)
 		this.assertEquals(LdapTest.ld.connect(), 0)
@@ -226,14 +228,14 @@ class LdapTest extends TestCase {
 	}
 
 	@Depend_@Test_GetOption() {
-		return "@Test_ServerAvailable,@Test_ReconnectWithV3,@Test_SetOption"
+		return "@Test_ServerAvailable,@Test_reconnectWithV3,@Test_SetOption"
 	}
 	@Test_GetOption() {
 		ai := new LDAPAPIInfo()
 		ai.ldapai_info_version := Ldap.LDAP_API_INFO_VERSION
-		ai.get(apiInfo)
+		ai.implode(apiInfo)
 		LdapTest.ld.getOption(Ldap.OPT_API_INFO, apiInfo)
-		ai.set(apiInfo)
+		ai.explode(apiInfo)
 		this.assertEquals(ai.ldapai_info_version, 1)
 		this.assertEquals(ai.ldapai_api_version, 2004)
 		this.assertEquals(ai.ldapai_protocol_version, 3)
@@ -274,15 +276,18 @@ class LdapTest extends TestCase {
 		this.assertEquals(NumGet(pc, 0, "UInt"), Ldap.OPT_ON)
 	}
 
-	@Test_Bind() {
+	@Depend_@Test_bind() {
+		return "@Test_ServerAvailable,@Test_reconnectWithV3"
+	}
+	@Test_bind() {
 		this.assertEquals(LdapTest.ld.simpleBind("uid=admin,ou=system"
 				, "secret"), 0)
 	}
 
-	@Depend_@Test_Get_DN() {
-		return "@Test_ServerAvailable,@Test_ReconnectWithV3,@Test_Bind"
+	@Depend_@Test_getDN() {
+		return "@Test_Bind"
 	}
-	@Test_Get_DN() {
+	@Test_getDN() {
 		this.assertEquals(LdapTest.ld.search(sr, "ou=system", "(uid=admin)"
 				,, ["uid"]), 0)
 		this.assertEquals(ldapTest.ld.countEntries(sr), 1)
@@ -294,91 +299,61 @@ class LdapTest extends TestCase {
 		this.assertEquals(System.ptrListToStrArray(valuesList)[1], "admin")
 	}
 
-	@Test_Count_Entries() {
+	@Depend_@Test_countEntries() {
+		return "@Test_bind"
+	}
+	@Test_countEntries() {
 		this.assertEquals(LdapTest.ld.search(sr, "", "(ou=*)"
 				, Ldap.SCOPE_ONELEVEL), 0)
 		this.assertEquals(LdapTest.ld.countEntries(sr), 3)
 	}
 
-	@Depend_@Test_Add() {
-		return "@Test_ServerAvailable"
+	@Depend_@Test_add() {
+		return "@Test_bind"
 	}
-	@Test_Add() {
-		cn_values := [ "Peter Pan", "" ]
-		Name_mod_op := Ldap.MOD_ADD
-		Name_mod_type := "cn"
-		System.strArrayToPtrList(cn_values, Name_mod_values)
-		Name_s := LDAPMod(Name, Name_mod_op, Name_mod_type, Name_mod_values)
-		; OutputDebug % "Name:`n" LoggingHelper.HexDump(&Name, 0, Name_s)
-
-		oc_values := [ "top", "person", "inetOrgPerson", "" ]
-		OClass_mod_op := Ldap.MOD_ADD
-		OClass_mod_type := "objectClass"
-		System.strArrayToPtrList(oc_values, OClass_mod_values)
-		OClass_s := LDAPMod(OClass, OClass_mod_op, OClass_mod_type
-				, OClass_mod_values)
-		; OutputDebug % "OClass:`n" LoggingHelper.HexDump(&OClass, 0, OClass_s)
-
-		gn_values := [ "Peter", "" ]
-		FName_mod_op := Ldap.MOD_ADD
-		FName_mod_type := "givenName"
-		System.strArrayToPtrList(gn_values, FName_mod_values)
-		FName_s := LDAPMod(FName, FName_mod_op, FName_mod_type
-				, FName_mod_values)
-		; OutputDebug % "FName:`n" LoggingHelper.HexDump(&FName, 0, FName_s)
-
-		sn_values := [ "Pan", "" ]
-		LName_mod_op := Ldap.MOD_ADD
-		LName_mod_type := "sn"
-		System.strArrayToPtrList(sn_values, LName_mod_values)
-		LName_s := LDAPMod(LName, LName_mod_op, LName_mod_type
-				, LName_mod_values)
-		; OutputDebug % "LName:`n" LoggingHelper.HexDump(&LName, 0, LName_s)
-
-		ti_values := [ "Developer", "" ]
-		Title_mod_op := Ldap.MOD_ADD
-		Title_mod_type := "title"
-		System.strArrayToPtrList(ti_values, Title_mod_values)
-		Title_s := LDAPMod(Title, Title_mod_op, Title_mod_type
-				, Title_mod_values)
-		; OutputDebug % "Title:`n" LoggingHelper.HexDump(&Title, 0, Title_s)
-
-		NewEntry_s := System.ptrList(NewEntry, &Name, &OClass, &FName, &LName
-				, &Title, 0)
-		; OutputDebug % "NewEntry:`n" LoggingHelper.HexDump(&NewEntry, 0, NewEntry_s)
-		rc := LdapTest.ld.add("cn=Peter Pan,dc=example,dc=com", NewEntry)
-		OutputDebug % A_ThisFunc ":" Ldap.err2String(rc)
+	@Test_add() {
+		cn := new LDAPMod({mod_op: Ldap.MOD_ADD, mod_type: "cn"
+				, mod_vals: ["Peter Pan"]})
+				.implode(_cn)
+		oc := new LDAPMod({mod_op: Ldap.MOD_ADD, mod_type: "objectClass"
+				, mod_vals: ["top", "person", "inetOrgPerson"]})
+				.implode(_oc)
+		givenName := new LDAPMod({mod_op: Ldap.MOD_ADD, mod_type: "givenName"
+				, mod_vals: ["Peter"]})
+				.implode(_givenName)
+		sn := new LDAPMod({mod_op: Ldap.MOD_ADD, mod_type: "sn"
+				, mod_vals: ["Pan"]})
+				.implode(_sn)
+		title := new LDAPMod({mod_op: Ldap.MOD_ADD, mod_type: "title"
+				, mod_vals: ["Developer"]})
+				.implode(_title)
+		System.ptrList(newEntry, &_cn, &_oc, &_givenName, &_sn, &_title, 0)
+		rc := LdapTest.ld.add("cn=Peter Pan,dc=example,dc=com", newEntry)
 		if (rc) {
-			this.fail("Entry to create already existing"
-					, "Delete entry:`ndn: cn=Peter Pan,dc=example,dc=com`n"
-					. "changetype: delete`n"
+			this.fail("Entry to create already existing!`nTo delete"
+					, "ldapdelete -h localhost:10389 -D uid=admin,ou=system "
+					. "-w secret ""cn=Peter Pan,dc=example,dc=com"""
 					, true)
 		}
 	}
 
-	@Depend_@Test_Modify() {
-		return "@Test_Add"
+	@Depend_@Test_modify() {
+		return "@Test_add"
 	}
-	@Test_Modify() {
-		sn_values := [ "Black", "" ]
-		SName_mod_op := Ldap.MOD_REPLACE
-		SName_mod_type := "sn"
-		System.strArrayToPtrList(sn_values, SName_mod_values)
-		SName_s := LDAPMod(SName, SName_mod_op, SName_mod_type
-				, SName_mod_values)
-		ti_values := [ "Administrator", "Lightning And Strike Detonator", "" ]
-		Title_mod_op := Ldap.MOD_ADD
-		Title_mod_type := "title"
-		System.strArrayToPtrList(ti_values, Title_mod_values)
-		Title_s := LDAPMod(Title, Title_mod_op, Title_mod_type
-				, Title_mod_values)
-		ModEntry_s := System.ptrList(ModEntry, &Title, &SName, 0)
-		rc := LdapTest.ld.modify("cn=Peter Pan,dc=example,dc=com", ModEntry)
-		OutputDebug % A_ThisFunc ":" Ldap.err2String(rc)
+	@Test_modify() {
+		sn := new LDAPMod({mod_op: Ldap.MOD_REPLACE, mod_type: "sn"
+				, mod_vals: ["Black"]})
+				.implode(_sn)
+		title := new LDAPMod({mod_op: Ldap.MOD_REPLACE, mod_type: "title"
+				, mod_vals: ["Administrator"
+				, "Lightning And Strike Detonator"]})
+				.implode(_title)
+		System.ptrList(modEntry, &_title, &_sn, 0)
+		rc := LdapTest.ld.modify("cn=Peter Pan,dc=example,dc=com", modEntry)
 		this.assertEquals(rc, 0)
 	}
 
-	@Test_FormatFilter() {
+	@Test_formatFilter() {
 		expected_output =
 (
 	(objectclass=top)
@@ -445,15 +420,11 @@ class LdapTest extends TestCase {
 		this.assertException(Ldap, "FormatFilter",,, "cn=*))")
 	}
 
-	@Depend_@Test_Search_DN() {
-		return "@Test_Add,@Test_Modify"
+	@Depend_@Test_searchByDN() {
+		return "@Test_modify"
 	}
-	@Test_Search_DN() {
-		decisionTable
-				:= {title: ["Developer"
-				, "Administrator"
-				, "Lightning And Strike Detonator"]
-				, sn: ["Black"]}
+	@Test_searchByDN() {
+		values := []
 		this.assertException(LdapTest.ld, "Search",,, sr := ""
 				, "cn=Peter Pan,dc=example,dc=com", "(objectclass=*)"
 				,, "string_nicht_erlaubt")
@@ -462,87 +433,74 @@ class LdapTest extends TestCase {
 				, "(objectclass=*)",, ["title", "sn"]), 0)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
-		System.strCpy(1stAttr, stAttr)
-		values := System.ptrListToStrArray(LdapTest.ld
-				.getValues(1stEntry, 1stAttr), false)
-		this.assertTrue(Arrays.equal(decisionTable[stAttr], values))
+		values.push(System.ptrListToStrArray(LdapTest.ld
+				.getValues(1stEntry, 1stAttr), false))
 		2ndAttr := LdapTest.ld.nextAttribute(1stEntry)
-		System.strCpy(2ndAttr, stAttr2)
-		values2 := System.ptrListToStrArray(LdapTest.ld
-				.getValues(1stEntry, 2ndAttr), false)
-		this.assertTrue(Arrays.equal(decisionTable[stAttr2], values2))
+		values.push(System.ptrListToStrArray(LdapTest.ld
+				.getValues(1stEntry, 2ndAttr), false))
+		this.assertTrue(Arrays.equal(Arrays.sort(Arrays.flat(values))
+				, ["Administrator", "Black", "Lightning And Strike Detonator"]))
 	}
 
-	@Depend_@Test_Search_Attributes() {
-		return "@Test_Add, @Test_Modify"
+	@Depend_@Test_searchAttributes() {
+		return "@Test_modify"
 	}
-	@Test_Search_Attributes() {
-		decisionTable
-				:= {title: ["Developer"
-				, "Administrator"
-				, "Lightning And Strike Detonator"]
-				, sn: ["Black"]}
+	@Test_searchAttributes() {
+		values := []
 		this.assertEquals(LdapTest.ld.search(sr, "dc=example,dc=com"
 				, "(cn=Peter Pan)",, ["title", "sn"]), 0)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
-		System.strCpy(1stAttr, stAttr)
-		1stValues := LdapTest.ld.getValues(1stEntry, 1stAttr)
-		values := System.ptrListToStrArray(1stValues, false)
-		this.assertTrue(Arrays.equal(decisionTable[stAttr], values))
+		values.push(System.ptrListToStrArray(LdapTest.ld
+				.getValues(1stEntry, 1stAttr), false))
 		2ndAttr := LdapTest.ld.nextAttribute(1stEntry)
-		System.strCpy(2ndAttr, stAttr2)
-		2ndValues := LdapTest.ld.getValues(1stEntry, 2ndAttr)
-		values2 := System.ptrListToStrArray(2ndValues, false)
-		this.assertTrue(Arrays.equal(decisionTable[stAttr2], values2))
+		values.push(System.ptrListToStrArray(LdapTest.ld
+				.getValues(1stEntry, 2ndAttr), false))
+		this.assertTrue(Arrays.equal(Arrays.sort(Arrays.flat(values))
+				, ["Administrator", "Black", "Lightning And Strike Detonator"]))
 	}
 
-	@Depend_@Test_Search_Multiple() {
-		return "@Test_ServerAvailable"
+	@Depend_@Test_searchMultiple() {
+		return "@Test_serverAvailable"
 	}
-	@Test_Search_Multiple() {
-		decisionTable
-				:= {Lucy: "van Pelt"
-				, Linus: "van Pelt"}
-		this.assertTrue(RegExMatch(LdapTest.ld.search(sr, "dc=example,dc=com"
-				, "(sn=van Pelt)", 2, ["givenname"]), "^(0|80)$"))
+	@Test_searchMultiple() {
+		values := []
+		this.assertEquals(LdapTest.ld.search(sr, "dc=example,dc=com"
+				, "(sn=van Pelt)", 2, ["givenname"]), 0)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
-		givennames := System.ptrListToStrArray(LdapTest.ld
-				.getValues(1stEntry, 1stAttr), false)
-		givenname := givennames[1]
-		this.assertEquals(decisionTable[givenname], "van Pelt")
+		values.push(System.ptrListToStrArray(LdapTest.ld
+				.getValues(1stEntry, 1stAttr), false))
 		nxtEntry := LdapTest.ld.nextEntry(1stEntry)
 		1stAttr := LdapTest.ld.firstAttribute(nxtEntry)
-		givennames := System.ptrListToStrArray(LdapTest.ld
-				.getValues(nxtEntry, 1stAttr), false)
-		givenname := givennames[1]
-		this.assertEquals(decisionTable[givenname], "van Pelt")
+		values.push(System.ptrListToStrArray(LdapTest.ld
+				.getValues(nxtEntry, 1stAttr), false))
+		this.assertEquals(Arrays.equal(Arrays.flat(Arrays.sort(values)
+				, ["Linus", "Lucy"])))
 		this.assertEquals(LdapTest.ld.nextEntry(nxtEntry), 0)
 		this.assertEquals(LdapTest.ld.getLastError(), 0)
 	}
 
-	@Depend_@Test_Delete() {
-		return "@Test_Add"
+	@Depend_@Test_delete() {
+		return "@Test_add"
 	}
-	@Test_Delete() {
+	@Test_delete() {
 		rc := LdapTest.ld.delete("cn=Peter Pan,dc=example,dc=com")
-		OutputDebug % A_ThisFunc ":" Ldap.err2String(rc)
 		this.assertEquals(rc, 0)
 	}
 
-	@Depend_@Test_Errors() {
-		return "@Test_ServerAvailable"
+	@Depend_@Test_errors() {
+		return "@Test_serverAvailable"
 	}
-	@Test_Errors() {
+	@Test_errors() {
 		this.assertEquals(LdapTest.ld.err2String(), "Erfolg")
 		this.assertEquals(LdapTest.ld.err2String(32), "Objekt nicht vorhanden")
 	}
 
-	@Depend_@Test_Unbind() {
-		return "@Test_ServerAvailable"
+	@Depend_@Test_unbind() {
+		return "@Test_bind"
 	}
-	@Test_Unbind() {
+	@Test_unbind() {
 		this.assertEquals(LdapTest.ld.unbind(), 0)
 	}
 
