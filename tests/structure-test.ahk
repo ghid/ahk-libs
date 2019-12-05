@@ -12,9 +12,9 @@
 #Include <system>
 #Include <testcase>
 
-#Include %ScriptDir%\..\structure.ahk
+#Include %A_ScriptDir%\..\structure.ahk
 
-#Include %ScriptDir%\..\modules\structure
+#Include %A_ScriptDir%\..\modules\structure
 #Include CONSOLE_SCREEN_BUFFER_INFO.ahk
 #Include COORD.ahk
 #Include SMALL_RECT.ahk
