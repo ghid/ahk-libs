@@ -201,14 +201,14 @@ class StructureTest extends TestCase {
 		z.x.a := 1
 		z.x.b := 2
 		z.d := 4
-		z.implode(_z)
+		this.assertSame(z.implode(_z), z)
 		this.assertEquals(NumGet(_z, 0, "Short"), 1)
 		this.assertEquals(NumGet(_z, 2, "Int"), 2)
 		this.assertEquals(NumGet(_z, 6, "UInt"), 0)
 		this.assertEquals(NumGet(_z, 10, "UInt"), 4)
 		NumPut(3, _z, 6, "UInt")
 		z2 := new TESTSTRUCT_B()
-		z2.explode(_z)
+		this.assertSame(z2.explode(_z), z2)
 		this.assertEquals(z2.x.a, 1)
 		this.assertEquals(z2.x.b, 2)
 		this.assertEquals(z2.c, 3)
@@ -232,7 +232,7 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_TIME_ZONE_INFORMATION() {
-		tzi := new TIME_ZONE_INFORMATION(_tzi)
+		tzi := new TIME_ZONE_INFORMATION(_tzi := "")
 		if (DllCall("GetTimeZoneInformation", "UInt", &_tzi, "UInt")) {
 			; TestCase.writeLine("`n" LoggingHelper.hexDump(&_tzi, 0, tzi.sizeOf())) ; ahklint-ignore: W002
 			tzi.explode(_tzi)
@@ -261,7 +261,7 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_DYNAMIC_TIME_ZONE_INFORMATION() {
-		dtzi := new DYNAMIC_TIME_ZONE_INFORMATION(_dtzi)
+		dtzi := new DYNAMIC_TIME_ZONE_INFORMATION(_dtzi := "")
 		this.assertTrue(DllCall("api-ms-win-core-timezone-l1-1-0\"
 				. "EnumDynamicTimeZoneInformation"
 				, "UInt", 1
@@ -336,6 +336,12 @@ class StructureTest extends TestCase {
 		this.assertEquals(lm.mod_type, lm2.mod_type)
 		this.assertEquals(lm2.mod_vals.count(), 3)
 		this.assertTrue(Arrays.equal(lm.mod_vals, lm2.mod_vals))
+		lm3 := new LDAPMod({mod_op: 3, mod_type: "title"
+				, mod_vals: ["Title One", "Title Two"]})
+		this.assertEquals(lm3.mod_op, 3)
+		this.assertEquals(lm3.mod_type, "title")
+		this.assertEquals(Arrays.equal(lm3.mod_vals
+				, ["Title One", "Title Two"]))
 	}
 }
 

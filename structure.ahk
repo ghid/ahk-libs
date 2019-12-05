@@ -7,7 +7,14 @@ class Structure {
 	struct := []
 
 	__new(ByRef data="") {
-		this.implode(data)
+		if (IsObject(data)) {
+			for key, value in data {
+				this[key] := value
+			}
+		} else {
+			this.implode(data)
+		}
+		return this
 	}
 
 	implode(ByRef data) {
@@ -17,6 +24,7 @@ class Structure {
 		loop % byteArray.count() {
 			NumPut(byteArray[A_Index], data, A_Index-1, "UChar")
 		}
+		return this
 	}
 
 	explode(ByRef data) {
@@ -26,6 +34,7 @@ class Structure {
 		}
 		this.traverse({onMember: Structure.getData.bind(this)
 				, onMissingMember: Structure.getData.bind(this)}, byteArray)
+		return this
 	}
 
 	ptrListToStrArray(ptrListAddress) {
