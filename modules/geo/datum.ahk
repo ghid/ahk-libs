@@ -6,6 +6,7 @@ class Datum {
 	__new(cardinalPoint=0, decimalDegrees=0.0) {
 		this.cardinalPoint := cardinalPoint
 		this.decimalDegrees := decimalDegrees
+		this.checkValidity()
 	}
 
 	getDegrees() {
@@ -21,33 +22,43 @@ class Datum {
 	}
 
 	getCardinalPoint() {
-		return GEO.CARDIAL_POINTS[this.cardinalPoint == GEO.HORIZONTAL
+		return Geo.CARDINAL_POINTS[this.cardinalPoint == Geo.HORIZONTAL
 				, this.decimalDegrees > 0]
 	}
 
 	setDegrees(degrees) {
 		this.decimalDegrees := (this.decimalDegrees - this.getDegrees())
 				+ degrees
+		this.checkValidity()
+		return this
 	}
 
 	setMinutes(minutes) {
 		this.decimalDegrees := (this.decimalDegrees - this.getMinutes() / 60.0)
 				+ minutes / 60.0
+		this.checkValidity()
+		return this
 	}
 
 	setSeconds(seconds) {
 		this.decimalDegrees
 				:= (this.decimalDegrees - this.getSeconds() / 3600.0)
 				+ seconds / 3600.0
+		this.checkValidity()
+		return this
 	}
 
 	setCardinalPoint(cardinalPoint) {
 		switch cardinalPoint {
-		case "N", "S":
+		case "N", "S", 1:
 			this.cardinalPoint := Geo.HORIZONTAL
-		case "E", "O", "W":
+		case "E", "O", "W", 0:
 			this.cardinalPoint := Geo.VERTICAL
+		default:
+			throw Exception("Invalid value for 'cardinalPoint': "
+					. cardinalPoint)
 		}
+		return this
 	}
 
 	parseDMS(dmsString, parsingExpressions="") {
@@ -59,12 +70,13 @@ class Datum {
 		this.setSeconds(this.parseSeconds(dmsString, parsingExpressions))
 		this.setCardinalPoint(this.parseCardinalPoint(dmsString
 				, parsingExpressions))
+		this.checkValidity()
 		return this
 	}
 
 	parseDegrees(dmsString, parsingExpressions) {
 		currentDegrees := this.getDegrees()
-		result := this.parse(dmsString, parsingExpressions.degreesExpr)
+		result := this.parseByExpr(dmsString, parsingExpressions.degreesExpr)
 		if (result != "") {
 			return 0 + result
 		}
@@ -73,7 +85,7 @@ class Datum {
 
 	parseMinutes(dmsString, parsingExpressions) {
 		currentMinutes := this.getMinutes()
-		result := this.parse(dmsString, parsingExpressions.minutesExpr)
+		result := this.parseByExpr(dmsString, parsingExpressions.minutesExpr)
 		if (result != "") {
 			return 0 + result
 		}
@@ -82,7 +94,7 @@ class Datum {
 
 	parseSeconds(dmsString, parsingExpressions) {
 		currentSeconds := this.getSeconds()
-		result := this.parse(dmsString, parsingExpressions.secondsExpr)
+		result := this.parseByExpr(dmsString, parsingExpressions.secondsExpr)
 		if (result != "") {
 			return 0 + result
 		}
@@ -90,18 +102,19 @@ class Datum {
 	}
 
 	parseCardinalPoint(dmsString, parsingExpressions) {
-		result := this.parse(dmsString
+		result := this.parseByExpr(dmsString
 				, parsingExpressions.cardinalPointExpr)
 		if (result) {
 			if (InStr("NS", result)) {
-				this.cardinalPoint := Geo.HORIZONTAL
+				return Geo.HORIZONTAL
 			} else {
-				this.cardinalPoint := Geo.VERTICAL
+				return Geo.VERTICAL
 			}
 		}
+		return ""
 	}
 
-	parse(dmsString, parsingExpression) {
+	parseByExpr(dmsString, parsingExpression) {
 		if (RegExMatch(parsingExpression
 				, "^\/(?<Pattern>.+?(?<!\\))\/(?<Options>.*)$", regex)) {
 			if (!RegExMatch(regexOptions, "\d+", regexGroup)) {
@@ -121,11 +134,27 @@ class Datum {
 				, this.getSeconds(), this.getCardinalPoint())
 	}
 
+	checkValidity() {
+		if (!this.isValid()) {
+			throw "Invalid Geo.Datum: "
+					. this.cardinalPoint "/ " this.decimalDegrees
+		}
+	}
+
+	isValid() {
+		return (this.cardinalPoint == Geo.HORIZONTAL
+				&& this.decimalDegrees >= -90.0
+				&& this.decimalDegrees <= +90.0)
+				|| (this.cardinalPoint == Geo.VERTICAL
+				&& this.decimalDegrees >= -180.0
+				&& this.decimalDegrees <= +180.0)
+	}
+
 	class ParsingExpressions {
 		degreesExpr := "/([+-]?\d+)°/1"
 		minutesExpr := "/(\d+)'/1"
 		secondsExpr := "/(\d+(\.\d+)?)""/1"
 		elevationExpr := "/([+-]?\d+(\.\d+)?)m/1"
-		cardinalPointExpr := "/[NnSsWwEeOo]/0"
+		cardinalPointExpr := "/[NSWEO]/i"
 	}
 }
