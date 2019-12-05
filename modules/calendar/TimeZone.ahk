@@ -56,7 +56,7 @@ class TimeZone {
 
 	forYear(aYear="") {
 		this.year := (aYear != "" ? aYear : A_Year)
-		tzi := new TIME_ZONE_INFORMATION(_tzi)
+		tzi := new TIME_ZONE_INFORMATION(_tzi := "")
 		if (DllCall("GetTimeZoneInformationForYear", "UShort", aYear
 				, "Ptr", 0, "Ptr", &_tzi, "UChar")) {
 			tzi.explode(_tzi)
