@@ -3,12 +3,12 @@ class Geo {
 	static VERTICAL := 0
 	static HORIZONTAL := 1
 
-	static CARDIAL_POINTS
+	static CARDINAL_POINTS
 			:= {1: {1: "N", 0: "S"}
 			,   0: {1: "E", 0: "W"}}
 
 	requires() {
-		return [TestCase]
+		return [TestCase, Object]
 	}
 
 	#Include %A_LineFile%\..\modules\geo
@@ -29,9 +29,30 @@ class Geo {
 		}
 
 		__new(latitude, longitude, elevation="") {
-			this.latitude := new Geo.Datum(GEO.HORIZONTAL, latitude)
-			this.longitude := new Geo.Datum(GEO.VERTICAL, longitude)
+			this.latitude := new Geo.Datum(Geo.HORIZONTAL, latitude)
+			this.longitude := new Geo.Datum(Geo.VERTICAL, longitude)
 			this.elevation := elevation
+		}
+
+		; @todo: what are these methods for good? Won't be getter/setter a better alternative?
+		setLatitude(aGeoDatum) {
+			this.checkForExpectedObjectType(aGeoDatum)
+			this.latitude := aGeoDatum
+			return this
+		}
+
+		setLongitude(aGeoDatum) {
+			this.checkForExpectedObjectType(aGeoDatum)
+			this.longitude := aGeoDatum
+			return this
+		}
+
+		checkForExpectedObjectType(anObject) {
+			if (!Object.instanceOf(anObject, "Geo.Datum")) {
+				throw Exception("Object of type 'Geo.Datum' expected "
+						. "but got: " (IsObject(anObject) ? anObject.__Class
+						: "no object"))
+			}
 		}
 	}
 }

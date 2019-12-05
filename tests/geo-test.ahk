@@ -2,7 +2,7 @@
 
 #Include <testcase-libs>
 #Include <system>
-#Include %ScriptDir%\..\geo.ahk
+#Include %A_ScriptDir%\..\geo.ahk
 
 class GeoTest extends TestCase {
 
@@ -11,7 +11,7 @@ class GeoTest extends TestCase {
 	}
 
 	@Test_Datum() {
-		d := new Geo.Datum(GEO.VERTICAL, 46.235194)
+		d := new Geo.Datum(Geo.VERTICAL, 46.235194)
 		this.assertEquals(d.decimalDegrees, 46.235194)
 		this.assertEquals(d.getDegrees(), 46)
 		this.assertEquals(d.getMinutes(), 14)
@@ -30,8 +30,23 @@ class GeoTest extends TestCase {
 				.getCardinalPoint(), "S")
 	}
 
+	@Test_setCardinalPoint() {
+		d := new Geo.Datum()
+		d.setCardinalPoint("N")
+		this.assertEquals(d.cardinalPoint, Geo.HORIZONTAL)
+		d.setCardinalPoint("W")
+		this.assertEquals(d.cardinalPoint, Geo.VERTICAL)
+		d.setCardinalPoint("s")
+		this.assertEquals(d.cardinalPoint, Geo.HORIZONTAL)
+		d.setCardinalPoint(1)
+		this.assertEquals(d.cardinalPoint, Geo.HORIZONTAL)
+		d.setCardinalPoint(0)
+		this.assertEquals(d.cardinalPoint, Geo.VERTICAL)
+		this.assertException(d, "setCardinalPoint",,, "x")
+	}
+
 	@Test_setDatum() {
-		d := new Geo.Datum(GEO.VERTICAL, 46.235194)
+		d := new Geo.Datum(Geo.VERTICAL, 46.235194)
 		d.setDegrees(47)
 		this.assertEquals(d.getDegrees(), 47)
 		d.setMinutes(34)
@@ -41,7 +56,7 @@ class GeoTest extends TestCase {
 	}
 
 	@Test_parseDatum() {
-		d := new Geo.Datum(GEO.VERTICAL, 46.235194)
+		d := new Geo.Datum(Geo.VERTICAL, 46.235194)
 		d.parseDMS("47°34'06.7""N")
 		this.assertEquals(d.getDegrees(), 47)
 		this.assertEquals(d.getMinutes(), 34)
