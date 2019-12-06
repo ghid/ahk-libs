@@ -123,38 +123,33 @@ class System {
 		return var
 	}
 
-	ptrListToStrArray(ByRef ptr, add_empty_element=true) {
-		aStr := []
+	ptrListToStrArray(ByRef pointerList, add_empty_element=true) {
+		stringArray := []
 		loop {
-			OutputDebug % "ptr = " &ptr
-			_addr := NumGet(ptr+0, 0, "Ptr")
-			OutputDebug _addr=%_addr%
-			if (!_addr) {
+			addr := NumGet(pointerList+0, 0, "Ptr")
+			if (!addr) {
 				if (add_empty_element) {
-					aStr.push("")
+					stringArray.push("")
 				}
 				break
 			}
-			System.strCpy(_addr, _st)
-			OutputDebug _st=%_st%
-			aStr.push(_st)
-			ptr += A_PtrSize
+			System.strCpy(addr, st)
+			stringArray.push(st)
+			pointerList += A_PtrSize
 		}
-		return aStr
+		return stringArray
 	}
 
 	strArrayToPtrList(ByRef a, ByRef ptr) {
 		i := a.minIndex()
 		s := 0
 		if (i) {
-			s := VarSetCapacity(ptr, (a.maxIndex() - a.minIndex() + 1)
-					* A_PtrSize)
+			s := VarSetCapacity(ptr, a.count() * A_PtrSize, 0)
 			while (i <= a.maxIndex()) {
 				NumPut(a.getAddress(i), ptr, (A_Index - 1) * A_PtrSize, "Ptr")
 				i++
 			}
 		}
-
 		return s
 	}
 
@@ -192,6 +187,7 @@ class System {
 		return content
 	}
 
+	; @todo: Refactor!
 	which(file, dirs=".", exts="*", all_matches=false) {
 		SplitPath file, file_name, file_dir, file_ext, file_name_no_ext
 		if (!file_ext) {
@@ -245,9 +241,16 @@ class System {
 	}
 
 	runProcess(Command, Stream_To="", Working_Dir="", Input_Data="") {
+		S_Temp := ""
+		N_Temp := ""
+		Output := ""
+		H_StdIn_Reader := 0
+		H_StdIn_Writer := 0
+		H_StdOut_Reader := 0
+		H_StdOut_Writer := 0
 		DllCall("CreatePipe"
 				, "Ptr*", H_StdIn_Reader
-				, "Ptr*" ,H_StdIn_Writer
+				, "Ptr*", H_StdIn_Writer
 				, "UInt", 0
 				, "UInt", 0)
 
@@ -326,9 +329,9 @@ class System {
 				NumPut(0, S_Temp, N_Size, "UChar")
 				VarSetCapacity(S_Temp, -1)
 				Output .= StrGet(&S_Temp, N_Size, "CP0")
-				if (Stream_To) {
+				if (Stream_To != "") {
 					loop {
-						if (RegExMatch(Output, "[^\n]*\n", S_Trim, N_Trim)) {
+						if (RegExMatch(Output, "[^\r\n]*\r?\n", S_Trim, N_Trim)) {
 							Stream_To+0 ? DllCall("WriteFile"
 									, "Ptr", H_Console
 									, "Ptr", &S_Trim
