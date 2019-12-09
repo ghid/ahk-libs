@@ -16,7 +16,7 @@ class Callback extends OptParser.Option {
 
 	set(argument, op) {
 		no_opt := ""
-		if (RegExMatch(argument, "--(no-?)?(\w+)", $)) {
+		if (RegExMatch(argument, "--(no-?)?([\w=]+)", $)) {
 			res := base.set("--" $2, op)
 			no_opt := $1
 		} else {

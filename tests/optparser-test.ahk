@@ -519,6 +519,18 @@ usage: Test
 				, "x", "Does_not_exist")
 	}
 
+	@Test_callback2() {
+		opts := {}
+		op := new OptParser("Test --color=<color>")
+		op.add(new OptParser.callback("c", "color", opts
+				, "color", "colors_func", "color", "A priority test"
+				, OptParser.OPT_ARGREQ))
+		op.parse(["--color", "red"])
+		this.assertEquals(opts.color, "red")
+		op.parse(["--color=green"])
+		this.assertEquals(opts.color, "green")
+	}
+
 	@Test_noOption() {
 		opts := {}
 		op := new OptParser("Test")
