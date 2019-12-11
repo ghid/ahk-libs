@@ -6,12 +6,12 @@ class CONSOLE_SCREEN_BUFFER_INFO extends Structure {
 	
 	size := new COORD()
 	cursorPosition := new COORD()
-	windows := new SMALL_RECT()
+	window := new SMALL_RECT()
 	maximumWindowSize := new COORD()
 
 	struct := [["size", "COORD"]
 			,  ["cursorPosition", "COORD"]
 			,  ["attributes", "UShort"]
-			,  ["windows", "SMALL_RECT"]
+			,  ["window", "SMALL_RECT"]
 			,  ["maximumWindowSize", "COORD"]]
 }
