@@ -31,6 +31,17 @@ class PagerTest extends TestCase {
 		FileDelete %A_Temp%\pager-test.txt
 	}
 
+	@Test_consoleSize() {
+		Pager.runInTestMode := !Pager.runInTestMode
+		this.assertTrue(Pager.getConsoleHeight() > 0)
+		this.assertTrue(Pager.getConsoleWidth() > 0)
+		this.assertTrue(Pager.getMaxConsoleWidth() > 0)
+		Pager.runInTestMode := !Pager.runInTestMode
+		this.assertTrue(Pager.getConsoleHeight() > 0)
+		this.assertTrue(Pager.getConsoleWidth() > 0)
+		this.assertTrue(Pager.getMaxConsoleWidth() > 0)
+	}
+
 	@Test_oneLine() {
 		Pager.writeHardWrapped("Das ist ein Einzeiler.")
         Ansi.flush()
@@ -106,6 +117,7 @@ class PagerTest extends TestCase {
 		Pager.lineCounter := 0
 		Ansi.stdOut.close()
 		Ansi.stdOut := Ansi.__InitStdOut()
+		Ansi.writeLine()
 		text := printBlindText()
 		text := RegExReplace(text, "i)\b(\w*[öäüß]+\w*)", "[32m$0[0m")
 		text := RegExReplace(text, "i)\b([,.!?:]+)", "[31m$0[0m")

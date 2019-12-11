@@ -82,12 +82,14 @@ class Pager {
 		Pause On
 	}
 
+	; @todo: Fix access to the bufferInfo properties; these aren't correct if
+	; the new Structure class is used @19-4818F
 	getConsoleHeight() {
 		if (Pager.runInTestMode) {
 			return Pager.TEST_CONSOLE_HEIGHT
 		}
-		conHeight := 1 + Console.bufferInfo.srWindow.bottom
-				- Console.bufferInfo.srWindow.top
+		conHeight := 1 + Console.bufferInfo.window.bottom
+				- Console.bufferInfo.window.top
 		return conHeight
 	}
 
@@ -95,8 +97,8 @@ class Pager {
 		if (Pager.runInTestMode) {
 			return Pager.TEST_CONSOLE_WIDTH
 		}
-		conWidth := 1 + Console.bufferInfo.srWindow.right
-				- Console.bufferInfo.srWindow.left
+		conWidth := 1 + Console.bufferInfo.window.right
+				- Console.bufferInfo.window.left
 		return conWidth
 	}
 
@@ -104,6 +106,6 @@ class Pager {
 		if (Pager.runInTestMode) {
 			return Pager.TEST_CONSOLE_WIDTH
 		}
-		return Console.bufferInfo.dwMaximumWindowSize.X
+		return Console.bufferInfo.maximumWindowSize.X
 	}
 }
