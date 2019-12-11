@@ -15,14 +15,15 @@
 #Include %A_ScriptDir%\..\structure.ahk
 
 #Include %A_ScriptDir%\..\modules\structure
-#Include CONSOLE_SCREEN_BUFFER_INFO.ahk
-#Include COORD.ahk
 #Include SMALL_RECT.ahk
+#Include COORD.ahk
+#Include CONSOLE_SCREEN_BUFFER_INFO.ahk
 #Include SYSTEMTIME.ahk
 #Include TIME_ZONE_INFORMATION.ahk
 #Include DYNAMIC_TIME_ZONE_INFORMATION.ahk
 #Include LDAPAPIINFO.ahk
 #Include LDAPMod.ahk
+#Include STARTUPINFO.ahk
 
 class StructureTest extends TestCase {
 
@@ -43,29 +44,29 @@ class StructureTest extends TestCase {
 		this.assertEquals(Structure.typeLength("wStr"), 0)
 		this.assertEquals(Structure.typeLength("AStr"), 0)
 		this.assertEquals(Structure.typeLength("Char"), 1)
-		this.assertEquals(Structure.typeLength("CharP"), 1)
-		this.assertEquals(Structure.typeLength("Char*"), 1)
+		this.assertEquals(Structure.typeLength("CharP"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("Char*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("UChar"), 1)
-		this.assertEquals(Structure.typeLength("UCharP"), 1)
-		this.assertEquals(Structure.typeLength("UChar*"), 1)
+		this.assertEquals(Structure.typeLength("UCharP"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("UChar*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("Short"), 2)
-		this.assertEquals(Structure.typeLength("ShortP"), 2)
-		this.assertEquals(Structure.typeLength("Short*"), 2)
+		this.assertEquals(Structure.typeLength("ShortP"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("Short*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("UShort"), 2)
-		this.assertEquals(Structure.typeLength("UShortP"), 2)
-		this.assertEquals(Structure.typeLength("UShort*"), 2)
+		this.assertEquals(Structure.typeLength("UShortP"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("UShort*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("Int"), 4)
-		this.assertEquals(Structure.typeLength("IntP"), 4)
-		this.assertEquals(Structure.typeLength("Int*"), 4)
+		this.assertEquals(Structure.typeLength("IntP"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("Int*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("UInt"), 4)
-		this.assertEquals(Structure.typeLength("UIntP"), 4)
-		this.assertEquals(Structure.typeLength("UInt*"), 4)
+		this.assertEquals(Structure.typeLength("UIntP"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("UInt*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("Int64"), 8)
-		this.assertEquals(Structure.typeLength("Int64P"), 8)
-		this.assertEquals(Structure.typeLength("Int64*"), 8)
+		this.assertEquals(Structure.typeLength("Int64P"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("Int64*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("UInt64"), 8)
-		this.assertEquals(Structure.typeLength("UInt64P"), 8)
-		this.assertEquals(Structure.typeLength("UInt64*"), 8)
+		this.assertEquals(Structure.typeLength("UInt64P"), A_PtrSize)
+		this.assertEquals(Structure.typeLength("UInt64*"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("Ptr"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("PtrP"), A_PtrSize)
 		this.assertEquals(Structure.typeLength("Ptr*"), A_PtrSize)
@@ -232,7 +233,7 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_TIME_ZONE_INFORMATION() {
-		tzi := new TIME_ZONE_INFORMATION(_tzi := "")
+		tzi := new TIME_ZONE_INFORMATION().implode(_tzi)
 		if (DllCall("GetTimeZoneInformation", "UInt", &_tzi, "UInt")) {
 			; TestCase.writeLine("`n" LoggingHelper.hexDump(&_tzi, 0, tzi.sizeOf())) ; ahklint-ignore: W002
 			tzi.explode(_tzi)
@@ -261,7 +262,7 @@ class StructureTest extends TestCase {
 	}
 
 	@Test_DYNAMIC_TIME_ZONE_INFORMATION() {
-		dtzi := new DYNAMIC_TIME_ZONE_INFORMATION(_dtzi := "")
+		dtzi := new DYNAMIC_TIME_ZONE_INFORMATION().implode(_dtzi)
 		this.assertTrue(DllCall("api-ms-win-core-timezone-l1-1-0\"
 				. "EnumDynamicTimeZoneInformation"
 				, "UInt", 1
@@ -342,6 +343,35 @@ class StructureTest extends TestCase {
 		this.assertEquals(lm3.mod_type, "title")
 		this.assertEquals(Arrays.equal(lm3.mod_vals
 				, ["Title One", "Title Two"]))
+	}
+
+	@Test_STARTUPINFO() {
+		si := new STARTUPINFO()
+		si.reserved := 1
+		si.desktop := 2
+		si.title := 3
+		si.x := 4
+		si.y := 5
+		si.xSize := 6
+		si.ySize := 7
+		si.xCountChars := 8
+		si.yCountChars := 9
+		si.fillAttribute := 10
+		si.flags := 11
+		si.showWindow := 12
+		si.cbReserved2 := 13
+		si.lpReserved2 := 14
+		si.stdInput := 15
+		si.stdOutput := 16
+		si.stdErr := 17
+		TestCase.writeLine("`n" si.dump())
+		si.implode(_si)
+		; TestCase.writeLine(LoggingHelper.hexDump(&_si, 0, si.sizeOf()))
+		si2 := new STARTUPINFO().implode(_si2)
+		DllCall("GetStartupInfo" (A_IsUnicode ? "W" : "A"), "Ptr", &_si2)
+		TestCase.writeLine(LoggingHelper.hexDump(&_si2, 0, si.sizeOf()))
+		si2.explode(_si2)
+		TestCase.writeLine(si2.dump())
 	}
 }
 

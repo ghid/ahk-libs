@@ -1,11 +1,11 @@
 class STARTUPINFO extends Structure {
 
-	cb[] {
-	get {
-		return this.sizeOf()
-	}}
+	implode(ByRef data) {
+		this.cb := this.sizeOf()
+		return base.implode(data)
+	}
 
-	struct := [["cb", "Ptr"]
+	struct := [["cb", "UPtr"]
 			,  ["reserved", "Ptr"]
 			,  ["desktop", "Ptr"]
 			,  ["title", "Ptr"]
@@ -16,10 +16,10 @@ class STARTUPINFO extends Structure {
 			,  ["xCountChars", "UInt"]
 			,  ["yCountChars", "UInt"]
 			,  ["fillAttribute", "UInt"]
-			,  ["flags", "UInt"]
-			,  ["showWindow", "UShort"]
-			,  ["cbReserved2", "UShort"]
-			,  ["lpReserved2", "UInt"]
+			,  ["flags", "Short"]
+			,  ["showWindow", "Short"]
+			,  ["cbReserved2", "Ptr"]
+			,  ["lpReserved2", "Ptr"]
 			,  ["stdInput", "Ptr"]
 			,  ["stdOutput", "Ptr"]
 			,  ["stdErr", "Ptr"]]

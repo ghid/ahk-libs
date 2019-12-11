@@ -6,13 +6,11 @@ class Structure {
 
 	struct := []
 
-	__new(ByRef data="") {
-		if (IsObject(data)) {
-			for key, value in data {
+	__new(dataObject="") {
+		if (IsObject(dataObject)) {
+			for key, value in dataObject {
 				this[key] := value
 			}
-		} else {
-			this.implode(data)
 		}
 		return this
 	}
@@ -215,23 +213,34 @@ class Structure {
 		switch type {
 		case "Str", "AStr", "WStr":
 			return 0
-		case "StrP", "AStrP", "WStrP", "Str*", "AStr*", "WStr*":
-			return A_PtrSize
-		case "Char", "CharP", "Char*", "UChar", "UCharP", "UChar*":
-			return 1
-		case "Short", "ShortP", "Short*", "UShort", "UShortP", "UShort*":
-			return 2
-		case "Int", "IntP", "Int*", "UInt", "UIntP", "UInt*":
-			return 4
-		case "Int64", "Int64P", "Int64*", "UInt64", "UInt64P", "UInt64*":
-			return 8
 		case "Ptr", "PtrP", "Ptr*", "UPtr", "UPtrP", "UPtr*":
 			return A_PtrSize
+		case "StrP", "AStrP", "WStrP", "Str*", "AStr*", "WStr*":
+			return A_PtrSize
+		case "CharP", "Char*", "UCharP", "UChar*":
+			return A_PtrSize
+		case "ShortP", "Short*", "UShortP", "UShort*":
+			return A_PtrSize
+		case "IntP", "Int*", "UIntP", "UInt*":
+			return A_PtrSize
+		case "Int64P", "Int64*", "UInt64P", "UInt64*":
+			return A_PtrSize
+		case "Char", "UChar":
+			return 1
+		case "Short", "UShort":
+			return 2
+		case "Int", "UInt":
+			return 4
+		case "Int64", "UInt64":
+			return 8
 		case "Float":
 			return 4
 		case "Double":
 			return 8
 		default:
+			if (IsObject(type) && Object.instanceOf("Structure")) {
+				return ObjBindMethod(type, "sizeOf")
+			}
 			throw Exception("Unknown type: " type)
 		}
 	}
