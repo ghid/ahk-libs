@@ -235,7 +235,6 @@ class StructureTest extends TestCase {
 	@Test_TIME_ZONE_INFORMATION() {
 		tzi := new TIME_ZONE_INFORMATION().implode(_tzi)
 		if (DllCall("GetTimeZoneInformation", "UInt", &_tzi, "UInt")) {
-			; TestCase.writeLine("`n" LoggingHelper.hexDump(&_tzi, 0, tzi.sizeOf())) ; ahklint-ignore: W002
 			tzi.explode(_tzi)
 			this.assertEquals(tzi.Bias, -60)
 			this.assertEquals(tzi.StandardName, "Mitteleuropäische Zeit")
@@ -364,14 +363,10 @@ class StructureTest extends TestCase {
 		si.stdInput := 15
 		si.stdOutput := 16
 		si.stdErr := 17
-		TestCase.writeLine("`n" si.dump())
 		si.implode(_si)
-		; TestCase.writeLine(LoggingHelper.hexDump(&_si, 0, si.sizeOf()))
 		si2 := new STARTUPINFO().implode(_si2)
 		DllCall("GetStartupInfo" (A_IsUnicode ? "W" : "A"), "Ptr", &_si2)
-		TestCase.writeLine(LoggingHelper.hexDump(&_si2, 0, si.sizeOf()))
 		si2.explode(_si2)
-		TestCase.writeLine(si2.dump())
 	}
 }
 
