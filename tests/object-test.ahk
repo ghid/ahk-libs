@@ -271,6 +271,20 @@ class ObjectTest extends TestCase {
 				, {a: "a", b: "x", c: "c"}))
 	}
 
+	@Test_append() {
+		o := Object.append({a: "foo"}, {b: "bar"})
+		this.assertEquals(o.a, "foo")
+		this.assertEquals(o.b, "bar")
+		o := Object.append(o, {c: "baz"})
+		this.assertEquals(o.a, "foo")
+		this.assertEquals(o.b, "bar")
+		this.assertEquals(o.c, "baz")
+		o := Object.append(o, {b: "blah"})
+		this.assertEquals(o.a, "foo")
+		this.assertEquals(o.b, "blah")
+		this.assertEquals(o.c, "baz")
+	}
+
 	@Test_Serialize_Class2() {
 		o := new KKunde()
 		Object.serialize(o, A_Temp "\class-test.ini")

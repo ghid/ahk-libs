@@ -130,6 +130,13 @@ class Object {
 		}
 		return true
 	}
+
+	append(targetObject, objectToAppend) {
+		for key, value in objectToAppend {
+			targetObject[key] := value
+		}
+		return targetObject
+	}
 }
 
 object_Serialize(poObject, poIni, pstId="") {
