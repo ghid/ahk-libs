@@ -157,7 +157,7 @@ class Console {
 	}
 
 	__initBufferInfo() {
-		csbi := new CONSOLE_SCREEN_BUFFER_INFO(_csbi := "")
+		csbi := new CONSOLE_SCREEN_BUFFER_INFO().implode(_csbi)
 		_ret := DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi)
 		if (_ret != 0) {
@@ -424,8 +424,7 @@ class Console {
 	}
 
 	getBufferInfo() {
-		csbi := new CONSOLE_SCREEN_BUFFER_INFO()
-		csbi.implode(_csbi)
+		csbi := new CONSOLE_SCREEN_BUFFER_INFO().implode(_csbi)
 		DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi, "Int")
 		csbi.explode(_csbi)
