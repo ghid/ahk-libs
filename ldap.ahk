@@ -50,7 +50,7 @@ class Ldap {
 		if (attrs) {
 			l := System.strArrayToPtrList(attrs, _attrs)
 		} else {
-			_attrs := ""
+			VarSetCapacity(_attrs, A_PtrSize, 0)
 		}
 		VarSetCapacity(res, A_PtrSize, 0)
 		result := DllCall("wldap32\ldap_search_s" Ldap.AW
