@@ -120,9 +120,9 @@ class TestCaseTest extends TestCase {
 
 	@Test_getAssertionSource() {
 		this.assertEquals(TestCase.getAssertionSource("@Test_assertNotEmpty", 6)
-				, "113: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
+				, "118: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
 		this.assertEquals(TestCase.getAssertionSource("@Test_assertNotEmpty", 7)
-				, "113: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
+				, "118: this.assertException(TestCase, ""assertNotEmpty"",,, Chr(0))") ; ahklint-ignore: W002
 	}
 
 	@Test_fail() {
