@@ -724,7 +724,7 @@ class StringTest extends TestCase {
 		this.assertEquals("%-7.5i".printf(-47)
 				, "-0047  ", compareAsString)
 		this.assertEquals("%-7.5i".printf(-47.00)
-				, "-0047  ", compareAsString) ; @fixme 19-4DD0C got not the expected result
+				, "-0047  ", compareAsString)
 		this.assertEquals("You earned %i credits".printf(47.000)
 				, "You earned 47 credits")
 		this.assertEquals("Amount owed is $%.2f".printf(1730)

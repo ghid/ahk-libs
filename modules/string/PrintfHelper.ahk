@@ -126,6 +126,7 @@ class PrintfHelper {
 	}
 
 	padIntegerTypes(replacingValue) {
+		replacingValue := RegExReplace(replacingValue , "\.\d+$", "")
 		if (PrintfHelper.placeHolder.precision != "") {
 			if (PrintfHelper.placeHolder.precision == 0
 					&& replacingValue == 0) {
@@ -135,7 +136,6 @@ class PrintfHelper {
 						.padNumber(PrintfHelper.placeHolder.precision)
 			}
 		}
-		replacingValue := RegExReplace(replacingValue , "\.\d+$", "")
 		size := (PrintfHelper.placeHolder.size == ""
 				? StrLen(replacingValue)
 				: PrintfHelper.placeHolder.size)
