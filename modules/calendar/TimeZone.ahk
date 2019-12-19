@@ -30,8 +30,7 @@ class TimeZone {
 	; ahklint-ignore-end
 
 	__new() {
-		tzi := new TIME_ZONE_INFORMATION()
-		tzi.implode(_tzi)
+		tzi := new TIME_ZONE_INFORMATION().implode(_tzi)
 		this.iD := DllCall("GetTimeZoneInformation", "Ptr", &_tzi)
 		if (this.iD != Calendar.TimeZone.INVALID) {
 			tzi.explode(_tzi)
@@ -56,7 +55,7 @@ class TimeZone {
 
 	forYear(aYear="") {
 		this.year := (aYear != "" ? aYear : A_Year)
-		tzi := new TIME_ZONE_INFORMATION(_tzi := "")
+		tzi := new TIME_ZONE_INFORMATION().implode(_tzi)
 		if (DllCall("GetTimeZoneInformationForYear", "UShort", aYear
 				, "Ptr", 0, "Ptr", &_tzi, "UChar")) {
 			tzi.explode(_tzi)
