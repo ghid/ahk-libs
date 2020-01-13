@@ -123,34 +123,34 @@ class System {
 		return var
 	}
 
-	ptrListToStrArray(ByRef pointerList, add_empty_element=true) {
-		stringArray := []
+	ptrListToStrArray(ptrListAddress, addEmptyElement=true) {
+		ofs := 0
+		strArray :=  []
 		loop {
-			addr := NumGet(pointerList+0, 0, "Ptr")
-			if (!addr) {
-				if (add_empty_element) {
-					stringArray.push("")
-				}
-				break
+			if (addr := NumGet(ptrListAddress+ofs, "Ptr")) {
+				strArray.push(StrGet(addr))
 			}
-			System.strCpy(addr, st)
-			stringArray.push(st)
-			pointerList += A_PtrSize
+			ofs += A_PtrSize
+		} until (addr == 0)
+		if (addEmptyElement) {
+			strArray.push("")
 		}
-		return stringArray
+		return strArray
 	}
 
-	strArrayToPtrList(ByRef a, ByRef ptr) {
-		i := a.minIndex()
-		s := 0
-		if (i) {
-			s := VarSetCapacity(ptr, a.count() * A_PtrSize, 0)
-			while (i <= a.maxIndex()) {
-				NumPut(a.getAddress(i), ptr, (A_Index - 1) * A_PtrSize, "Ptr")
-				i++
+	strArrayToPtrList(anArray, ByRef ptrList) {
+		size := 0
+		if (anArray.count() != "") {
+			size := VarSetCapacity(ptrList, (anArray.count()+1)*A_PtrSize)
+			ofs := 0
+			for k, _ in anArray {
+				addr := anArray.getAddress(k)
+				NumPut(addr, &ptrList+ofs, "Ptr")
+				ofs += A_PtrSize
 			}
+			NumPut(0, &ptrList+ofs, "Ptr")
 		}
-		return s
+		return size
 	}
 
 	strArrayToStrArrayList(ByRef a, ByRef ptr) {
@@ -240,7 +240,8 @@ class System {
 		return found
 	}
 
-	runProcess(Command, Stream_To="", Working_Dir="", Input_Data="") {
+	runProcess(Command, Stream_To="", Working_Dir="", Input_Data=""
+			, timeoutMSecs=5000) {
 		S_Temp := ""
 		N_Temp := ""
 		Output := ""
@@ -280,7 +281,7 @@ class System {
 			NumPut(H_StdOut_Writer,		Startup_Info,	64, "Ptr")
 		} else if (A_PtrSize = 8) {
 			VarSetCapacity(Process_Info, 24, 0)
-			Startup_Info_Size := VarSetCapacity(Startup_Info, 96, 0)
+			Startup_Info_Size := VarSetCapacity(Startup_Info, 104, 0)
 			NumPut(Startup_Info_Size,	Startup_Info,	 0, "UInt")
 			NumPut(0x100,					Startup_Info,	60, "UInt")
 			NumPut(H_StdIn_Reader,		Startup_Info,	80, "Ptr")
@@ -316,7 +317,23 @@ class System {
 				, "Ptr"))
 				: ""
 		DllCall("CloseHandle", "Ptr", H_StdOut_Writer)
+		timeoutTickCount := A_TickCount + timeoutMSecs
 		loop {
+			; hStdOutRd := H_StdOut_Reader
+			; fout := FileOpen(hStdOutRd, "h", A_FileEncoding)
+			sleep 200
+			hStdOutRd := H_StdOut_Reader
+			fout := FileOpen(hStdOutRd, "h", A_FileEncoding)
+			data := fout.read()
+			if (fout.AtEOF && data != "") {
+				output .= data
+				break
+			}
+			if (A_TickCount > timeoutTickCount) {
+				Msgbox Timeout
+				throw Exception("Timeout")
+			}
+			/*
 			Result := DllCall("ReadFile"
 					, "Ptr", H_StdOut_Reader
 					, "Ptr", &S_Temp
@@ -346,16 +363,17 @@ class System {
 					}
 				}
 			}
+			*/
 		}
 
-		Stream_To+0 ? (DllCall("Sleep", "UInt", 1000)
-				, H_Console+1 ? DllCall("CloseHandle", "Ptr", H_Console)
-				: "", Alloc_Console ? DllCall("FreeConsole") : "") : ""
+		; Stream_To+0 ? (DllCall("Sleep", "UInt", 1000)
+				; , H_Console+1 ? DllCall("CloseHandle", "Ptr", H_Console)
+				; : "", Alloc_Console ? DllCall("FreeConsole") : "") : ""
 
-		Wait_Result := DllCall("WaitForSingleObject"
-				, "Ptr", NumGet(Process_Info, 0, "Ptr")
-				, "UInt", 0xFFFFFFFF	; INFINITE
-				, "UInt")
+		; Wait_Result := DllCall("WaitForSingleObject"
+				; , "Ptr", NumGet(Process_Info, 0, "Ptr")
+				; , "UInt", 0xFFFFFFFF	; INFINITE
+				; , "UInt")
 
 		DllCall("CloseHandle", "Ptr", NumGet(Process_Info, 0, "Ptr"))
 

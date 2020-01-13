@@ -113,7 +113,7 @@ class SystemTest extends TestCase {
 				, "i)^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$"))
 	}
 
-	@Test_PtrListToStrArray() {
+	@Test_ptrListToStrArray() {
 		VarSetCapacity(pList, A_PtrSize*(6), 0)
 		s1 := "Anne"
 		s2 := "Bob"
@@ -145,7 +145,7 @@ class SystemTest extends TestCase {
 		a3 := NumGet(&ptr, _ofs+=A_PtrSize, "Ptr")
 		a4 := NumGet(&ptr, _ofs+=A_PtrSize, "Ptr")
 		a5 := NumGet(&ptr, _ofs+=A_PtrSize, "Ptr")
-		this.assertEquals(s, 40)
+		this.assertEquals(s, (a.count()+1)*A_PtrSize)
 		this.assertEquals(StrGet(a1), "Anne")
 		this.assertEquals(StrGet(a2), "Bob")
 		this.assertEquals(StrGet(a3), "Charlie")
@@ -173,57 +173,6 @@ class SystemTest extends TestCase {
 		this.assertEquals(a2.maxIndex(), 2)
 		this.assertEquals(a2[1], a1[1])
 		this.assertEquals(a2[2], "")
-	}
-
-	@Test_StrArrayToPtrList2() {
-		o := {a: ["alpha", "bravo", "charlie", ""]}
-		VarSetCapacity(G_target, 100, 0)
-		s := System.strArrayToPtrList(o.a, p)
-		NumPut(&p, G_target, A_PtrSize, "Ptr")
-		this.assertEquals(s, o.a.maxIndex()*A_PtrSize)
-		this.assertEquals(StrGet(NumGet(p, 0, "Ptr")), o.a[1])
-		this.assertEquals(StrGet(NumGet(p, A_PtrSize, "Ptr")), o.a[2])
-		this.assertEquals(StrGet(NumGet(p, 2*A_PtrSize, "Ptr")), o.a[3])
-		this.assertEquals(StrGet(NumGet(p, 3*A_PtrSize, "Ptr")), o.a[4])
-		this.assertEquals(StrGet(NumGet(NumGet(G_target, A_PtrSize, "Ptr")
-				, 0, "Ptr")), o.a[1])
-		this.assertEquals(StrGet(NumGet(NumGet(G_target, A_PtrSize, "Ptr")
-				, A_PtrSize, "Ptr")), o.a[2])
-		this.assertEquals(StrGet(NumGet(NumGet(G_target, A_PtrSize, "Ptr")
-				, 2*A_PtrSize, "Ptr")), o.a[3])
-		this.assertEquals(StrGet(NumGet(NumGet(G_target, A_PtrSize, "Ptr")
-				, 3*A_PtrSize, "Ptr")), o.a[4])
-		OutputDebug % LoggingHelper.hexDump(NumGet(G_Target, A_PtrSize
-				, "Ptr"), 0, s)
-		OutputDebug % LoggingHelper.hexDump(NumGet(NumGet(G_Target, A_PtrSize
-				, "Ptr"), 0, "Ptr"), 0, 20)
-	}
-
-	@Depend_@Test_PtrListToStrArray2() {
-		return "@Test_StrArrayToPtrList2"
-	}
-	@Test_PtrListToStrArray2() {
-		OutputDebug % NumGet(G_Target, A_PtrSize, "Ptr")
-		OutputDebug % LoggingHelper.hexDump(NumGet(G_Target, A_PtrSize, "Ptr")
-				, 0, 4*A_PtrSize)
-		OutputDebug % LoggingHelper.hexDump(NumGet(NumGet(G_Target, A_PtrSize
-				, "Ptr"), 0, "Ptr"), 0, 20)
-		this.assertEquals(StrGet(NumGet(NumGet(G_target, A_PtrSize, "Ptr")
-				, 0, "Ptr")), "x")
-		; NumPut(G_1st_addr, NumGet(G_target, A_PtrSize, "Ptr"), 0, "Ptr")
-		; this.AssertEquals(&G_Target, G_target_addr)
-		; this.AssertEquals(StrGet(G_Target_addr), "alpha")
-		o := {a: ["one", "two", "three"]}
-		this.assertEquals(o.a[1], "one")
-		this.assertEquals(o.a[2], "two")
-		this.assertEquals(o.a[3], "three")
-		o.a := System.ptrListToStrArray(&G_1st_addr)
-		OutputDebug % LoggingHelper.dump(o)
-		this.assertEquals(o.a.maxIndex(), 4)
-		this.assertEquals(o.a[1], "alpha")
-		this.assertEquals(o.a[2], "bravo")
-		this.assertEquals(o.a[3], "charlie")
-		this.assertEquals(o.a[4], "")
 	}
 
 	@Test_StrArrayToPtrListAndBackAsObject() {
@@ -282,7 +231,7 @@ class SystemTest extends TestCase {
 	@Test_Which() {
 		EnvGet path, PATH
 		EnvGet pathext, PATHEXT
-		this.assertEquals(System.which("cmd", path, pathext)
+		this.assertEqualsIgnoreCase(System.which("cmd", path, pathext)
 				, A_WinDir "\system32\cmd.EXE")
 		this.assertEquals(System.which(A_WinDir "\system32\cmd", path, pathext)
 				, A_WinDir "\system32\cmd.EXE")
@@ -342,6 +291,11 @@ class SystemTest extends TestCase {
 		this.assertEquals(a2[5], 40)
 		this.assertEquals(a2[6], 50)
 		this.assertEquals(a2[7], "")
+	}
+
+	@Test_runProcess() {
+		this.assertEquals(System.runProcess("hostname")
+				, System.envGet("COMPUTERNAME") "`r`n")
 	}
 }
 
