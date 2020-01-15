@@ -85,6 +85,9 @@ class Ansi {
 	}
 
 	__initAnsiSupport() {
+		if (RegExMatch(A_OSVersion, "^10\.")) {
+			return true
+		}
 		EnvGet da, DISABLE_ANSI
 		EnvGet ansicon_version, ANSICON_VER
 		return ansicon_version && (!da)
@@ -338,30 +341,5 @@ class Ansi {
 			}
 		}
 		return position
-	}
-
-	mapColor(color) {
-		static COLOR_MAPPING
-				:= {30: Console.Color.Foreground.BLACK
-				, 31: Console.Color.Foreground.RED
-				, 32: Console.Color.Foreground.GREEN
-				, 33: Console.Color.Foreground.OCHER
-				, 34: Console.Color.Foreground.BLUE
-				, 35: Console.Color.Foreground.PURPLE
-				, 36: Console.Color.Foreground.TURQUOISE
-				, 37: Console.Color.Foreground.LIGHTGREY
-				, 40: Console.Color.Background.BLACK
-				, 41: Console.Color.Background.RED
-				, 42: Console.Color.Background.GREEN
-				, 43: Console.Color.Background.OCHER
-				, 44: Console.Color.Background.BLUE
-				, 45: Console.Color.Background.PURPLE
-				, 46: Console.Color.Background.TURQUOISE
-				, 47: Console.Color.Background.LIGHTGREY}
-
-		if ((color < 30 || color > 37) && (color < 40 || color > 47)) {
-			throw Exception("Invalid color code",, color)
-		}
-		return COLOR_MAPPING[color]
 	}
 }

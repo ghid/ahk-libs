@@ -14,14 +14,14 @@ class Console {
 	static hStdErr := Console.__initHandle(Console.STD_ERROR_HANDLE)
 	static hStdIn  := Console.__initHandle(Console.STD_INPUT_HANDLE)
 
-	static BufferInfo := Console.__initBufferInfo()
+	static bufferInfo := Console.__initBufferInfo()
 
 	static SavedPos := [0, 0]
 
 	static Encoding := "cp850"
 
 	class Color {
-		wAttributes := 0
+		attributes := 0
 		strText := ""
 
 		static FOREGROUND_BLUE := 0x0001
@@ -117,21 +117,21 @@ class Console {
 		}
 
 		__new(pwAttributes, pstrText="") {
-			this.wAttributes := pwAttributes
+			this.attributes := pwAttributes
 			this.strText := pstrText
 			return this
 		}
 
 		reverse(pwAttributes="") {
 			if (pwAttributes = "") {
-				pwAttributes := Console.getBufferInfo().wAttributes
+				pwAttributes := Console.getBufferInfo().attributes
 			}
 			return ((pwAttributes & 0x0f)<<4) | ((pwAttributes & 0xf0)>>4)
 		}
 
 		bold(pwAttributes="") {
 			if (pwAttributes = "") {
-				pwAttributes := Console.getBufferInfo().wAttributes
+				pwAttributes := Console.getBufferInfo().attributes
 			}
 			return pwAttributes & 0x0f
 					| Console.Color.FOREGROUND_INTENSITY
@@ -139,7 +139,7 @@ class Console {
 
 		highlight() {
 			bi := Console.getBufferInfo()
-			return bi.wAttributes
+			return bi.attributes
 					| Console.Color.BACKGROUND_INTENSITY
 		}
 
@@ -180,8 +180,8 @@ class Console {
 			}
 			if (_item.__Class = "Console.Color") {
 				if (_item.strText != "") {
-					_currentAttributes := Console.bufferInfo.wAttributes
-					Console.setTextAttribute(_item.wAttributes)
+					_currentAttributes := Console.bufferInfo.attributes
+					Console.setTextAttribute(_item.attributes)
 					if (Console.bufferInfo) {
 						FileAppend % _item.strText, CONOUT$, % Console.encoding
 					} else {
@@ -189,7 +189,7 @@ class Console {
 					}
 					Console.setTextAttribute(_currentAttributes)
 				} else {
-					Console.setTextAttribute(_item.wAttributes)
+					Console.setTextAttribute(_item.attributes)
 					if (Console.bufferInfo) {
 						FileAppend % _item.strText, CONOUT$, % Console.encoding
 					} else {
@@ -258,31 +258,33 @@ class Console {
 			} else if ($3 = "m") {
 				values := StrSplit($2, ";")
 				consoleColor
-						:= new Console.Color(Console.bufferInfo.wAttributes)
+						:= new Console.Color(Console.bufferInfo.attributes)
 				loop % values.maxIndex() {
 					value := values[A_Index]
 					OutputDebug ::: value=%value%
 					if (value = 0) {
-						consoleColor.wAttributes
-								:= Console.bufferInfo.wAttributes
+						consoleColor.attributes
+								:= Console.bufferInfo.attributes
 					} else if (value = 1) {
-						consoleColor.wAttributes := consoleColor.wAttributes
+						consoleColor.attributes := consoleColor.attributes
 								| Console.Color.FOREGROUND_INTENSITY ; ahklint-ignore: W002
 					} else if (value = 7) {
-						hb := consoleColor.wAttributes & 0xf0
-						lb := consoleColor.wAttributes & 0xf
-						consoleColor.wAttributes := lb<<4 | hb>>4
-					} else if (value >= 30 && value <= 37) {
-						consoleColor.wAttributes
-								:= consoleColor.wAttributes & 0xf8
-								| Ansi.mapColor(value)
-					} else if (value >= 40 && value <= 47) {
-						consoleColor.wAttributes
-								:= consoleColor.wAttributes & 0xf
-								| Ansi.mapColor(value)
+						hb := consoleColor.attributes & 0xf0
+						lb := consoleColor.attributes & 0xf
+						consoleColor.attributes := lb<<4 | hb>>4
+					} else if ((value >= 30 && value <= 37)
+							|| (value >= 90 && value <= 97)) {
+						consoleColor.attributes
+								:= consoleColor.attributes & 0xf8
+								| Console.mapColor(value)
+					} else if ((value >= 40 && value <= 47)
+							|| (value >= 100 && value <= 107)) {
+						consoleColor.attributes
+								:= consoleColor.attributes & 0xf
+								| Console.mapColor(value)
 					}
 				}
-				OutputDebug ::: consoleColor=%consoleColor%
+				OutputDebug % "::: consoleColor=" consoleColor.attributes
 				Console.write(consoleColor, "")
 			} else if ($3 = "n" && $2 = "6") {
 				bi := Console.getBufferInfo()
@@ -302,7 +304,7 @@ class Console {
 	}
 
 	resetColor() {
-		return Console.setTextAttribute(Console.bufferInfo.wAttributes)
+		return Console.setTextAttribute(Console.bufferInfo.attributes)
 	}
 
 
@@ -409,7 +411,7 @@ class Console {
 		bi := Console.getBufferInfo()
 		Console.fillWithCharacter(" ", bi.dwSize.X - bi.dwCursorPosition.X
 				, bi.dwCursorPosition.X, bi.dwCursorPosition.Y)
-		Console.fillWithAttribute(bi.wAttributes
+		Console.fillWithAttribute(bi.attributes
 				, bi.dwSize.X - bi.dwCursorPosition.X, bi.dwCursorPosition.X
 				, bi.dwCursorPosition.Y)
 		Console.setCursorPos(0, bi.dwCursorPosition.Y)
@@ -418,7 +420,7 @@ class Console {
 	clearSCR() {
 		bi := Console.getBufferInfo()
 		Console.fillWithCharacter(" ", bi.dwSize.X * bi.dwSize.Y, 0, 0)
-		Console.fillWithAttribute(bi.wAttributes, bi.dwSize.X * bi.dwSize.Y
+		Console.fillWithAttribute(bi.attributes, bi.dwSize.X * bi.dwSize.Y
 				, 0, 0)
 		Console.setCursorPos(0, 0)
 	}
@@ -474,5 +476,62 @@ class Console {
 
 	refreshBufferInfo() {
 		Console.bufferInfo := Console.__InitBufferInfo()
+	}
+
+	mapColor(colorCode) {
+		static COLOR_MAPPING
+				:= {30: Console.Color.Foreground.BLACK
+				, 31: Console.Color.Foreground.RED
+				, 32: Console.Color.Foreground.GREEN
+				, 33: Console.Color.Foreground.OCHER
+				, 34: Console.Color.Foreground.BLUE
+				, 35: Console.Color.Foreground.PURPLE
+				, 36: Console.Color.Foreground.TURQUOISE
+				, 37: Console.Color.Foreground.LIGHTGREY
+				, 40: Console.Color.Background.BLACK
+				, 41: Console.Color.Background.RED
+				, 42: Console.Color.Background.GREEN
+				, 43: Console.Color.Background.OCHER
+				, 44: Console.Color.Background.BLUE
+				, 45: Console.Color.Background.PURPLE
+				, 46: Console.Color.Background.TURQUOISE
+				, 47: Console.Color.Background.LIGHTGREY
+				, 90: Console.Color.Foreground.BLACK
+				| Console.Color.FOREGROUND_INTENSITY
+				, 91: Console.Color.Foreground.RED
+				| Console.Color.FOREGROUND_INTENSITY
+				, 92: Console.Color.Foreground.GREEN
+				| Console.Color.FOREGROUND_INTENSITY
+				, 93: Console.Color.Foreground.OCHER
+				| Console.Color.FOREGROUND_INTENSITY
+				, 94: Console.Color.Foreground.BLUE
+				| Console.Color.FOREGROUND_INTENSITY
+				, 95: Console.Color.Foreground.PURPLE
+				| Console.Color.FOREGROUND_INTENSITY
+				, 96: Console.Color.Foreground.TURQUOISE
+				| Console.Color.FOREGROUND_INTENSITY
+				, 97: Console.Color.Foreground.LIGHTGREY
+				| Console.Color.FOREGROUND_INTENSITY
+				, 100: Console.Color.Background.BLACK
+				| Console.Color.BACKGROUND_INTENSITY
+				, 101: Console.Color.Background.RED
+				| Console.Color.BACKGROUND_INTENSITY
+				, 102: Console.Color.Background.GREEN
+				| Console.Color.BACKGROUND_INTENSITY
+				, 103: Console.Color.Background.OCHER
+				| Console.Color.BACKGROUND_INTENSITY
+				, 104: Console.Color.Background.BLUE
+				| Console.Color.BACKGROUND_INTENSITY
+				, 105: Console.Color.Background.PURPLE
+				| Console.Color.BACKGROUND_INTENSITY
+				, 106: Console.Color.Background.TURQUOISE
+				| Console.Color.BACKGROUND_INTENSITY
+				, 107: Console.Color.Background.LIGHTGREY
+				| Console.Color.BACKGROUND_INTENSITY}
+
+		if (!COLOR_MAPPING.hasKey(colorCode)) {
+			throw Exception("Invalid color code",, colorCode)
+		}
+		return COLOR_MAPPING[colorCode]
 	}
 }
