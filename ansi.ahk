@@ -85,10 +85,10 @@ class Ansi {
 	}
 
 	__initAnsiSupport() {
-		if (RegExMatch(A_OSVersion, "^10\.")) {
-			return true
-		}
 		EnvGet da, DISABLE_ANSI
+		if (RegExMatch(A_OSVersion, "^10\.")) {
+			return true && (!da)
+		}
 		EnvGet ansicon_version, ANSICON_VER
 		return ansicon_version && (!da)
 	}
