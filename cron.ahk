@@ -1,6 +1,10 @@
 ; TODO: Refactor
 class Cron {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [String, Arrays, Math]
 	}

@@ -1,6 +1,10 @@
 ; TODO: Refactor
 class Crypto {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [String, Base64]
 	}

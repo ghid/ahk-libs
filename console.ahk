@@ -1,5 +1,9 @@
 class Console {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Structure, CONSOLE_SCREEN_BUFFER_INFO]
 	}

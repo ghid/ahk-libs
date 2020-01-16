@@ -1,5 +1,20 @@
 class OptParser {
 
+	#Include %A_LineFile%\..\modules\optparser
+	#Include Group.ahk
+	#Include Line.ahk
+	#Include Option.ahk
+	#Include Boolean.ahk
+	#Include String.ahk
+	#Include Callback.ahk
+	#Include RcFile.ahk
+	#Include Counter.ahk
+	#Include Generic.ahk
+
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Object, String]
 	}
@@ -16,13 +31,13 @@ class OptParser {
 	 *      OPT_NEG_USAGE - Display as 'no'-option in usage.
 	 *      PARSER_ALLOW_DASHED_ARGS - Allow dashes in arguments
 	 */
-	static OPT_ARG	     := 1
-	static OPT_ARGREQ	 := 1
-	static OPT_OPTARG	 := 2
-	static OPT_NOARG	 := 4
-	static OPT_HIDDEN	 := 8
-	static OPT_MULTIPLE  := 16
-	static OPT_NEG       := 32
+	static OPT_ARG := 1
+	static OPT_ARGREQ := 1
+	static OPT_OPTARG := 2
+	static OPT_NOARG := 4
+	static OPT_HIDDEN := 8
+	static OPT_MULTIPLE := 16
+	static OPT_NEG := 32
 	static OPT_NEG_USAGE := 64
 	static OPT_ALLOW_SINGLE_DASH := 128
 
@@ -41,17 +56,6 @@ class OptParser {
 	iPtr := 0
 	exitOnDie := false
 	hasCounter := false
-
-	#Include %A_LineFile%\..\modules\optparser
-	#Include Group.ahk
-	#Include Line.ahk
-	#Include Option.ahk
-	#Include Boolean.ahk
-	#Include String.ahk
-	#Include Callback.ahk
-	#Include RcFile.ahk
-	#Include Counter.ahk
-	#Include Generic.ahk
 
 	__new(usageText, flags=0, envVarName="", rcFileName="") {
 		if (IsObject(usageText)) {

@@ -1,4 +1,6 @@
 ; ahk: console
+
+; @todo: Refactor! Move helper classes into String class
 #Include %A_LineFile%\..\modules\string\
 #Include HyphenationHelper.ahk
 #Include PrintfHelper.ahk
@@ -53,6 +55,14 @@
 "".base.hyphenate	:= Func("String.hyphenate")
 
 class String {
+
+	version() {
+		return "1.0.0"
+	}
+
+	requires() {
+		return []
+	}
 
 	; ahklint-ignore-begin: W002
 	static TRIM_LEFT          := -1, TRIM_ALL             := 0, TRIM_RIGHT            := +1

@@ -1,18 +1,22 @@
 class Geo {
 
+	#Include %A_LineFile%\..\modules\geo
+	#Include datum.ahk
+
+	version() {
+		return "1.0.0"
+	}
+
+	requires() {
+		return [TestCase, Object]
+	}
+
 	static VERTICAL := 0
 	static HORIZONTAL := 1
 
 	static CARDINAL_POINTS
 			:= {1: {1: "N", 0: "S"}
 			,   0: {1: "E", 0: "W"}}
-
-	requires() {
-		return [TestCase, Object]
-	}
-
-	#Include %A_LineFile%\..\modules\geo
-	#Include datum.ahk
 
 	class Coordinate {
 

@@ -1,6 +1,10 @@
 ; ahk: console
 class Arrays {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [String]
 	}

@@ -1,5 +1,9 @@
 class Structure {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Object]
 	}

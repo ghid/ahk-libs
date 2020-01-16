@@ -1,5 +1,9 @@
 class Flimsydata {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Random, Calendar]
 	}

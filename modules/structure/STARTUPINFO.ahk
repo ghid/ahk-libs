@@ -1,5 +1,9 @@
 class STARTUPINFO extends Structure {
 
+	version() {
+		return ["1.0.0"]
+	}
+
 	implode(ByRef data) {
 		this.cb := this.sizeOf()
 		return base.implode(data)

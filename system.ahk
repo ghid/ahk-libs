@@ -1,5 +1,13 @@
 class System {
 
+	version() {
+		return "1.0.0"
+	}
+
+	requires() {
+		return []
+	}
+
 	static FORMAT_MESSAGE_ALLOCATE_BUFFER := 0x00000100
 	static FORMAT_MESSAGE_ARGUMENT_ARRAY  := 0x00002000
 	static FORMAT_MESSAGE_FROM_HMODULE    := 0x00000800
@@ -17,6 +25,7 @@ class System {
 
 	__vArgs() {
 		global
+		OutputDebug %A_ThisFunc%: Use `A_Args` instead
 		local _argList := []
 
 		loop %0% {

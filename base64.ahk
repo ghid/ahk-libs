@@ -1,5 +1,9 @@
 class Base64 {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return []
 	}

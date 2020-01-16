@@ -1,7 +1,12 @@
+; @todo: Refactor! Move helper classes inside of Pager class
 #Include %A_LineFile%\..\modules\pager\
 #Include actions.ahk
 
 class Pager {
+
+	version() {
+		return "1.0.0"
+	}
 
 	requires() {
 		return [Structure, CONSOLE_SCREEN_BUFFER_INFO]

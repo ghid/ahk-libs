@@ -1,14 +1,18 @@
 class Ldap {
 
+	#Include %A_LineFile%\..\modules\ldap
+	#Include constants.ahk
+	#Include Helper.ahk
+
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Ansi, String, System, Structure, LDAPAPIINFO, LDAPMod]
 	}
 
 	static hWldap32 := 0
-
-	#Include %A_LineFile%\..\modules\ldap
-	#Include constants.ahk
-	#Include Helper.ahk
 
 	hLdap := 0
 

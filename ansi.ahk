@@ -1,4 +1,8 @@
 class Ansi {
+	
+	version() {
+		return "1.0.0"
+	}
 
 	requires() {
 		return [Console, Math, Arrays]
@@ -86,9 +90,6 @@ class Ansi {
 
 	__initAnsiSupport() {
 		EnvGet da, DISABLE_ANSI
-		if (RegExMatch(A_OSVersion, "^10\.")) {
-			return true && (!da)
-		}
 		EnvGet ansicon_version, ANSICON_VER
 		return ansicon_version && (!da)
 	}
@@ -133,9 +134,9 @@ class Ansi {
 		return Console.writeAndTranslateAnsiSequences(string)
 	}
 
-	writeLine(string="", flush_immediate=false, writeTo="") {
+	writeLine(string="", flushImmediate=false, writeTo="") {
 		stringWithNewLine := Ansi.write(string "`n", writeTo)
-		if (flush_immediate || Ansi.NO_BUFFER) {
+		if (flushImmediate || Ansi.NO_BUFFER) {
 			Ansi.flush()
 		}
 		return stringWithNewLine
@@ -143,6 +144,10 @@ class Ansi {
 
 	writeError(string) {
 		return Ansi.write(string, Ansi.stdErr)
+	}
+
+	writeErrorLine(string) {
+		return Ansi.write(string "`n", Ansi.stdErr)
 	}
 
 	wordWrap(inputString, desiredWidth) {

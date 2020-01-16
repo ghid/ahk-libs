@@ -6,6 +6,10 @@ class Calendar {
 	#Include TimeZone.ahk
 	#Include Units.ahk
 	
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Structure
 				, Object

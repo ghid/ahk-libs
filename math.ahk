@@ -1,8 +1,13 @@
+; @todo: Refactor! Put modules inside of Math class
 #Include %A_LineFile%\..\modules\math
 #Include MathHelper.ahk
 #Include PrimeFactorProduct.ahk
 
 class Math {
+
+	version() {
+		return "1.0.0"
+	}
 
 	requires() {
 		return [Arrays]

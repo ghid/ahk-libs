@@ -1,5 +1,9 @@
 class Long {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Math]
 	}

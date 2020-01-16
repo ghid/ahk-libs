@@ -1,17 +1,23 @@
 class App {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return []
 	}
 
-	; TODO: Handly cyclic dependencies
+	; TODO: Handle cyclic dependencies
 	checkRequiredClasses(forClass="") {
 		forClass := (forClass != "" ? forClass : this)
 		requiredClasses := forClass.requires()
 		while (A_Index <= requiredClasses.maxIndex()) {
 			requiredClass := requiredClasses[A_Index]
 			if (IsObject(requiredClass)) {
-				OutputDebug % forClass.__Class " uses " requiredClass.__Class
+				OutputDebug % Format("{:s} uses {:s} {:s}"
+						, forClass.__Class, requiredClass.__Class
+						, requiredClass.version())
 				App.checkRequiredClasses(requiredClass)
 			} else {
 				OutputDebug % "Misses requirement #" A_Index

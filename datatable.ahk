@@ -1,5 +1,9 @@
 class DataTable {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [Ansi, Arrays, String, Object]
 	}

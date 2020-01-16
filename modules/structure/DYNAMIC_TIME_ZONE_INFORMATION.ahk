@@ -1,5 +1,9 @@
 class DYNAMIC_TIME_ZONE_INFORMATION extends Structure {
 
+	version() {
+		return ["1.0.0"]
+	}
+
 	requires() {
 		return [Structure, SYSTEMTIME]
 	}

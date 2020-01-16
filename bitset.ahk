@@ -1,5 +1,9 @@
 class BitSet {
 
+	version() {
+		return "1.0.0"
+	}
+
 	requires() {
 		return [TestCase, Arrays, System, Math]
 	}

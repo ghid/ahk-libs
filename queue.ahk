@@ -1,5 +1,13 @@
 class Queue {
 
+	version() {
+		return "1.0.0"
+	}
+
+	requires() {
+		return []
+	}
+
 	queueSize := 0
 	content := []
 

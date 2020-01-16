@@ -1,11 +1,15 @@
 class LDAPAPIINFO extends Structure {
 
-	extensionsPtrList := " "
-	extensionsList := []
+	version() {
+		return ["1.0.0"]
+	}
 
 	requires() {
 		return [Structure]
 	}
+
+	extensionsPtrList := " "
+	extensionsList := []
 
 	ldapai_extensions[] {
 		get {

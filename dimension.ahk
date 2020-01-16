@@ -1,4 +1,9 @@
+; @todo: finish implementation
 class Dimension {
+
+	version() {
+		return "1.0.0"
+	}
 
 	static units := ""
 	static type := 0

@@ -136,7 +136,7 @@ class AnsiTest extends TestCase {
 
 	@Test_writeToStdErr() {
 		Ansi.stdErr := FileOpen(A_Temp "\ansi-test-err.txt", "w `n")
-		Ansi.writeLine("TEST,1,2,3",, Ansi.stdErr)
+		Ansi.writeErrorLine("TEST,1,2,3")
 		Ansi.stdErr.close()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ansi-test-err.txt")
 				, "TEST,1,2,3`r`n")

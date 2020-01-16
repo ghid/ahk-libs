@@ -1,5 +1,14 @@
 class Object {
 
+	version() {
+		return "1.0.0"
+	}
+
+	requires() {
+		return []
+	}
+
+	; @todo: Refactor! Put Ini class in separate module file
 	class Ini {
 		stFileName := ""
 		section := {}

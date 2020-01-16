@@ -1,5 +1,13 @@
 class Random {
 
+	version() {
+		return "1.0.0"
+	}
+
+	requires() {
+		return []
+	}
+
 	static N := 624
 	static M := 397
 	static MATRIX_A := 0x9908b0df
