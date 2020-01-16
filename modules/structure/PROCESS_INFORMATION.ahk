@@ -1,7 +1,7 @@
 class PROCESS_INFORMATION extends Structure {
 
 	version() {
-		return ["1.0.0"]
+		return "1.0.0"
 	}
 
 	struct := [["process"  , "Ptr"]

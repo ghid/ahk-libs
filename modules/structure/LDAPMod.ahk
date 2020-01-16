@@ -1,7 +1,7 @@
 class LDAPMod extends Structure {
 
 	version() {
-		return ["1.0.0"]
+		return "1.0.0"
 	}
 
 	requires() {

@@ -1,7 +1,7 @@
 class CONSOLE_SCREEN_BUFFER_INFO extends Structure {
 
 	version() {
-		return ["1.0.0"]
+		return "1.0.0"
 	}
 
 	requires() {
