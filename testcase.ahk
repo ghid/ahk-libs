@@ -7,7 +7,7 @@
 class TestCase {
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
@@ -22,10 +22,11 @@ class TestCase {
 	static allSuccessfulTestsDuration := 0.0
 	static stopOnFirstError := false
 
+	static isWinCmdExe := TestCase.checkIfCmdExeIsUsed()
+	static SUCCESSFUL_SYMBOL := TestCase.getSuccessfullSymbol()
+	static FAILED_SYMBOL := TestCase.getFailSymbol()
 	static SUCCESSFUL := 1
-	static SUCCESSFUL_SYMBOL := Chr(0x2714)
 	static FAILED := 0
-	static FAILED_SYMBOL := Chr(0x274c)
 	static UNKNOWN := ""
 	static NOT_RUN := -1
 
@@ -44,6 +45,19 @@ class TestCase {
 	__new() {
 		throw Exception("Instantiation of class '" this.__Class
 				. "' ist not allowed", -1)
+	}
+
+	checkIfCmdExeIsUsed() {
+		WinGet procName, ProcessName, A
+		return procName = "cmd.exe"
+	}
+
+	getSuccessfullSymbol() {
+		return (TestCase.isWinCmdExe ? "PASS" : Chr(0x2714))
+	}
+
+	getFailSymbol() {
+		return (TestCase.isWinCmdExe ? "FAIL" : Chr(0x274c))
 	}
 
 	openTestOutForOutput() {
@@ -491,16 +505,18 @@ class TestCase {
 	}
 
 	stateName(state) {
-		if (state = TestCase.UNKNOWN) {
-			return "Unknown test"
-		} else if (state = TestCase.NOT_RUN) {
+		switch state {
+		case TestCase.UNKNOWN:
+			return "Unkown test"
+		case TestCase.NOT_RUN:
 			return "Did not run"
-		} else if (state = TestCase.SUCCESSFUL) {
+		case TestCase.SUCCESSFUL:
 			return "Successfull"
-		} else if (state = TestCase.FAILED) {
+		case TestCase.FAILED:
 			return "Failed"
+		default:
+			return "Unknown state: " state
 		}
-		return "Unknown state: " state
 	}
 
 	visibleCtrls(st, compareTo="") {
