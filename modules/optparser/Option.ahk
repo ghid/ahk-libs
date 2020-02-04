@@ -75,12 +75,12 @@ class Option {
 				this.setValue(groupArgument)
 			} else if (optionParser.iPtr < optionParser.argumentList
 					.maxIndex()) {
-				nextArgument
-						:= optionParser.argumentList[optionParser.iPtr + 1]
+				nextArgument := optionParser.argumentList[optionParser.iPtr + 1]
 				if (nextArgument != ""
 						&& SubStr(nextArgument, 1, 1) != "-"
 						|| (this.flags & OptParser.OPT_ALLOW_SINGLE_DASH
-						&& nextArgument == "-")) {
+						&& nextArgument == "-")
+						|| (this.flags & OptParser.OPT_ARGREQ)) {
 					optionParser.iPtr += 1
 					this.setValue(nextArgument)
 				}
