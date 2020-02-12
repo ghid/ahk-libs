@@ -115,8 +115,7 @@ class OptParserTest extends TestCase {
 		op := new OptParser("Test")
 		op.add(new OptParser.Boolean("v", "verbose", opt
 				, "v", "Verbose output",, true))
-		op.add(new OptParser.Boolean("q", "quiet", opt
-				, "q", "Quiet output"))
+		op.add(new OptParser.Boolean("q", "quiet", opt, "q", "Quiet output"))
 		op.parse(["-q"])
 		this.assertEquals(opt.v, true)
 		this.assertEquals(opt.q, true)
@@ -362,8 +361,7 @@ Specific git-branch actions:
 				, "move/rename a branch and its reflog"))
 		op.add(new OptParser.Boolean("M", "", opts, "mte"
 				, "move/rename a branch, even if target exists"))
-		op.add(new OptParser.Boolean(0, "list", opts, "l"
-				, "list branch names"))
+		op.add(new OptParser.Boolean(0, "list", opts, "l", "list branch names"))
 		op.add(new OptParser.Boolean("l", "create-reflog", opts, "crl"
 				, "create the branch's reflog"))
 		op.add(new OptParser.Boolean(0, "edit-description", opts, "ed"
@@ -431,7 +429,7 @@ Specific git-branch actions:
 	}
 
 	@Test_optionUsage() {
-		; ahklint-ignore-begin: W003,W010
+		; ahklint-ignore-begin: I001,W004
 		stExpectedUsage =
 (
 usage: Test
@@ -450,8 +448,7 @@ usage: Test
 		op.add(new OptParser.Boolean("o", "a-very-long-option-string"
 				, opts, "long-opt"
 				, ["Explanation number one", "and number two"]))
-		op.add(new OptParser.Boolean("x", "long-self-explaining-option"
-				, opts))
+		op.add(new OptParser.Boolean("x", "long-self-explaining-option", opts))
 		op.add(new OptParser.Boolean(0, "hidden", opts, "hidden"
 				, "Will not be displayed", OptParser.OPT_HIDDEN))
 		this.assertEquals(op.usage(), stExpectedUsage)
@@ -550,7 +547,7 @@ usage: Test
 
 	@Test_noOptionUsage() {
 		stExpectedUsage =
-		; ahklint-ignore-begin: W010,W003
+		; ahklint-ignore-begin: I001,W004
 ( Comments
 usage: Test
 
@@ -671,8 +668,7 @@ usage: Test
 		op.add(new OptParser.Boolean("b", "", opts, "b", "Option b"))
 		op.add(new OptParser.Boolean("c", "", opts, "c", "Option c"))
 		op.add(new OptParser.Boolean("d", "", opts, "d", "Option d"))
-		op.add(new OptParser.Boolean(0, "first", opts
-				, "first", "First Option"))
+		op.add(new OptParser.Boolean(0, "first", opts, "first", "First Option"))
 		op.add(new OptParser.Boolean(0, "second", opts
 				, "second", "Second option"))
 		EnvSet %opt_var_name%,
@@ -763,7 +759,7 @@ usage: Test
 		if (FileExist(A_Temp "\.testrc")) {
 			FileDelete %A_Temp%\.testrc
 		}
-		; ahklint-ignore-begin: W010,W003
+		; ahklint-ignore-begin: I001,W004
 		FileAppend,
 			( LTrim Comments
 			--foo
@@ -783,7 +779,7 @@ usage: Test
 			FileDelete %A_Temp%\mytestrc
 		}
 		FileAppend,
-			; ahklint-ignore-begin: W003,W010
+			; ahklint-ignore-begin: I001,W004
 			( LTrim
 			--foo
 			#--text dummy
@@ -812,7 +808,7 @@ usage: Test
 			FileDelete %A_Temp%\mytestrc
 		}
 		FileAppend,
-			; ahklint-ignore-begin: W003,W010
+			; ahklint-ignore-begin: I001,W004
 			( LTrim
 			--foo
 			#--text dummy
