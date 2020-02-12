@@ -161,6 +161,8 @@ class Console {
 	}
 
 	__initBufferInfo() {
+		; @see: https://docs.microsoft.com/en-us/windows/console/setconsolemode
+		Console.setConsoleMode(Console.getConsoleMode() | 0x0004)
 		csbi := new CONSOLE_SCREEN_BUFFER_INFO().implode(_csbi)
 		_ret := DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi)
@@ -169,6 +171,24 @@ class Console {
 			return csbi
 		}
 		return ""
+	}
+
+	getConsoleMode() {
+		result := DllCall("GetConsoleMode"
+				, "Ptr", Console.hStdOut, "ShortP", mode := 0)
+		if (result) {
+			return mode
+		}
+		throw Exception(Format("{:s}: {:i}", A_ThisFunc, A_LastError))
+	}
+
+	setConsoleMode(mode) {
+		result := DllCall("SetConsoleMode"
+				, "Ptr", Console.hStdOut, "UInt", mode)
+		if (result) {
+			return result
+		}
+		throw Exception(Format("{:s}: {:i}", A_ThisFunc, A_LastError))
 	}
 
 	__new() {
