@@ -491,6 +491,7 @@ class TestCase {
 	}
 
 	fileContent(fileName) {
+		Ansi.flush()
 		FileRead content, %fileName%
 		return content
 	}
