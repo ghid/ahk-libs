@@ -265,7 +265,7 @@ class Console {
 						:= new Console.Color(Console.bufferInfo.attributes)
 				loop % values.maxIndex() {
 					value := values[A_Index]
-					OutputDebug ::: value=%value%
+					OutputDebug ::: %A_ThisFunc% ::: value=%value%
 					if (value = 0) {
 						consoleColor.attributes
 								:= Console.bufferInfo.attributes
@@ -288,7 +288,7 @@ class Console {
 								| Console.mapColor(value)
 					}
 				}
-				OutputDebug % "::: consoleColor=" consoleColor.attributes
+				OutputDebug % "::: " A_ThisFunc " ::: consoleColor=" consoleColor.attributes
 				Console.write(consoleColor, "")
 			} else if ($3 = "n" && $2 = "6") {
 				bi := Console.getBufferInfo()
