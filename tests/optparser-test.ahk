@@ -875,6 +875,18 @@ usage: Test
 		this.assertEquals(op.testIfValidLongOrShortOption("foo"), -1)
 		this.assertEquals(op.iPtr, 2)
 	}
+
+	@Test_negativeNumberArgument() {
+		opts := {}
+		op := new OptParser("Test", OptParser.PARSER_ALLOW_DASHED_ARGS)
+		op.add(new OptParser.String("x", ""
+				, opts, "x", "x"
+				, OptParser.OPT_ARGREQ | OptParserTest.OPT_ALLOW_SINGLE_DASH))
+		op.parse(["-x", "5"])
+		this.assertEquals(opts.x, 5)
+		op.parse(["-x", "-5"])
+		this.assertEquals(opts.x, -5)
+	}
 }
 
 test_func(value, no_opt="") {
