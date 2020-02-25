@@ -137,14 +137,12 @@ class Console {
 			if (pwAttributes = "") {
 				pwAttributes := Console.getBufferInfo().attributes
 			}
-			return pwAttributes & 0x0f
-					| Console.Color.FOREGROUND_INTENSITY
+			return pwAttributes & 0x0f | Console.Color.FOREGROUND_INTENSITY
 		}
 
 		highlight() {
 			bi := Console.getBufferInfo()
-			return bi.attributes
-					| Console.Color.BACKGROUND_INTENSITY
+			return bi.attributes | Console.Color.BACKGROUND_INTENSITY
 		}
 
 		normal() {
@@ -162,7 +160,11 @@ class Console {
 
 	__initBufferInfo() {
 		; @see: https://docs.microsoft.com/en-us/windows/console/setconsolemode
-		Console.setConsoleMode(Console.getConsoleMode() | 0x0004)
+		try {
+			Console.setConsoleMode(Console.getConsoleMode() | 0x0004)
+		} catch e {
+			OutputDebug %A_ThisFunc%: e.message ": " e.extra
+		}
 		csbi := new CONSOLE_SCREEN_BUFFER_INFO().implode(_csbi)
 		_ret := DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
 				, "Ptr", &_csbi)
@@ -253,17 +255,14 @@ class Console {
 				Console.setCursorPos(0, $2 = "" ? -1 : $2 = 0 ? 0 : $2*(-1)
 						, true)
 			} else if ($3 == "B") {
-				Console.setCursorPos(0, $2 = "" ? 1 : $2 = 0 ? 0 : $2
-						, true)
+				Console.setCursorPos(0, $2 = "" ? 1 : $2 = 0 ? 0 : $2, true)
 			} else if ($3 == "C") {
-				Console.setCursorPos($2 = "" ? 1 : $2 = 0 ? 0 : $2, 0
-						, true)
+				Console.setCursorPos($2 = "" ? 1 : $2 = 0 ? 0 : $2, 0, true)
 			} else if ($3 == "D") {
 				Console.setCursorPos($2 = "" ? -1 : $2 = 0 ? 0 : $2*(-1), 0
 						, true)
 			} else if ($3 == "E") {
-				Console.setCursorPos("", $2 = "" ? 1 : $2 = 0 ? 0 : $2
-						, true)
+				Console.setCursorPos("", $2 = "" ? 1 : $2 = 0 ? 0 : $2, true)
 				Console.setCursorPos(0)
 			} else if ($3 == "F") {
 				Console.setCursorPos("", $2 = "" ? -1 : $2 = 0 ? 0 : $2*(-1)
@@ -281,14 +280,12 @@ class Console {
 				Console.clearEOL()
 			} else if ($3 = "m") {
 				values := StrSplit($2, ";")
-				consoleColor
-						:= new Console.Color(Console.bufferInfo.attributes)
+				consoleColor := new Console.Color(Console.bufferInfo.attributes)
 				loop % values.maxIndex() {
 					value := values[A_Index]
 					OutputDebug ::: %A_ThisFunc% ::: value=%value%
 					if (value = 0) {
-						consoleColor.attributes
-								:= Console.bufferInfo.attributes
+						consoleColor.attributes := Console.bufferInfo.attributes
 					} else if (value = 1) {
 						consoleColor.attributes := consoleColor.attributes
 								| Console.Color.FOREGROUND_INTENSITY ; ahklint-ignore: W002
@@ -308,7 +305,8 @@ class Console {
 								| Console.mapColor(value)
 					}
 				}
-				OutputDebug % "::: " A_ThisFunc " ::: consoleColor=" consoleColor.attributes
+				OutputDebug % "::: " A_ThisFunc " ::: consoleColor="
+						. consoleColor.attributes
 				Console.write(consoleColor, "")
 			} else if ($3 = "n" && $2 = "6") {
 				bi := Console.getBufferInfo()

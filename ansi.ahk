@@ -8,7 +8,7 @@ class Ansi {
 		return [Console, Math, Arrays]
 	}
 
-	static codePage := "cp850"
+	static codePage := Ansi.__initCodePage()
 	static ansiExit := Ansi.__onExit()
 	static stdOut := Ansi.__initStdOut()
 	static stdErr := Ansi.__initStdErr()
@@ -68,6 +68,7 @@ class Ansi {
 	static BACKGROUND_BRIGHT_WHITE := 107
 
 	__initStdOut() {
+		OutputDebug % A_ThisFunc ": Ansi.codePage = " Ansi.codePage
 		h := FileOpen("*", "w `n", Ansi.codePage)
 		h.read(0)
 		return h
@@ -86,6 +87,15 @@ class Ansi {
 		h := FileOpen("*", "r `n", Ansi.codePage)
 		h.write(0)
 		return h
+	}
+
+	__initCodePage() {
+		codePage := DllCall("GetConsoleCP", "UInt")
+		if (codePage == 0) {
+			OutputDebug %A_ThisFunc%: Windows-Error: %A_LastError%
+			codePage := 850
+		}
+		return "cp" codepage
 	}
 
 	__initAnsiSupport() {
