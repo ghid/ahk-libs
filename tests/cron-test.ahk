@@ -1,9 +1,11 @@
-; ahk: console
+﻿; ahk: console
 #NoEnv
 #Warn All, StdOut
 SetBatchLines -1
 
 #Include <testcase-libs>
+#Include <Calendar>
+#Include <calendar-structs>
 
 #Include %A_ScriptDir%\..\cron.ahk
 
@@ -98,6 +100,14 @@ class CronTest extends TestCase {
 				. p3 " * * * * Dummy`n4:0 "
 				. p4 " * * * Dummy`n")
 	}
+
+	@Test_lastDayInMonth() {
+		Cron.reset()
+		Cron.addScheduler("* * L * *", "Dummy")
+		Cron.addScheduler("59 23 L 3,6,9,12 *", "FooBar")
+		this.assertEquals(Cron.cron_tab, "`n1:* * L * * Dummy"
+				. "`n2:59 23 L 3,6,9,12 * FooBar`n")
+	}
 }
 
 dummy(n) {
@@ -115,13 +125,11 @@ dummy5(n) {
 patternHelper(m, i, max=60) {
 	OutputDebug m=%m% i=%i% max=%max%
 	m := Mod(m, i)
-	; OutputDebug m=%m%
 	list := ""
 	while (m < max) {
 		list .= (list = "" ? "" : ",") m
 		m+=i
 	}
-
 	OutputDebug list=%list%
 	return list
 }

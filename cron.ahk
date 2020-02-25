@@ -1,12 +1,12 @@
-; TODO: Refactor
+; @todo: Refactor
 class Cron {
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
-		return [String, Arrays, Math]
+		return [String, Arrays, Math, Calendar]
 	}
 
 	static cron_tab := "`n"
@@ -25,12 +25,10 @@ class Cron {
 		return
 
 		CronTimer:
-			_timer := new Logger("class." A_ThisFunc)
 			delay := (((60 - A_Sec) * 1000) - A_MSec) * -1
 			Cron.scheduler(A_Min)
 			SetTimer CronTimer, %delay%
-			_timer.info("delay", delay)
-		return _timer.exit()
+		return
 	}
 
 	stop() {
@@ -57,13 +55,7 @@ class Cron {
 			}
 		}
 
-		expr := "\n(?P<number>\d+?):\s*"
-				. "((\d+,)*" Cron.value2Expr(current_min) "(,\d+)*|\*)\s+"
-				. "((\d+,)*" Cron.value2Expr(A_Hour) "(,\d+)*|\*)\s+"
-				. "((\d+,)*" Cron.value2Expr(A_DD) "(,\d+)*|\*)\s+"
-				. "((\d+,)*" Cron.value2Expr(A_MM) "(,\d+)*|\*)\s+"
-				. "((\d+,)*" Cron.value2Expr(A_WDay) "(,\d+)*|\*)\s+"
-				. "(?P<name>.+?)\s*\n"
+		expr := Cron.buildExpression(current_min)
 
 		num_jobs := 0
 		start := 1
@@ -78,7 +70,18 @@ class Cron {
 
 		last_runs_min := current_min
 
-		return num_job
+		return num_jobs
+	}
+
+	buildExpression(current_min) {
+		lastDay := (A_DD == new Calendar(A_Year A_MM).daysInMonth() ? "|L" : "")
+		return "\n(?P<number>\d+?):\s*"
+				. "((\d+,)*" Cron.value2Expr(current_min) "(,\d+)*|\*)\s+"
+				. "((\d+,)*" Cron.value2Expr(A_Hour) "(,\d+)*|\*)\s+"
+				. "((\d+,)*" Cron.value2Expr(A_DD) "(,\d+)*|\*" lastDay ")\s+"
+				. "((\d+,)*" Cron.value2Expr(A_MM) "(,\d+)*|\*)\s+"
+				. "((\d+,)*" Cron.value2Expr(A_WDay) "(,\d+)*|\*)\s+"
+				. "(?P<name>.+?)\s*\n"
 	}
 
 	addScheduler(cron_pattern, function_name) {
@@ -88,14 +91,19 @@ class Cron {
 
 	parseEntry(cron_pattern, function_name) {
 		entry := cron_pattern.trimAll() " " function_name.trimAll()
-		sub_expr := "(((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
-		expr := "S)^" sub_expr.repeat(5) "(.+?)$"
+		subExpr := "(((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+		subExprLast := "(L|((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+		expr := "S)^" subExpr.repeat(2)
+				. subExprLast
+				. subExpr.repeat(2) "(.+?)$"
 		if (RegExMatch(entry, expr, cron_entry)) {
 			minute := Cron.range2List(cron_entry1, 0, 59, A_Min)
 			hour := Cron.range2List(cron_entry6, 0, 23, A_Hour)
-			day := Cron.range2List(cron_entry11, 1, 31, A_MDay)
 			month := Cron.range2List(cron_entry16, 1, 12, A_Mon)
 			wday := Cron.range2List(cron_entry21, 1, 7, A_WDay)
+			day := cron_entry11 = "L"
+					? cron_entry11
+					: Cron.range2List(cron_entry11, 1, 31, A_MDay)
 			function := cron_entry26
 			effective_entry := minute " "
 					. hour " "
@@ -110,7 +118,7 @@ class Cron {
 		return effective_entry
 	}
 
-	; TODO: Refactor
+	; @todo: Refactor
 	range2List(range, min, max, actual=0) {
 		if (range = "*") {
 			return range
