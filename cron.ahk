@@ -118,21 +118,21 @@ class Cron {
 		return effective_entry
 	}
 
-	range2List(range, lowerBound, max, actual=0) {
+	range2List(range, lowerBound, upperBound, actual=0) {
 		if (range = "*") {
 			return range
 		}
 		list_value := []
-		elements := StrSplit(Cron.asFromToRange(range, max, actual), ",")
+		elements := StrSplit(Cron.asFromToRange(range, upperBound, actual), ",")
 		loop % elements.count() {
 			if (RegExMatch(elements[A_Index], "(?P<from>\d+)-(?P<to>\d+)"
 					, range_)) {
-				Cron.checkRanges([range_from, range_to], lowerBound, max)
+				Cron.checkRanges([range_from, range_to], lowerBound, upperBound)
 				loop {
 					list_value.push(range_from++)
 				} until (range_from > range_to)
 			} else if (RegExMatch(elements[A_Index], "\d+", range_val)) {
-				Cron.checkRanges([range_val], lowerBound, max)
+				Cron.checkRanges([range_val], lowerBound, upperBound)
 				list_value.push(range_val)
 			}
 		}
