@@ -28,6 +28,41 @@ class CronTest extends TestCase {
 		this.assertEquals(Cron.value2Expr("05"), "0*5")
 	}
 
+	@Test_asFromToRange() {
+		this.assertEquals(Cron.asFromToRange("2-5", 7, 0), "2-5")
+		this.assertEquals(Cron.asFromToRange("2,5", 7, 0), "2,5")
+		this.assertEquals(Cron.asFromToRange("2,3,5", 7, 0), "2,3,5")
+		this.assertEquals(Cron.asFromToRange("1/2", 12, 0), "1-12")
+		this.assertEquals(Cron.asFromToRange("*/12", 12, 0), "0-12")
+		this.assertEquals(Cron.asFromToRange("*/12", 12, 3), "3-12")
+	}
+
+	@Test_checkRanges() {
+		this.assertTrue(Cron.checkRanges([1, 5], 0, 7))
+		this.assertTrue(Cron.checkRanges([0, 7], 0, 7))
+		this.assertException(Cron, "checkRanges",,, [0, 7], 1, 7)
+		this.assertException(Cron, "checkRanges",,, [0, 7], 0, 6)
+	}
+
+	@Test_setIntervals() {
+		this.assertTrue(Arrays.equal(Cron.setIntervals([0,1,2,3,4,5,6], "*/2")
+				, [0,2,4,6]))
+		this.assertTrue(Arrays.equal(Cron.setIntervals([0,1,2,3,4,5,6,7], "*/2")
+				, [0,2,4,6]))
+		; this.assertTrue(Arrays.equal(Cron.setIntervals([0,1,2,3,4,5,6,7], "1/2") ; @fixme: This should work!
+				; , [1,3,5,7]))
+		this.assertTrue(Arrays.equal(Cron.setIntervals([2,3,4,5,6,7,8,9,10,11]
+				, "1/2"), [3,5,7,9,11]))
+		this.assertTrue(Arrays.equal(Cron.setIntervals([1,2,3,4,5,6,7,8,9,10,11,12] ; ahklint-ignore: W002
+				, "1/2"), [1,3,5,7,9,11]))
+		this.assertTrue(Arrays.equal(Cron.setIntervals([0,1,2,3,4,5,6], "/2")
+				, [0,1,2,3,4,5,6]))
+		this.assertTrue(Arrays.equal(Cron.setIntervals([0,1,2,3,4,5,6], "2")
+				, [0,1,2,3,4,5,6]))
+		this.assertTrue(Arrays.equal(Cron.setIntervals([0,1,2,3,4,5,6], "2/")
+				, [0,1,2,3,4,5,6]))
+	}
+
 	@Test_Range2List() {
 		this.assertEquals(Cron.range2List("*", 1, 7), "*")
 		this.assertEquals(Cron.range2List("2-5", 1, 7), "2,3,4,5")
@@ -123,14 +158,14 @@ dummy5(n) {
 }
 
 patternHelper(m, i, max=60) {
-	OutputDebug m=%m% i=%i% max=%max%
+	OutputDebug %A_ThisFunc%: m=%m% i=%i% max=%max%
 	m := Mod(m, i)
 	list := ""
 	while (m < max) {
 		list .= (list = "" ? "" : ",") m
 		m+=i
 	}
-	OutputDebug list=%list%
+	OutputDebug %A_ThisFunc%: list=%list%
 	return list
 }
 

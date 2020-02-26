@@ -118,63 +118,66 @@ class Cron {
 		return effective_entry
 	}
 
-	; @todo: Refactor
 	range2List(range, min, max, actual=0) {
 		if (range = "*") {
 			return range
 		}
 		list_value := []
-		RegExMatch(range, "(.+?)(\/(\d+))*$", range)
-		if (range3 != "" && range1 != "*") {
-			range := range1 "-" max
-		} else if (range3 != "" && range1 = "*") {
-			range := Mod(actual, range3) "-" max
-		} else if (range3 != "" && range1 != "") {
-			range := range1 "-" max
-		}
-		ranges := StrSplit(range, ",")
-		loop % ranges.maxIndex() {
-			if (RegExMatch(ranges[A_Index], "(?P<from>\d+)-(?P<to>\d+)"
+		elements := StrSplit(Cron.asFromToRange(range, max, actual), ",")
+		loop % elements.count() {
+			if (RegExMatch(elements[A_Index], "(?P<from>\d+)-(?P<to>\d+)"
 					, range_)) {
-				; range_from := Math.LimitTo(range_from, min, max)
-				if (range_from < min || range_from > max) {
-					throw Exception("Range out of bounds: " range_from
-							. " (" min "-" max ")")
-				}
-				; range_to := Math.LimitTo(range_to, min, max)
-				if (range_to < min || range_to > max) {
-					throw Exception("Range out of bounds: " range_to "
-							. (" min "-" max ")")
-				}
+				Cron.checkRanges([range_from, range_to], min, max)
 				loop {
 					list_value.push(range_from++)
 				} until (range_from > range_to)
-			} else if (RegExMatch(ranges[A_Index], "\d+", range_val)) {
-				if (range_val < min || range_val > max) {
-					throw Exception("Range out of bounds: " range_val
-							. " (" min "-" max ")")
-				}
+			} else if (RegExMatch(elements[A_Index], "\d+", range_val)) {
+				Cron.checkRanges([range_val], min, max)
 				list_value.push(range_val)
 			}
 		}
-		uni_list_vals := Arrays.distinct(list_value)
-		if (range3 != "") {
+		return Arrays.toString(Cron.setIntervals(list_value, range), ",")
+	}
+
+	asFromToRange(range, upperBound, currentValue) {
+		RegExMatch(range, "(.+?)(\/(\d+))*$", $range)
+		if ($range1 != "*" && $range3 != "") {
+			return $range1 "-" upperBound
+		}
+		if ($range1 == "*" && $range3 != "") {
+			return Mod(currentValue, $range3) "-" upperBound
+		}
+		if ($range1 != "" && $range3 != "") {
+			return $range1 "-" upperBound
+		}
+		return range
+	}
+
+	checkRanges(currentValues, lowerBound, upperBound) {
+		for _, currentValue in currentValues {
+			if (currentValue < lowerBound || currentValue > upperBound) {
+				throw Exception("Range out of bounds: " currentValue
+						. " (" lowerBound "-" upperBound ")")
+			}
+		}
+		return true
+	}
+
+	setIntervals(intervals, range) {
+		distinctIntervals := Arrays.distinct(intervals)
+		if (RegExMatch(range, "^(.+?)\/(\d+)$", $range)) {
+			interval := 0
 			i := 1
-			n := 0
-			while (i <= uni_list_vals.maxIndex()) {
-				if (mod(n, range3) != 0) {
-					uni_list_vals.remove(i)
+			while (i <= distinctIntervals.count()) {
+				if (mod(interval, $range2) != 0) {
+					distinctIntervals.remove(i)
 				} else {
 					i++
 				}
-				n++
+				interval++
 			}
 		}
-		list_values := ""
-		for key, value in uni_list_vals {
-			list_values .= (list_values = "" ? "" : ",") value
-		}
-		return list_values
+		return distinctIntervals
 	}
 
 	value2Expr(value) {
