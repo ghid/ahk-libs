@@ -122,21 +122,21 @@ class Cron {
 		if (range = "*") {
 			return range
 		}
-		list_value := []
+		intervals := []
 		elements := StrSplit(Cron.asFromToRange(range, upperBound, actual), ",")
 		loop % elements.count() {
 			if (RegExMatch(elements[A_Index], "(?P<from>\d+)-(?P<to>\d+)"
 					, range_)) {
 				Cron.checkRanges([range_from, range_to], lowerBound, upperBound)
 				loop {
-					list_value.push(range_from++)
+					intervals.push(range_from++)
 				} until (range_from > range_to)
 			} else if (RegExMatch(elements[A_Index], "\d+", range_val)) {
 				Cron.checkRanges([range_val], lowerBound, upperBound)
-				list_value.push(range_val)
+				intervals.push(range_val)
 			}
 		}
-		return Arrays.toString(Cron.setIntervals(list_value, range), ",")
+		return Arrays.toString(Cron.setIntervals(intervals, range), ",")
 	}
 
 	asFromToRange(range, upperBound, currentValue) {
