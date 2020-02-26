@@ -118,7 +118,7 @@ class Cron {
 		return effective_entry
 	}
 
-	range2List(range, min, max, actual=0) {
+	range2List(range, lowerBound, max, actual=0) {
 		if (range = "*") {
 			return range
 		}
@@ -127,12 +127,12 @@ class Cron {
 		loop % elements.count() {
 			if (RegExMatch(elements[A_Index], "(?P<from>\d+)-(?P<to>\d+)"
 					, range_)) {
-				Cron.checkRanges([range_from, range_to], min, max)
+				Cron.checkRanges([range_from, range_to], lowerBound, max)
 				loop {
 					list_value.push(range_from++)
 				} until (range_from > range_to)
 			} else if (RegExMatch(elements[A_Index], "\d+", range_val)) {
-				Cron.checkRanges([range_val], min, max)
+				Cron.checkRanges([range_val], lowerBound, max)
 				list_value.push(range_val)
 			}
 		}
