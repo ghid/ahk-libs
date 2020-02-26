@@ -125,12 +125,12 @@ class Cron {
 		intervals := []
 		elements := StrSplit(Cron.asFromToRange(range, upperBound, actual), ",")
 		loop % elements.count() {
-			if (RegExMatch(elements[A_Index], "(?P<from>\d+)-(?P<to>\d+)"
-					, range_)) {
-				Cron.checkRanges([range_from, range_to], lowerBound, upperBound)
+			if (RegExMatch(elements[A_Index], "(?P<From>\d+)-(?P<To>\d+)"
+					, $range)) {
+				Cron.checkRanges([$rangeFrom, $rangeTo], lowerBound, upperBound)
 				loop {
-					intervals.push(range_from++)
-				} until (range_from > range_to)
+					intervals.push($rangeFrom++)
+				} until ($rangeFrom > $rangeTo)
 			} else if (RegExMatch(elements[A_Index], "\d+", range_val)) {
 				Cron.checkRanges([range_val], lowerBound, upperBound)
 				intervals.push(range_val)
