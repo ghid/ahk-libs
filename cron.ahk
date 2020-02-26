@@ -26,7 +26,7 @@ class Cron {
 
 		CronTimer:
 			delay := (((60 - A_Sec) * 1000) - A_MSec) * -1
-			Cron.scheduler(A_Min)
+			Cron.processJobs(A_Min)
 			SetTimer CronTimer, %delay%
 		return
 	}
@@ -42,9 +42,8 @@ class Cron {
 		Cron.cron_job_num := 0
 	}
 
-	scheduler(current_min) {
+	processJobs(current_min) {
 		static last_runs_min := -1
-
 		if (!Cron.isStarted) {
 			return -1
 		}
@@ -54,9 +53,7 @@ class Cron {
 				current_min := A_Min
 			}
 		}
-
 		expr := Cron.buildExpression(current_min)
-
 		num_jobs := 0
 		start := 1
 		loop {
@@ -67,9 +64,7 @@ class Cron {
 				start := job_found_at + StrLen(job_name) - 1
 			}
 		} until (job_found_at = 0)
-
 		last_runs_min := current_min
-
 		return num_jobs
 	}
 
