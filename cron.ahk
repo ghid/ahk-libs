@@ -131,9 +131,9 @@ class Cron {
 				loop {
 					intervals.push($rangeFrom++)
 				} until ($rangeFrom > $rangeTo)
-			} else if (RegExMatch(elements[A_Index], "\d+", range_val)) {
-				Cron.checkRanges([range_val], lowerBound, upperBound)
-				intervals.push(range_val)
+			} else if (RegExMatch(elements[A_Index], "\d+", rangeInterval)) {
+				Cron.checkRanges([rangeInterval], lowerBound, upperBound)
+				intervals.push(rangeInterval)
 			}
 		}
 		return Arrays.toString(Cron.setIntervals(intervals, range), ",")
