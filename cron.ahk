@@ -118,12 +118,13 @@ class Cron {
 		return effective_entry
 	}
 
-	range2List(range, lowerBound, upperBound, actual=0) {
+	range2List(range, lowerBound, upperBound, currentValue=0) {
 		if (range = "*") {
 			return range
 		}
 		intervals := []
-		elements := StrSplit(Cron.asFromToRange(range, upperBound, actual), ",")
+		elements := StrSplit(Cron.asFromToRange(range, upperBound, currentValue)
+				, ",")
 		loop % elements.count() {
 			if (RegExMatch(elements[A_Index], "(?P<From>\d+)-(?P<To>\d+)"
 					, $range)) {
@@ -131,9 +132,9 @@ class Cron {
 				loop {
 					intervals.push($rangeFrom++)
 				} until ($rangeFrom > $rangeTo)
-			} else if (RegExMatch(elements[A_Index], "\d+", rangeInterval)) {
-				Cron.checkRanges([rangeInterval], lowerBound, upperBound)
-				intervals.push(rangeInterval)
+			} else if (RegExMatch(elements[A_Index], "\d+", $rangeInterval)) {
+				Cron.checkRanges([$rangeInterval], lowerBound, upperBound)
+				intervals.push($rangeInterval)
 			}
 		}
 		return Arrays.toString(Cron.setIntervals(intervals, range), ",")
