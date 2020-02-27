@@ -15,14 +15,63 @@ class CronTest extends TestCase {
 		return [TestCase, Cron]
 	}
 
-	cron_tab := []
-
-	@Test_Class() {
+	@Test_class() {
 		this.assertTrue(IsFunc(Cron.__New))
 		this.assertException(Cron, "__New")
 	}
 
-	@Test_Value2Expr() {
+	@Test_EntryClass() {
+		cronEntry := { minute: 1
+				, hour: 2
+				, day: 3
+				, month: 4
+				, weekday: 5
+				, functionName: "foobar" }
+		ce := new Cron.Entry(cronEntry)
+		this.assertTrue(IsObject(ce))
+		this.assertEquals(ce.minute, cronEntry.minute)
+		this.assertEquals(ce.hour, cronEntry.hour)
+		this.assertEquals(ce.day, cronEntry.day)
+		this.assertEquals(ce.month, cronEntry.month)
+		this.assertEquals(ce.weekday, cronEntry.weekday)
+		this.assertEquals(ce.functionName, cronEntry.functionName)
+		this.assertTrue(Arrays.equal(ce.asArray()
+				, [cronEntry.minute
+				, cronEntry.hour
+				, cronEntry.day
+				, cronEntry.month
+				, cronEntry.weekday
+				, cronEntry.functionName]))
+		this.assertEquals(ce.asExpression()
+				, Format("{:s} {:s} {:s} {:s} {:s} {:s}"
+				, [cronEntry.minute
+				, cronEntry.hour
+				, cronEntry.day
+				, cronEntry.month
+				, cronEntry.weekday
+				, cronEntry.functionName]*))
+	}
+
+	@Test_range2List() {
+		this.assertEquals(Cron.Entry.range2List("*", 1, 7), "*")
+		this.assertEquals(Cron.Entry.range2List("2-5", 1, 7), "2,3,4,5")
+		this.assertEquals(Cron.Entry.range2List("0-12", 0, 23)
+				, "0,1,2,3,4,5,6,7,8,9,10,11,12")
+		this.assertEquals(Cron.Entry.range2List("1/2", 1, 12), "1,3,5,7,9,11")
+	}
+
+	@Test_pattern() {
+		this.assertEquals(Cron.pattern()
+				, "SO)^"
+				. "(?P<minute>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+				. "(?P<hour>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+				. "(?P<day>L|((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+				. "(?P<month>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+				. "(?P<weekday>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s"
+				. "+(?P<functionName>.+?)$")
+	}
+
+	@Test_value2Expr() {
 		this.assertEquals(Cron.value2Expr(5), "0*5")
 		this.assertEquals(Cron.value2Expr(15), "0*15")
 		this.assertEquals(Cron.value2Expr("05"), "0*5")
@@ -63,15 +112,7 @@ class CronTest extends TestCase {
 				, [0,1,2,3,4,5,6]))
 	}
 
-	@Test_Range2List() {
-		this.assertEquals(Cron.range2List("*", 1, 7), "*")
-		this.assertEquals(Cron.range2List("2-5", 1, 7), "2,3,4,5")
-		this.assertEquals(Cron.range2List("0-12", 0, 23)
-				, "0,1,2,3,4,5,6,7,8,9,10,11,12")
-		this.assertEquals(Cron.range2List("1/2", 1, 12), "1,3,5,7,9,11")
-	}
-
-	@Test_ParseEntry() {
+	@Test_parseEntry() {
 		this.assertEquals(Cron.parseEntry("* * * * *", "Dummy")
 				, "* * * * * Dummy")
 		this.assertEquals(Cron.parseEntry("0-59 0-23 1-31 1-12 1-7", "Dummy")
@@ -98,19 +139,19 @@ class CronTest extends TestCase {
 				, "30 21 7 19 *", "Dummy")
 	}
 
-	@Test_AddScheduler() {
+	@Test_addScheduler() {
 		Cron.reset()
 		Cron.addScheduler("* * * * *", "Dummy")
 		Cron.addScheduler("0/2 * * * *", "Dummy2")
 		Cron.addScheduler("0/5 * * * *", "Dummy5")
 		Cron.addScheduler("1/15 * * * *", "Dummy15")
-		this.assertEquals(Cron.cron_tab, "`n1:* * * * * Dummy`n2:0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58 * * * * Dummy2`n3:0,5,10,15,20,25,30,35,40,45,50,55 * * * * Dummy5`n4:1,16,31,46 * * * * Dummy15`n") ; ahklint-ignore: W002
-		this.assertEquals(Cron.cron_job_num, 4)
+		this.assertEquals(Cron.cronTab, "`n1:* * * * * Dummy`n2:0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58 * * * * Dummy2`n3:0,5,10,15,20,25,30,35,40,45,50,55 * * * * Dummy5`n4:1,16,31,46 * * * * Dummy15`n") ; ahklint-ignore: W002
+		this.assertEquals(Cron.numberOfJobs, 4)
 		Cron.start()
 		Cron.stop()
 	}
 
-	@Test_PatternHelper() {
+	@Test_patternHelper() {
 		this.assertEquals(PatternHelper(6, 10), "6,16,26,36,46,56")
 		this.assertEquals(PatternHelper(7, 11), "7,18,29,40,51")
 		this.assertEquals(PatternHelper(31, 30), "1,31")
@@ -119,7 +160,7 @@ class CronTest extends TestCase {
 		this.assertEquals(PatternHelper(0, 10), "0,10,20,30,40,50")
 	}
 
-	@Test_AddScheduler2() {
+	@Test_addScheduler2() {
 		Cron.reset()
 		p1 := PatternHelper(m := A_Min, 10)
 		Cron.addScheduler("*/10 * * * *", "Dummy")
@@ -129,7 +170,7 @@ class CronTest extends TestCase {
 		Cron.addScheduler("*/30 * * * *", "Dummy")
 		p4 := PatternHelper(h := A_Hour, 5, 24)
 		Cron.addScheduler("0 */5 * * *", "Dummy")
-		this.assertEquals(Cron.cron_tab, "`n1:"
+		this.assertEquals(Cron.cronTab, "`n1:"
 				. p1 " * * * * Dummy`n2:"
 				. p2 " * * * * Dummy`n3:"
 				. p3 " * * * * Dummy`n4:0 "
@@ -140,7 +181,7 @@ class CronTest extends TestCase {
 		Cron.reset()
 		Cron.addScheduler("* * L * *", "Dummy")
 		Cron.addScheduler("59 23 L 3,6,9,12 *", "FooBar")
-		this.assertEquals(Cron.cron_tab, "`n1:* * L * * Dummy"
+		this.assertEquals(Cron.cronTab, "`n1:* * L * * Dummy"
 				. "`n2:59 23 L 3,6,9,12 * FooBar`n")
 	}
 }
@@ -169,8 +210,4 @@ patternHelper(m, i, max=60) {
 	return list
 }
 
-cronTetRetVal := CronTest.runTests()
-
-; Sleep 120000
-
-exitapp cronTetRetVal
+exitapp CronTest.runTests()

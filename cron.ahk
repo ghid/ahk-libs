@@ -1,17 +1,21 @@
-; @todo: Refactor
-class Cron {
+﻿class Cron {
+
+	#Include %A_LineFile%\..\modules\cron
+	#Include Entry.ahk
 
 	version() {
-		return "1.0.1"
+		return "1.0.2"
 	}
 
 	requires() {
 		return [String, Arrays, Math, Calendar]
 	}
 
-	static cron_tab := "`n"
+	static patternString
+			:= "(?P<{:s}>{:s}((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
+	static cronTab := "`n"
 	static IsStarted := false
-	static cron_job_num := 0
+	static numberOfJobs := 0
 
 	__new() {
 		throw Exception("Instatiation of class " this.__Class
@@ -19,16 +23,18 @@ class Cron {
 	}
 
 	start() {
-		delay := (((60 - A_Sec) * 1000) - A_MSec) * -1
-		SetTimer CronTimer, %delay%
+		SetTimer CronTimer, % Cron.delay()
 		Cron.isStarted := true
 		return
 
 		CronTimer:
-			delay := (((60 - A_Sec) * 1000) - A_MSec) * -1
-			Cron.processJobs(A_Min)
-			SetTimer CronTimer, %delay%
+			Cron.processJobs()
+			SetTimer CronTimer, % Cron.delay()
 		return
+	}
+
+	delay() {
+		return (((60 - A_Sec) * 1000) - A_MSec) * -1
 	}
 
 	stop() {
@@ -38,101 +44,72 @@ class Cron {
 	}
 
 	reset() {
-		Cron.cron_tab := "`n"
-		Cron.cron_job_num := 0
+		Cron.cronTab := "`n"
+		Cron.numberOfJobs := 0
 	}
 
-	processJobs(current_min) {
-		static last_runs_min := -1
+	processJobs() {
 		if (!Cron.isStarted) {
 			return -1
 		}
-		if (last_runs_min = current_min) {
-			while (last_runs_min = current_min) {
-				sleep 500
-				current_min := A_Min
-			}
-		}
-		expr := Cron.buildExpression(current_min)
-		num_jobs := 0
-		start := 1
+		Cron.sleepUntilNextMinute()
+		numberOfJobsFound := 0
+		startAt := 1
 		loop {
-			job_found_at := RegExMatch(Cron.cron_tab, expr, job_, start)
-			if (job_found_at) {
-				num_jobs++
-				%job_name%(job_number)
-				start := job_found_at + StrLen(job_name) - 1
+			if (foundJobAt := RegExMatch(Cron.cronTab
+					, Cron.buildExpression(A_Min), $job, startAt)) {
+				numberOfJobsFound++
+				%$jobName%($jobNumber)
+				startAt := foundJobAt + StrLen($jobName) - 1
 			}
-		} until (job_found_at = 0)
-		last_runs_min := current_min
-		return num_jobs
+		} until (foundJobAt = 0)
+		return numberOfJobsFound
+	}
+
+	sleepUntilNextMinute() {
+		static minuteOfPreviousRun := A_Min
+		while (minuteOfPreviousRun == A_Min) {
+			sleep 200
+		}
+		minuteOfPreviousRun := A_Min
 	}
 
 	buildExpression(current_min) {
 		lastDay := (A_DD == new Calendar(A_Year A_MM).daysInMonth() ? "|L" : "")
-		return "\n(?P<number>\d+?):\s*"
+		return "\n(?P<Number>\d+?):\s*"
 				. "((\d+,)*" Cron.value2Expr(current_min) "(,\d+)*|\*)\s+"
 				. "((\d+,)*" Cron.value2Expr(A_Hour) "(,\d+)*|\*)\s+"
 				. "((\d+,)*" Cron.value2Expr(A_DD) "(,\d+)*|\*" lastDay ")\s+"
 				. "((\d+,)*" Cron.value2Expr(A_MM) "(,\d+)*|\*)\s+"
 				. "((\d+,)*" Cron.value2Expr(A_WDay) "(,\d+)*|\*)\s+"
-				. "(?P<name>.+?)\s*\n"
+				. "(?P<Name>.+?)\s*\n"
 	}
 
-	addScheduler(cron_pattern, function_name) {
-		this.cron_tab .= ++Cron.cron_job_num ":"
-				. Cron.parseEntry(cron_pattern, function_name) "`n"
+	addScheduler(cronPattern, functionName) {
+		this.cronTab .= ++Cron.numberOfJobs ":"
+				. Cron.parseEntry(cronPattern, functionName) "`n"
 	}
 
-	parseEntry(cron_pattern, function_name) {
-		entry := cron_pattern.trimAll() " " function_name.trimAll()
-		subExpr := "(((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
-		subExprLast := "(L|((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
-		expr := "S)^" subExpr.repeat(2)
-				. subExprLast
-				. subExpr.repeat(2) "(.+?)$"
-		if (RegExMatch(entry, expr, cron_entry)) {
-			minute := Cron.range2List(cron_entry1, 0, 59, A_Min)
-			hour := Cron.range2List(cron_entry6, 0, 23, A_Hour)
-			month := Cron.range2List(cron_entry16, 1, 12, A_Mon)
-			wday := Cron.range2List(cron_entry21, 1, 7, A_WDay)
-			day := cron_entry11 = "L"
-					? cron_entry11
-					: Cron.range2List(cron_entry11, 1, 31, A_MDay)
-			function := cron_entry26
-			effective_entry := minute " "
-					. hour " "
-					. day " "
-					. month " "
-					. wday " "
-					. function
+	parseEntry(cronPattern, functionName) {
+		cronEntryString := cronPattern.trimAll() " " functionName.trimAll()
+		if (RegExMatch(cronEntryString, Cron.pattern(), $cronEntry)) {
+			cronEntryExpression := new Cron.Entry($cronEntry).asExpression()
 		} else {
-			effective_entry := ""
-			throw Exception("Entry '" entry "' is rejected: " ErrorLevel)
+			cronEntryExpression := ""
+			throw Exception("Entry '" cronEntryString
+					. "' is rejected: " ErrorLevel)
 		}
-		return effective_entry
+		return cronEntryExpression
 	}
 
-	range2List(range, lowerBound, upperBound, currentValue=0) {
-		if (range = "*") {
-			return range
-		}
-		intervals := []
-		elements := StrSplit(Cron.asFromToRange(range, upperBound, currentValue)
-				, ",")
-		loop % elements.count() {
-			if (RegExMatch(elements[A_Index], "(?P<From>\d+)-(?P<To>\d+)"
-					, $range)) {
-				Cron.checkRanges([$rangeFrom, $rangeTo], lowerBound, upperBound)
-				loop {
-					intervals.push($rangeFrom++)
-				} until ($rangeFrom > $rangeTo)
-			} else if (RegExMatch(elements[A_Index], "\d+", $rangeInterval)) {
-				Cron.checkRanges([$rangeInterval], lowerBound, upperBound)
-				intervals.push($rangeInterval)
-			}
-		}
-		return Arrays.toString(Cron.setIntervals(intervals, range), ",")
+	pattern() {
+		return "SO)^"
+				. Format(Cron.patternString, "minute", "")
+				. Format(Cron.patternString, "hour", "")
+				. Format(Cron.patternString, "day", "L|")
+				. Format(Cron.patternString, "month", "")
+				. Format(Cron.patternString, "weekday", "")
+				. "(?P<functionName>.+?)$"
 	}
 
 	asFromToRange(range, upperBound, currentValue) {
@@ -179,6 +156,4 @@ class Cron {
 	value2Expr(value) {
 		return "0*" RegExReplace(value, "^0*", "")
 	}
-
 }
-
