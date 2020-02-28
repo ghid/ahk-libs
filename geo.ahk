@@ -14,9 +14,7 @@
 	static VERTICAL := 0
 	static HORIZONTAL := 1
 
-	static CARDINAL_POINTS
-			:= {1: {1: "N", 0: "S"}
-			,   0: {1: "E", 0: "W"}}
+	static CARDINAL_POINTS := { 1: {1: "N", 0: "S"}, 0: {1: "E", 0: "W"} }
 
 	class Coordinate {
 
