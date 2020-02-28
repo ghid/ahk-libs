@@ -1,10 +1,10 @@
-class Geo {
+﻿class Geo {
 
 	#Include %A_LineFile%\..\modules\geo
 	#Include datum.ahk
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
@@ -20,9 +20,31 @@ class Geo {
 
 	class Coordinate {
 
-		latitude := new Geo.Datum()
-		longitude := new Geo.Datum()
+		latitudeValue := new Geo.Datum()
+		longitudeValue := new Geo.Datum()
 		elevation := ""
+
+		latitude[] {
+			get {
+				return this.latitudeValue
+			}
+			set {
+				this.checkForExpectedObjectType(value)
+				this.latitudeValue := value
+				return this
+			}
+		}
+
+		longitude[] {
+			get {
+				return this.longitudeValue
+			}
+			set {
+				this.checkForExpectedObjectType(value)
+				this.longitudeValue := value
+				return this
+			}
+		}
 
 		asDMS(dmsFormatString="{:i}°{:i}'{:.0f}""{:s} "
 				, elevationFormatString="{:.1f}m") {
@@ -36,19 +58,6 @@ class Geo {
 			this.latitude := new Geo.Datum(Geo.HORIZONTAL, latitude)
 			this.longitude := new Geo.Datum(Geo.VERTICAL, longitude)
 			this.elevation := elevation
-		}
-
-		; @todo: what are these methods for good? Won't be getter/setter a better alternative?
-		setLatitude(aGeoDatum) {
-			this.checkForExpectedObjectType(aGeoDatum)
-			this.latitude := aGeoDatum
-			return this
-		}
-
-		setLongitude(aGeoDatum) {
-			this.checkForExpectedObjectType(aGeoDatum)
-			this.longitude := aGeoDatum
-			return this
 		}
 
 		checkForExpectedObjectType(anObject) {

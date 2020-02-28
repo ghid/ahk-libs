@@ -1,4 +1,4 @@
-class Datum {
+﻿class Datum {
 
 	cardinalPoint := ""
 	decimalDegrees := 0.0

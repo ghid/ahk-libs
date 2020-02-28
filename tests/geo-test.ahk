@@ -1,4 +1,4 @@
-; ahk: console
+﻿; ahk: console
 
 #Include <testcase-libs>
 #Include <system>
