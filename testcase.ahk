@@ -1,4 +1,4 @@
-#Include <app>
+﻿#Include <app>
 
 #Include %A_LineFile%\..\modules\testcase\
 #Include TestData.ahk
@@ -7,7 +7,7 @@
 class TestCase {
 
 	version() {
-		return "1.0.1"
+		return "1.0.2"
 	}
 
 	requires() {
@@ -16,6 +16,7 @@ class TestCase {
 
 	static lAPIOverhead := TestCase.initAPIOverhead()
 	static lFrequency := TestCase.initFrequency()
+	static codePage := TestCase.consoleCodePage()
 	static testOut := TestCase.openTestOutForOutput()
 
 	static duration := 0.0
@@ -53,17 +54,25 @@ class TestCase {
 	}
 
 	getSuccessfullSymbol() {
-		return (TestCase.isWinCmdExe ? "PASS" : Chr(0x2714))
+		return (TestCase.codePage = "cp65001" ? Chr(0x2714) : "PASS")
 	}
 
 	getFailSymbol() {
-		return (TestCase.isWinCmdExe ? "FAIL" : Chr(0x274c))
+		return (TestCase.codePage = "cp65001" ? Chr(0x274c) : "FAIL")
 	}
 
 	openTestOutForOutput() {
-		testOut := FileOpen("*", "w `n", "utf-8")
+		testOut := FileOpen("*", "w `n", TestCase.codePage)
 		testOut.read(0)
 		return testOut
+	}
+
+	consoleCodePage() {
+		codePage := DllCall("GetConsoleCP", "UInt")
+		if (codePage == 0) {
+			codePage := 850
+		}
+		return "cp" codePage
 	}
 
 	initAPIOverhead() {
