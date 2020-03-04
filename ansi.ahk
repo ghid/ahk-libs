@@ -1,7 +1,7 @@
-class Ansi {
+﻿class Ansi {
 	
 	version() {
-		return "1.0.1"
+		return "1.0.2"
 	}
 
 	requires() {
@@ -295,6 +295,11 @@ class Ansi {
 	flush() {
 		Ansi.stdOut.read(0)
 		Ansi.stdErr.read(0)
+	}
+
+	flushInput() {
+		return DllCall("FlushConsoleInputBuffer"
+				, "Ptr", Ansi.stdIn.__Handle, "Int")
 	}
 
 	plainStr(inputString) {
