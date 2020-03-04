@@ -1,11 +1,11 @@
-; @todo: Refactor! Move helper classes inside of Pager class
+﻿; @todo: Refactor! Move helper classes inside of Pager class
 #Include %A_LineFile%\..\modules\pager\
 #Include actions.ahk
 
 class Pager {
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
@@ -17,10 +17,12 @@ class Pager {
 
 	static handleOfCurrentConsoleWindow := WinExist("A")
 	static lineCounter := 0
+	static pageCounter := 0
 	static enablePager := true
 	static scrollOneLine := false
 	static runInTestMode := false
 	static breakMessage := "<Press space to continue or q to quit>"
+	static endMessage := "<End>"
 
 	writeHardWrapped(text) {
 		wrappedText := Ansi.wrap(text, Pager.getConsoleWidth())
@@ -65,6 +67,7 @@ class Pager {
 	}
 
 	break(breakMessage, resetLineCounter=false) {
+		Pager.pageCounter++
 		if (resetLineCounter) {
 			Pager.lineCounter := 0
 		}
@@ -83,12 +86,40 @@ class Pager {
 		HotKey, c, pagerActionContinue
 		HotKey, Space, pagerActionNextPage
 		HotKey, Enter, pagerActionNextLine
+		HotKey, q, On
+		HotKey, c, On
+		HotKey, Space, On
+		HotKey, Enter, On
 		Ansi.flush()
 		Pause On
+		HotKey, q, Off
+		HotKey, c, Off
+		HotKey, Space, Off
+		HotKey, Enter, Off
 	}
 
-	; @todo: Fix access to the bufferInfo properties; these aren't correct if
-	; the new Structure class is used @19-4818F
+	end() {
+		if (!Pager.enablePager || Pager.pageCounter == 0) {
+			return
+		}
+		if (Pager.runInTestMode) {
+			Ansi.write(Pager.endMessage)
+			Ansi.flush()
+			return
+		}
+		Ansi.write(Ansi.saveCursorPosition() Ansi.cursorHorizontalAbs(1)
+				. Ansi.reset() Ansi.eraseLine()
+				. Ansi.setGraphic(Ansi.ATTR_REVERSE) Pager.endMessage
+				. Ansi.reset() Ansi.eraseLine())
+		_handleOfCurrentConsoleWindow := Pager.handleOfCurrentConsoleWindow
+		HotKey, IfWinActive, ahk_id %_handleOfCurrentConsoleWindow%
+		HotKey, q, pagerActionQuit
+		HotKey, q, On
+		Ansi.flush()
+		Pause On
+		HotKey, q, Off
+	}
+
 	getConsoleHeight() {
 		if (Pager.runInTestMode) {
 			return Pager.TEST_CONSOLE_HEIGHT

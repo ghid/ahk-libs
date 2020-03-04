@@ -15,6 +15,7 @@ class PagerTest extends TestCase {
 	@BeforeClass_setup() {
 		Pager.runInTestMode := true
 		Pager.breakMessage := "--break--"
+		Pager.endMessage := "--end--"
 	}
 
 	@BeforeRedirStdOut() {
@@ -44,6 +45,7 @@ class PagerTest extends TestCase {
 
 	@Test_oneLine() {
 		Pager.writeHardWrapped("Das ist ein Einzeiler.")
+		Pager.end()
         Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\pager-test.txt")
 				, TestCase.fileContent(PagerTest.FIGURES_DIR "OneLine.txt"))
@@ -54,6 +56,7 @@ class PagerTest extends TestCase {
 			testText := "Das ist Zeile #" A_Index "!"
 			Pager.writeHardWrapped(testText)
 		}
+		Pager.end()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\pager-test.txt")
 				, TestCase.fileContent(PagerTest.FIGURES_DIR "AlmostAPage.txt"))
@@ -64,6 +67,7 @@ class PagerTest extends TestCase {
 			testText := "Das ist Zeile #" A_Index "!"
 			Pager.writeHardWrapped(testText)
 		}
+		Pager.end()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\pager-test.txt")
 				, TestCase.fileContent(PagerTest.FIGURES_DIR
@@ -75,6 +79,7 @@ class PagerTest extends TestCase {
 			testText := "Das ist Zeile #" A_Index "!"
 			Pager.writeHardWrapped(testText)
 		}
+		Pager.end()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\pager-test.txt")
 				, TestCase.fileContent(PagerTest.FIGURES_DIR
@@ -86,6 +91,7 @@ class PagerTest extends TestCase {
 			testText := "Das ist Zeile #" A_Index "!"
 			Pager.writeHardWrapped(testText)
 		}
+		pager.end()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\pager-test.txt")
 				, TestCase.fileContent(PagerTest.FIGURES_DIR
@@ -97,6 +103,7 @@ class PagerTest extends TestCase {
 		text := RegExReplace(text, "i)\b(\w*[öäüß]+\w*)", "[32m$0[0m")
 		text := RegExReplace(text, "i)\b([,.!?:]+)", "[31m$0[0m")
 		Pager.writeWordWrapped(text)
+		Pager.end()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\pager-test.txt")
 				, TestCase.fileContent(PagerTest.FIGURES_DIR
@@ -106,6 +113,7 @@ class PagerTest extends TestCase {
 	@Test_longLines() {
 		text := handleLongLines()
 		Pager.writeHardWrapped(text)
+		Pager.end()
 		Ansi.flush()
 	}
 
@@ -122,6 +130,7 @@ class PagerTest extends TestCase {
 		text := RegExReplace(text, "i)\b(\w*[öäüß]+\w*)", "[32m$0[0m")
 		text := RegExReplace(text, "i)\b([,.!?:]+)", "[31m$0[0m")
 		Pager.writeWordWrapped(text)
+		Pager.end()
 		Ansi.flush()
 	}
 }
