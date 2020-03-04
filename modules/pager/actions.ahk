@@ -1,7 +1,6 @@
 ﻿pagerActionQuit() {
 	if (A_IsPaused) {
-		Ansi.write(Ansi.restoreCursorPosition() Ansi.reset()
-				. Ansi.eraseLine())
+		Ansi.write(Ansi.restoreCursorPosition() Ansi.reset() Ansi.eraseLine())
 		Ansi.flush()
 		Ansi.flushInput()
 	}
@@ -10,8 +9,7 @@
 
 pagerActionNextPage() {
 	Pause Off
-	Ansi.write(Ansi.restoreCursorPosition() Ansi.reset()
-			. Ansi.eraseLine())
+	Ansi.write(Ansi.restoreCursorPosition() Ansi.reset() Ansi.eraseLine())
 	Ansi.flush()
 	Console.refreshBufferInfo()
 	Pager.scrollOneLine := false
@@ -20,8 +18,7 @@ pagerActionNextPage() {
 
 pagerActionContinue() {
 	Pause off
-	Ansi.write(Ansi.restoreCursorPosition() Ansi.reset()
-			. Ansi.eraseLine())
+	Ansi.write(Ansi.restoreCursorPosition() Ansi.reset() Ansi.eraseLine())
 	Ansi.flush()
 	Pager.enablePager := false
 	Console.refreshBufferInfo()
@@ -30,8 +27,7 @@ pagerActionContinue() {
 
 pagerActionNextLine() {
 	Pause off
-	Ansi.write(Ansi.restoreCursorPosition() Ansi.reset()
-			. Ansi.eraseLine())
+	Ansi.write(Ansi.restoreCursorPosition() Ansi.reset() Ansi.eraseLine())
 	Ansi.flush()
 	Pager.scrollOneLine := true
 }

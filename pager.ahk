@@ -26,8 +26,7 @@ class Pager {
 
 	writeHardWrapped(text) {
 		wrappedText := Ansi.wrap(text, Pager.getConsoleWidth())
-		Pager.lineCounter := Pager.writeText(wrappedText
-				, Pager.lineCounter)
+		Pager.lineCounter := Pager.writeText(wrappedText, Pager.lineCounter)
 		return Pager.lineCounter
 	}
 
