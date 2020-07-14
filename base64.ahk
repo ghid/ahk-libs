@@ -1,7 +1,7 @@
-class Base64 {
+﻿class Base64 {
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {

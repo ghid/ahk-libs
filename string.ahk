@@ -1,4 +1,4 @@
-; ahk: console
+﻿; ahk: console
 
 ; @todo: Refactor! Move helper classes into String class
 #Include %A_LineFile%\..\modules\string\
@@ -57,7 +57,7 @@
 class String {
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
