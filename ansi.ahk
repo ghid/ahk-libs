@@ -1,7 +1,7 @@
 ﻿class Ansi {
 	
 	version() {
-		return "1.0.2"
+		return "1.0.3"
 	}
 
 	requires() {
@@ -100,7 +100,8 @@
 
 	__initAnsiSupport() {
 		EnvGet da, DISABLE_ANSI
-		if (RegExMatch(A_OSVersion, "^10\.")) {
+		EnvGet shell, SHELL
+		if (RegExMatch(A_OSVersion, "^10\.") || shell != "") {
 			return true && (!da)
 		}
 		EnvGet ansicon_version, ANSICON_VER
