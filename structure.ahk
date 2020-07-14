@@ -1,7 +1,7 @@
 ﻿class Structure {
 
 	version() {
-		return "1.0.1"
+		return "1.0.2"
 	}
 
 	requires() {
@@ -184,16 +184,18 @@
 	}
 
 	isWide(size, memberType="") {
+		newSize := 0
 		switch memberType {
 		case "WStr":
-			return size * 2
+			newSize := size * 2
 		case "AStr":
-			return size
+			newSize := size
 		case "Str":
-			return size * (A_IsUnicode ? 2 : 1)
+			newSize := size * (A_IsUnicode ? 2 : 1)
 		default:
-			return size
+			newSize := size
 		}
+		return newSize
 	}
 
 	dumpMember(accumulator, memberName, memberType, value) {
@@ -214,38 +216,40 @@
 	}
 
 	typeLength(type) {
+		size := 0
 		switch type {
 		case "Str", "AStr", "WStr":
-			return 0
+			size := 0
 		case "Ptr", "PtrP", "Ptr*", "UPtr", "UPtrP", "UPtr*":
-			return A_PtrSize
+			size := A_PtrSize
 		case "StrP", "AStrP", "WStrP", "Str*", "AStr*", "WStr*":
-			return A_PtrSize
+			size := A_PtrSize
 		case "CharP", "Char*", "UCharP", "UChar*":
-			return A_PtrSize
+			size := A_PtrSize
 		case "ShortP", "Short*", "UShortP", "UShort*":
-			return A_PtrSize
+			size := A_PtrSize
 		case "IntP", "Int*", "UIntP", "UInt*":
-			return A_PtrSize
+			size := A_PtrSize
 		case "Int64P", "Int64*", "UInt64P", "UInt64*":
-			return A_PtrSize
+			size := A_PtrSize
 		case "Char", "UChar":
-			return 1
+			size := 1
 		case "Short", "UShort":
-			return 2
+			size := 2
 		case "Int", "UInt":
-			return 4
+			size := 4
 		case "Int64", "UInt64":
-			return 8
+			size := 8
 		case "Float":
-			return 4
+			size := 4
 		case "Double":
-			return 8
+			size := 8
 		default:
 			if (IsObject(type) && Object.instanceOf("Structure")) {
-				return ObjBindMethod(type, "sizeOf")
+				size := ObjBindMethod(type, "sizeOf")
 			}
 			throw Exception("Unknown type: " type)
 		}
+		return size
 	}
 }
