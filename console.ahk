@@ -1,7 +1,7 @@
 class Console {
 
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
@@ -162,15 +162,9 @@ class Console {
 		; @see: https://docs.microsoft.com/en-us/windows/console/setconsolemode
 		try {
 			Console.setConsoleMode(Console.getConsoleMode() | 0x0004)
+			return Console.getBufferInfo()
 		} catch e {
-			OutputDebug %A_ThisFunc%: e.message ": " e.extra
-		}
-		csbi := new CONSOLE_SCREEN_BUFFER_INFO().implode(_csbi)
-		_ret := DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
-				, "Ptr", &_csbi)
-		if (_ret != 0) {
-			csbi.explode(_csbi)
-			return csbi
+			OutputDebug % A_ThisFunc ": " e.message ": " e.extra
 		}
 		return ""
 	}
@@ -449,10 +443,12 @@ class Console {
 
 	getBufferInfo() {
 		csbi := new CONSOLE_SCREEN_BUFFER_INFO().implode(_csbi)
-		DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
-				, "Ptr", &_csbi, "Int")
-		csbi.explode(_csbi)
-		return csbi
+		if (DllCall("GetConsoleScreenBufferInfo", "Ptr", Console.hStdOut
+				, "Ptr", &_csbi, "Int") != 0) {
+			csbi.explode(_csbi)
+			return csbi
+		}
+		return ""
 	}
 
 	fillWithCharacter(pcChar=" ", pnLength=1, piX=0, piY=0) {
