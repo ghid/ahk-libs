@@ -1,4 +1,4 @@
-; ahk: console
+;@Ahk2Exe-ConsoleApp
 #Warn All, StdOut
 
 #Include <ansi>
@@ -127,6 +127,15 @@ class TestCaseTest extends TestCase {
 
 	@Test_fail() {
 		this.assertException(TestCase, "fail",,, "error", 42)
+	}
+
+	@Test_stateName() {
+		this.assertEquals(TestCase.stateName(TestCase.UNKNOWN), "Unknown test")
+		this.assertEquals(TestCase.stateName(TestCase.NOT_RUN), "Did not run")
+		this.assertEquals(TestCase.stateName(TestCase.SUCCESSFUL), "Successful")
+		this.assertEquals(TestCase.stateName(TestCase.FAILED), "Failed")
+		this.assertEquals(TestCase.stateName("X"), "Unknown state: X")
+		this.assertEquals(TestCase.stateName(""), "Unknown test")
 	}
 }
 

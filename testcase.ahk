@@ -7,7 +7,7 @@
 class TestCase {
 
 	version() {
-		return "1.0.2"
+		return "1.0.3"
 	}
 
 	requires() {
@@ -72,6 +72,7 @@ class TestCase {
 		if (codePage == 0) {
 			codePage := 850
 		}
+		FileEncoding cp%codePage%
 		return "cp" codePage
 	}
 
@@ -517,16 +518,17 @@ class TestCase {
 	stateName(state) {
 		switch state {
 		case TestCase.UNKNOWN:
-			return "Unkown test"
+			result := "Unknown test"
 		case TestCase.NOT_RUN:
-			return "Did not run"
+			result := "Did not run"
 		case TestCase.SUCCESSFUL:
-			return "Successfull"
+			result := "Successful"
 		case TestCase.FAILED:
-			return "Failed"
+			result := "Failed"
 		default:
-			return "Unknown state: " state
+			result := "Unknown state: " state
 		}
+		return result
 	}
 
 	visibleCtrls(st, compareTo="") {
