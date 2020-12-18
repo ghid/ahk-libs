@@ -1,0 +1,4 @@
+dn: olcDatabase={-1}frontend,cn=config
+changetype: modify
+add: olcDefaultSearchBase
+olcDefaultSearchBase: dc=example,dc=com

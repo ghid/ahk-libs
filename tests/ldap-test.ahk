@@ -1,4 +1,4 @@
-; ahk: console
+;@Ahk2Exe-ConsoleApp
 ; ahk: x86
 #NoEnv
 SetBatchLines -1
@@ -20,79 +20,35 @@ class LdapTest extends TestCase {
 
 	static SERVER := "localhost"
 	static PORT := 10389
-	static COVER_SERVICE := false
+	static ADMINUSER := "cn=admin,dc=example,dc=com"
+	static PASSWORD := "secret"
+	static BASE_DN := "dc=example,dc=com"
 	static VI_SERVER := "lxs150w05.viessmann.com"
 	static VI_PORT := 389
 
 	static ld := 0
+	static coverLdapService := false
 
 	@BeforeClass_SetUp() {
-		for ldap_svc in ComObjGet("winmgmts:")
-				.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
-			if (ldap_svc.state != "Running") {
-				TestCase.writeLine("Starting apacheds-default service...")
-				LdapTest.COVER_SERVICE := true
-				if ((ldap_rc := ldap_svc.startService()) != 0) {
-					this.fail("*** FATAL: apacheds-default service "
-							. "could not be startet: " ldap_rc,, true)
-				}
-				max_tries := 600
-				while (max_tries > 0 && ldap_svc.state != "Running") {
-					sleep 100
-					for ldap_svc in ComObjGet("winmgmts:")
-							.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
-						break
-					}
-					max_tries--
-				}
-				if (max_tries = 0) {
-					this.fail("*** FATAL: apacheds-default service "
-							. "could not be startet in an adequate time",, true)
-				} else {
-					TestCase.writeLine("apacheds-default service has been started") ; ahklint-ignore: W002
-				}
-			} else {
-				TestCase.writeLine("apacheds-default service is already running") ; ahklint-ignore: W002
-			}
-			break
+		testLdap := new Ldap(LdapTest.SERVER, LdapTest.PORT)
+		if (testLdap.connect() != 0) {	
+			TestCase.writeLine("Starting Ldap...")
+			LdapTest.startDockerLdap()
+			LdapTest.coverLdapService := true
+		} else {
+			TestCase.writeLine("Ldap is already reachable")
 		}
+		testLdap.unbind()
+		Ldap.hWldap32 := 0
 	}
 
-	@AfterClass_TearDown() {
-		if (LdapTest.COVER_SERVICE) {
-			for ldap_svc in ComObjGet("winmgmts:")
-					.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
-				if (ldap_svc.state = "Running") {
-					TestCase.writeLine("Stopping apacheds-default service...") ; ahklint-ignore: W002
-					if ((ldap_rc := ldap_svc.stopService()) != 0) {
-						this.fail("*** FATAL: apacheds-default service "
-								. "could not be stopped: " ldap_rc,, true)
-					}
-					max_tries := 600
-					while (max_tries > 0 && ldap_svc.state != "Stopped") {
-						sleep 100
-						for ldap_svc in ComObjGet("winmgmts:")
-								.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
-							break
-						}
-						max_tries--
-					}
-					if (max_tries = 0) {
-						this.fail("*** FATAL: apacheds-default service "
-								. "could not be stopped in an adequate time"
-								,, true)
-					}
-					else {
-						TestCase.writeLine("apacheds-default service has been stopped") ; ahklint-ignore: W002
-					}
-				} else {
-					TestCase.writeLine("apacheds-default service has already been stopped") ; ahklint-ignore: W002
-				}
-				break
-			}
+	@AfterClass_TeadDown() {
+		if (LdapTest.coverLdapService) {
+			TestCase.writeLine("`nStopping Ldap...")
+			LdapTest.stopDockerLdap()
 		}
 	}
-
+	
 	@AfterClass_unbind() {
 		if (LdapTest.ld != 0) {
 			LdapTest.ld.unbind()
@@ -209,8 +165,8 @@ class LdapTest extends TestCase {
 		this.assertEquals(LdapTest.ld.setOption(Ldap.OPT_VERSION
 				, Ldap.VERSION3), 0)
 		this.assertEquals(LdapTest.ld.connect(), 0)
-		this.assertEquals(LdapTest.ld.simpleBind("uid=admin,ou=system"
-				, "secret"), 0)
+		this.assertEquals(LdapTest.ld.simpleBind(LdapTest.ADMINUSER
+				, LdapTest.PASSWORD), 0)
 	}
 
 	@Depend_@Test_SetOption() {
@@ -280,21 +236,21 @@ class LdapTest extends TestCase {
 		return "@Test_ServerAvailable,@Test_reconnectWithV3"
 	}
 	@Test_bind() {
-		this.assertEquals(LdapTest.ld.simpleBind("uid=admin,ou=system"
-				, "secret"), 0)
+		this.assertEquals(LdapTest.ld.simpleBind(LdapTest.ADMINUSER
+				, LdapTest.PASSWORD), 0)
 	}
 
 	@Depend_@Test_getDN() {
 		return "@Test_Bind"
 	}
 	@Test_getDN() {
-		this.assertEquals(LdapTest.ld.search(sr, "ou=system", "(uid=admin)"
-				,, ["uid"]), 0)
+		this.assertEquals(LdapTest.ld.search(sr, LdapTest.BASE_DN, "(cn=admin)"
+				,, ["cn"]), 0)
 		this.assertEquals(ldapTest.ld.countEntries(sr), 1)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
 		System.strCpy(1stAttr, stAttr)
-		this.assertEquals(stAttr, "uid")
+		this.assertEquals(stAttr, "cn")
 		valuesList := LdapTest.ld.getValues(1stEntry, 1stAttr)
 		this.assertEquals(System.ptrListToStrArray(valuesList)[1], "admin")
 	}
@@ -305,7 +261,7 @@ class LdapTest extends TestCase {
 	@Test_countEntries() {
 		this.assertEquals(LdapTest.ld.search(sr, "", "(ou=*)"
 				, Ldap.SCOPE_ONELEVEL), 0)
-		this.assertEquals(LdapTest.ld.countEntries(sr), 3)
+		this.assertEquals(LdapTest.ld.countEntries(sr), 1)
 	}
 
 	@Depend_@Test_add() {
@@ -331,8 +287,9 @@ class LdapTest extends TestCase {
 		rc := LdapTest.ld.add("cn=Peter Pan,dc=example,dc=com", newEntry)
 		if (rc) {
 			this.fail("Entry to create already existing!`nTo delete"
-					, "ldapdelete -h localhost:10389 -D uid=admin,ou=system "
-					. "-w secret ""cn=Peter Pan,dc=example,dc=com"""
+					, Format("ldapdelete -h localhost:{:i} -D {:s} "
+					. "-w {:s} ""cn=Peter Pan,dc=example,dc=com"""
+					, LdapTest.PORT, LdapTest.ADMINUSER, LdapTest.PASSWORD)
 					, true)
 		}
 	}
@@ -363,55 +320,55 @@ class LdapTest extends TestCase {
 		; ahklint-ignore-begin: W002,W003
 		Example0 := "(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2))(|(accountExpires=0)(accountExpires=9223372036854775807)))"
 		Example0_output := "(&`n"
-	                     . "  (objectCategory=person)`n"
-						 . "  (objectClass=user)`n"
-						 . "  (!`n"
-						 . "    (userAccountControl:1.2.840.113556.1.4.803:=2)`n"
-						 . "  )`n"
-						 . "  (|`n"
-						 . "    (accountExpires=0)`n"
-						 . "    (accountExpires=9223372036854775807)`n"
-						 . "  )`n"
-						 . ")"
+				. "  (objectCategory=person)`n"
+				. "  (objectClass=user)`n"
+				. "  (!`n"
+				. "    (userAccountControl:1.2.840.113556.1.4.803:=2)`n"
+				. "  )`n"
+				. "  (|`n"
+				. "    (accountExpires=0)`n"
+				. "    (accountExpires=9223372036854775807)`n"
+				. "  )`n"
+				. ")"
 		Example1 := "(&(objectCategory=person)(objectClass=user)(!(userAccountControl:1.2.840.113556.1.4.803:=2))(|(accountExpires=0)(accountExpires=9223372036854775807))(userAccountControl:1.2.840.113556.1.4.803:=65536))"
 		Example1_output := "(&`n"
-						 . "  (objectCategory=person)`n"
-						 . "  (objectClass=user)`n"
-						 . "  (!`n"
-						 . "    (userAccountControl:1.2.840.113556.1.4.803:=2)`n"
-						 . "  )`n"
-						 . "  (|`n"
-						 . "    (accountExpires=0)`n"
-						 . "    (accountExpires=9223372036854775807)`n"
-						 . "  )`n"
-						 . "  (userAccountControl:1.2.840.113556.1.4.803:=65536)`n"
-						 . ")"
+				. "  (objectCategory=person)`n"
+				. "  (objectClass=user)`n"
+				. "  (!`n"
+				. "    (userAccountControl:1.2.840.113556.1.4.803:=2)`n"
+				. "  )`n"
+				. "  (|`n"
+				. "    (accountExpires=0)`n"
+				. "    (accountExpires=9223372036854775807)`n"
+				. "  )`n"
+				. "  (userAccountControl:1.2.840.113556.1.4.803:=65536)`n"
+				. ")"
 		Example2 := "(&(&(!(cn:dn:=jbond))(|(ou:dn:=ResearchAndDevelopment)(ou:dn:=HumanResources)))(objectclass=Person))"
 		Example2_output := "(&`n"
-						 . "  (&`n"
-						 . "    (!`n"
-						 . "      (cn:dn:=jbond)`n"
-						 . "    )`n"
-						 . "    (|`n"
-						 . "      (ou:dn:=ResearchAndDevelopment)`n"
-						 . "      (ou:dn:=HumanResources)`n"
-						 . "    )`n"
-						 . "  )`n"
-						 . "  (objectclass=Person)`n"
-						 . ")"
+				. "  (&`n"
+				. "    (!`n"
+				. "      (cn:dn:=jbond)`n"
+				. "    )`n"
+				. "    (|`n"
+				. "      (ou:dn:=ResearchAndDevelopment)`n"
+				. "      (ou:dn:=HumanResources)`n"
+				. "    )`n"
+				. "  )`n"
+				. "  (objectclass=Person)`n"
+				. ")"
 		Example3 := "(&(&(!(cn:dn:=jbond))(|(ou:dn:=ResearchAndDevelopment)(ou:dn:=HumanResources)))(objectclass=Person))"
 		Example3_output := "([0;32m&[0m`n"
-						 . "  ([0;32m&[0m`n"
-						 . "    ([0;32m![0m`n"
-						 . "      (cn:dn:[0;35m[0;31m=[0m[0;34mjbond[0m)`n"
-						 . "    )`n"
-						 . "    ([0;32m|[0m`n"
-						 . "      (ou:dn:[0;35m[0;31m=[0m[0;34mResearchAndDevelopment[0m)`n"
-						 . "      (ou:dn:[0;35m[0;31m=[0m[0;34mHumanResources[0m)`n"
-						 . "    )`n"
-						 . "  )`n"
-						 . "  ([0;35mobjectclass[0;31m=[0m[0;34mPerson[0m)`n"
-						 . ")"
+				. "  ([0;32m&[0m`n"
+				. "    ([0;32m![0m`n"
+				. "      (cn:dn:[0;35m[0;31m=[0m[0;34mjbond[0m)`n"
+				. "    )`n"
+				. "    ([0;32m|[0m`n"
+				. "      (ou:dn:[0;35m[0;31m=[0m[0;34mResearchAndDevelopment[0m)`n"
+				. "      (ou:dn:[0;35m[0;31m=[0m[0;34mHumanResources[0m)`n"
+				. "    )`n"
+				. "  )`n"
+				. "  ([0;35mobjectclass[0;31m=[0m[0;34mPerson[0m)`n"
+				. ")"
 		; ahklint-ignore-end
 		this.assertEquals(Ldap.formatFilter(Example0, false), Example0_output)
 		this.assertEquals(Ldap.formatFilter(Example1, false), Example1_output)
@@ -518,6 +475,71 @@ class LdapTest extends TestCase {
 		this.assertEqualsIgnoreCase(LdapTest.ld_vi.getDn(1stEntry)
 				, "cn=tam_blacklist,ou=groups,dc=viessmann,dc=net")
 		this.assertEquals(LdapTest.ld_vi.unbind(), 0)
+	}
+
+	startDockerLdap() {
+		RunWait %COMSPEC% /c ""docker-compose" "-f" "ldap/openldap.yaml" "up" "-d"", %A_ScriptDir% ; ahklint-ignore: W002
+		sleep 1000
+	}
+
+	stopDockerLdap() {
+		RunWait %COMSPEC% /c ""docker-compose" "-f" "ldap/openldap.yaml" "down"", %A_ScriptDir% ; ahklint-ignore: W002
+	}
+
+	startApacheDsLdap() {
+		for ldap_svc in ComObjGet("winmgmts:")
+				.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
+			if (ldap_svc.state != "Running") {
+				LdapTest.coverLdapService := true
+				if ((ldap_rc := ldap_svc.startService()) != 0) {
+					this.fail("*** FATAL: apacheds-default service "
+							. "could not be startet: " ldap_rc,, true)
+				}
+				LdapTest.waitForApacheDsState("Running")
+			} else {
+				TestCase.writeLine("apacheds-default service is already running") ; ahklint-ignore: W002
+			}
+			break
+		}
+	}
+
+	stopApacheDsLdap() {
+		if (LdapTest.coverLdapService) {
+			for ldap_svc in ComObjGet("winmgmts:")
+					.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
+				if (ldap_svc.state = "Running") {
+					TestCase.writeLine("Stopping apacheds-default service...") ; ahklint-ignore: W002
+					if ((ldap_rc := ldap_svc.stopService()) != 0) {
+						this.fail("*** FATAL: apacheds-default service "
+								. "could not be stopped: " ldap_rc,, true)
+					}
+					LdapTest.waitForApacheDsState("Stopped")
+				} else {
+					TestCase.writeLine("apacheds-default service has already been stopped") ; ahklint-ignore: W002
+				}
+				break
+			}
+		}
+	}
+
+	waitForApacheDsState(expectedState) {
+		max_tries := 600
+		while (max_tries > 0 && ldap_svc.state != expectedState) {
+			sleep 100
+			for ldap_svc in ComObjGet("winmgmts:")
+					.execQuery("Select * from Win32_Service where Name='apacheds-default'") { ; ahklint-ignore: W002
+				break
+			}
+			max_tries--
+		}
+		if (max_tries = 0) {
+			this.fail(Format("*** FATAL: apacheds-default service "
+					. "did not reach state '{:s}' in an adequate time"
+					, expectedState),, true)
+		} else {
+			TestCase.writeLine(Format("apacheds-default service is in state "
+					.  " {:s}", expectedState)) ; ahklint-ignore: W002
+		}
 	}
 }
 

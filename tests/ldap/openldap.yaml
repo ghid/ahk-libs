@@ -1,0 +1,18 @@
+version: '3'
+services:
+  openldap:
+    image: openldap:latest
+    ports:
+      - 10389:389
+    environment:
+      - SLAPD_PASSWORD=secret
+      - SLAPD_DOMAIN=example.com
+      - SLAPD_CONFIG_PASSWORD=verysecret
+      # - SLAPD_ORGANIZATION=
+      # - SLAPD_ADDITIONAL_SCHEMAS=
+      # - SLAPD_ADDITIONAL_MODULES=
+      # - SLAPD_FORCE_RECONFIGURE=
+      # - SLAPD_PPOLICY_DN_PREFIX=
+    volumes:
+      - /c/var/docker/volumes/ldap-conf:/etc/ldap
+      - /c/var/docker/volumes/ldap-data:/var/lib/ldap
