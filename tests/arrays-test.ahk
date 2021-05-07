@@ -1,4 +1,4 @@
-; ahk: console
+﻿; ahk: console
 #NoEnv
 #Warn All, StdOut
 
@@ -20,7 +20,7 @@
 class ArraysTest extends TestCase {
 
 	requires() {
-		return [TestCase, Arrays]
+		return [TestCase, Arrays, String]
 	}
 
 	@Test_class() {
@@ -374,6 +374,14 @@ class ArraysTest extends TestCase {
 
 	findLongWords(word) {
 		return StrLen(word) > 6
+	}
+
+	@Test_contains() {
+		words := ["spray", "limit", "elite", "exubertant", "destruction", "present"] ; ahklint-ignore: W002
+		this.assertTrue(Arrays.filter(words
+				, String.equals.bind("elite")).count() > 0)
+		this.assertFalse(Arrays.filter(words
+				, String.equals.bind("foobar")).count() > 0)
 	}
 
 	@Test_sort() {

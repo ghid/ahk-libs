@@ -80,7 +80,7 @@ class FlimsyDataTestClass extends TestCase {
 
 	@Test_randomPattern() {
 		fd4p := new FlimsyData.Pattern(0x0a1b2c)
-		this.assertEquals(fd4p.getPattern("v%[Mo,Di,Mi,Do,Fr,Sa,So]AA%[Jan,Feb,Mar,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez]C.#%[PHd,BatJ,HosB,KnoA,TsA,SrP]"), "oDi3,JunP-7HosB") ; ahklint-ignore: W002
+		this.assertEquals(fd4p.getPattern("v%[Mo,Di,Mi,Do,Fr,Sa,So]AA%[Jan,Feb,Mar,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez]C.#%[PHd,BatJ,HosB,KnoA,TsA,SrP]"), "oDi5YJunP-7HosB") ; ahklint-ignore: W002
 		this.assertEquals(fd4p.getPattern(["CvccVcv##$", "xxx%[&,$,%,@]"])
 				, "DehlIpi14<")
 		this.assertEquals(fd4p.getPattern(["CvccVcv##$", "xxx%[&,$,%,@]"])
