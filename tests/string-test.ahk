@@ -1,4 +1,4 @@
-﻿; ahk: console
+﻿;@Ahk2Exe-ConsoleApp
 #NoEnv
 #Warn All, StdOut
 
@@ -31,8 +31,8 @@ class StringTest extends TestCase {
 		this.assertEquals(String.TRIM_RIGHT, +1)
 		this.assertEquals(String.TRIM_ALL,    0)
 
-		this.assertEquals(String.ASHEX_LOWER, 	 0)
-		this.assertEquals(String.ASHEX_UPPER, 	 1)
+		this.assertEquals(String.ASHEX_LOWER,    0)
+		this.assertEquals(String.ASHEX_UPPER,    1)
 		this.assertEquals(String.ASHEX_NOPREFIX, 2)
 		this.assertEquals(String.ASHEX_2DIGITS,  4)
 
@@ -682,8 +682,7 @@ class StringTest extends TestCase {
 		this.assertEquals("%4.2f".printf(3.1416), "3.14")
 		this.assertEquals("%7.3f".printf(3.1416), "  3.141", compareAsString)
 		this.assertEquals("%7.1f".printf(3.1416), "    3.1", compareAsString)
-		this.assertEquals("%+7.1f".printf(3.1416), "   +3.1"
-				, compareAsString)
+		this.assertEquals("%+7.1f".printf(3.1416), "   +3.1", compareAsString)
 		this.assertEquals("%+9.4f".printf(-3.1416), "  -3.1416"
 				, compareAsString)
 		this.assertEquals("%+09.4f".printf(-3.1416), "-003.1416"
@@ -717,14 +716,10 @@ class StringTest extends TestCase {
 	}
 
 	@Test_printf_20191009() {
-		this.assertEquals("%i".printf(47.00)
-				, "47", compareAsString)
-		this.assertEquals("%-7.0i".printf(-47.00)
-				, "-47    ", compareAsString)
-		this.assertEquals("%-7.5i".printf(-47)
-				, "-0047  ", compareAsString)
-		this.assertEquals("%-7.5i".printf(-47.00)
-				, "-0047  ", compareAsString)
+		this.assertEquals("%i".printf(47.00), "47", compareAsString)
+		this.assertEquals("%-7.0i".printf(-47.00), "-47    ", compareAsString)
+		this.assertEquals("%-7.5i".printf(-47), "-0047  ", compareAsString)
+		this.assertEquals("%-7.5i".printf(-47.00), "-0047  ", compareAsString)
 		this.assertEquals("You earned %i credits".printf(47.000)
 				, "You earned 47 credits")
 		this.assertEquals("Amount owed is $%.2f".printf(1730)
@@ -771,7 +766,6 @@ class StringTest extends TestCase {
 		this.assertException("".base, "hyphenate", "", "", "Vorgartenzwerg-")
 	}
 }
-;}}}
 
 exitapp StringTest.runTests()
 
