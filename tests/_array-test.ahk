@@ -35,6 +35,7 @@ class _arrayTest extends TestCase {
         TestCase.assertTrue(IsFunc("_Array.some"))
         TestCase.assertTrue(IsFunc("_Array.sort"))
         TestCase.assertTrue(IsFunc("_Array.splice"))
+        TestCase.assertTrue(IsFunc("_Array.spread"))
         TestCase.assertTrue(IsFunc("_Array.toString"))
         TestCase.assertTrue(IsFunc("_Array.unshift"))
         TestCase.assertTrue(IsFunc("_Array.Quicksort.sort"))
@@ -421,6 +422,12 @@ class _arrayTest extends TestCase {
         myFish := ["angel","clown","mandarin","sturgeon"]
         TestCase.assertTrue(myFish.splice(3).equals(["mandarin","sturgeon"]))
         TestCase.assertTrue(myFish.equals(["angel","clown"]))
+    }
+
+    @Test_spread() {
+        numbers := [1,2,3]
+        TestCase.assertTrue(numbers.spread(4).equals([1,2,3,4]))
+        TestCase.assertTrue(numbers.spread(4,5).equals([1,2,3,4,5]))
     }
 
     @Test_toString() {

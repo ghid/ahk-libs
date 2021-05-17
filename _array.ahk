@@ -313,6 +313,12 @@ class _Array {
         return removedElements
     }
 
+    spread(addValues*) {
+        newArray := this.clone()
+        newArray.push(addValues*)
+        return newArray
+    }
+
     toString() {
         result := ""
         for each, value in this {
