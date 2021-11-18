@@ -7,7 +7,7 @@ class Calendar {
 	#Include Units.ahk
 	
 	version() {
-		return "1.0.0"
+		return "1.0.1"
 	}
 
 	requires() {
@@ -379,21 +379,54 @@ class Calendar {
 		return this
 	}
 
-	findWeekDay(dayOfWeek=1, occurenceAndDirection=0.1) {
+    findNextWeekDay(dayOfWeek=1, occurence=1) {
 		Calendar.Helper.testForValidWeekDay(dayOfWeek)
-		Calendar.Helper.testForValidNumber(occurenceAndDirection)
-		if (Calendar.Helper
-				.findNextOrFirstOccurenceOfWeekDay(occurenceAndDirection)) {
-			occurenceOfWeekDay
-					:= Calendar.Helper.findNextOccurenceOfWeekDay(this.clone()
-					, dayOfWeek, occurenceAndDirection)
-		} else {
-			occurenceOfWeekDay
-					:= Calendar.Helper.findRecentOccurenceOfWeekDay(this.clone()
-					, dayOfWeek, occurenceAndDirection)
-		}
-		return occurenceOfWeekDay
-	}
+		Calendar.Helper.testForValidNumber(occurence)
+        timeStamp := this.clone()
+        diff := dayOfWeek - timeStamp.dayOfWeek()
+        if (diff <= 0) {
+            diff += occurence * 7
+        } else {
+            diff += (occurence - 1) * 7
+        }
+        return timeStamp.adjust(,,diff)
+    }
+
+    findRecentWeekDay(dayOfWeek=1, occurence=1) {
+		Calendar.Helper.testForValidWeekDay(dayOfWeek)
+		Calendar.Helper.testForValidNumber(occurence)
+        timeStamp := this.clone()
+        diff := dayOfWeek - timeStamp.dayOfWeek()
+        if (diff < -6 || diff == 0) {
+            diff -= occurence * 7
+        }
+        return timeStamp.adjust(,, diff)
+    }
+
+    findWeekDay(dayOfWeek=1, occurence=1) {
+		Calendar.Helper.testForValidWeekDay(dayOfWeek)
+		Calendar.Helper.testForValidNumber(occurence)
+        timeStamp := this.clone()
+        if (occurence > 0) {
+            timeStamp.setAsDay(1)
+            if (timeStamp.dayOfWeek() == dayOfWeek && occurence == 1) {
+                return timeStamp
+            }
+            diff := dayOfWeek - timeStamp.dayOfWeek()
+            if (diff < 0) {
+                diff += occurence * 7
+            } else {
+                diff += (occurence - 1) * 7
+            }
+        } else {
+            timeStamp.setAsDay(timeStamp.daysInMonth())
+            if (timeStamp.dayOfWeek() == dayOfWeek && occurence == -1) {
+                return timeStamp
+            }
+            diff := (dayOfWeek - timeStamp.dayOfWeek()) + (occurence + 1) * 7
+        }
+        return timeStamp.adjust(,, diff)
+    }
 
 	formatTime(pattern="") {
 		dateTime := this.timeStamp

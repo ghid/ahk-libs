@@ -1,4 +1,4 @@
-; ahk: console
+;@Ahk2Exe-ConsoleApp
 #NoEnv
 #Warn All, StdOut
 
@@ -579,6 +579,7 @@ class CalendarTest extends TestCase {
 	}
 
 	@Test_adjust() {
+        this.assertAdjust(new Calendar(20130214).adjust(), 20130214000000)
 		this.assertEquals(new Calendar(20130214)
 				.adjust(0, -1, 0, 0, 0, 0).get(), 20130114000000)
 		this.assertEquals(new Calendar(20130218)
@@ -672,34 +673,7 @@ class CalendarTest extends TestCase {
 	}
 
 	@Test_findWeekDay() {
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.THURSDAY).get(), 20120614000000)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.SATURDAY).asDay(), 16)
-		this.assertEquals(new Calendar(20120612)
-				.findWeekDay().asDay(), 17)
-		this.assertEquals(new Calendar(20120612)
-				.findWeekDay(Calendar.MONDAY).asDay(), 18)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.MONDAY).asDay(), 18)
-		this.assertEquals(new Calendar(20120617)
-				.findWeekDay(Calendar.MONDAY).asDay(), 18)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.WEDNESDAY).get(), 20120620000000)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.TUESDAY, Calendar.FIND_RECENT).get()
-				, 20120612000000)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.MONDAY, Calendar.FIND_RECENT).asDay(), 11)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.SUNDAY, Calendar.FIND_RECENT).asDay(), 10)
-		this.assertEquals(new Calendar(20120613)
-				.findWeekDay(Calendar.WEDNESDAY, Calendar.FIND_RECENT).asDay()
-				, 6)
-		this.assertEquals(new Calendar(20120630)
-				.findWeekDay(Calendar.SUNDAY, Calendar.FIND_RECENT).asDay(), 24)
-		this.assertEquals(new Calendar(201206)
-				.findWeekDay().asDay(), 3)										; Erster Sonntag im Juni 2012
+		this.assertEquals(new Calendar(201206).findWeekDay().asDay(), 3)		; Erster Sonntag im Juni 2012
 		this.assertEquals(new Calendar(201206)
 				.findWeekDay(Calendar.MONDAY).asDay(), 4)						; Erster Montag im Juni 2012
 		this.assertEquals(new Calendar(201206)
@@ -726,6 +700,12 @@ class CalendarTest extends TestCase {
 				.findWeekDay(Calendar.MONDAY, 4).asDay(), 22)					; 4. Montag im Juli 2013
 		this.assertEquals(new Calendar(201307)
 				.findWeekDay(Calendar.MONDAY, 5).asDay(), 29)					; 5. Montag im Juli 2013
+		this.assertEquals(new Calendar(202111)
+				.findWeekDay(Calendar.FRIDAY, 1).asDay(), 5) 					; 1. Freitag im November 2021
+		this.assertEquals(new Calendar(202111)
+				.findWeekDay(Calendar.FRIDAY, 2).asDay(), 12)					; 2. Freitag im November 2021
+		this.assertEquals(new Calendar(202111)
+				.findWeekDay(Calendar.FRIDAY, 3).asDay(), 19)					; 3. Freitag im November 2021
 		this.assertEquals(new Calendar(201307)
 				.findWeekDay(Calendar.MONDAY, 6).asDate(), 20130805)			; 6. Montag im Juli 2013 (gibt es nicht!)
 		cal := new Calendar()
@@ -735,9 +715,50 @@ class CalendarTest extends TestCase {
 		this.assertException(cal, "findWeekDay",,, 8)
 	}
 
+    @Test_findNextWeekDay() {
+		this.assertEquals(new Calendar(20120613)
+				.findNextWeekDay(Calendar.THURSDAY).get(), 20120614000000)
+		this.assertEquals(new Calendar(20120613)
+				.findNextWeekDay(Calendar.SATURDAY).asDay(), 16)
+		this.assertEquals(new Calendar(20120612).findNextWeekDay().asDay(), 17)
+		this.assertEquals(new Calendar(20120612)
+				.findNextWeekDay(Calendar.MONDAY).asDay(), 18)
+		this.assertEquals(new Calendar(20120613)
+				.findNextWeekDay(Calendar.MONDAY).asDay(), 18)
+		this.assertEquals(new Calendar(20120617)
+				.findNextWeekDay(Calendar.MONDAY).asDay(), 18)
+		this.assertEquals(new Calendar(20120613)
+				.findNextWeekDay(Calendar.WEDNESDAY).get(), 20120620000000)
+		cal := new Calendar()
+		this.assertException(cal, "findNextWeekDay",,, "abc")
+		this.assertException(cal, "findNextWeekDay",,, 1, "abc")
+		this.assertException(cal, "findNextWeekDay",,, 0)
+		this.assertException(cal, "findNextWeekDay",,, 8)
+    }
+
+    @Test_findRecentWeekDay() {
+		this.assertEquals(new Calendar(20120613)
+				.findRecentWeekDay(Calendar.TUESDAY).get(), 20120612000000)
+		this.assertEquals(new Calendar(20120613)
+				.findRecentWeekDay(Calendar.MONDAY).asDay(), 11)
+		this.assertEquals(new Calendar(20120613)
+				.findRecentWeekDay(Calendar.SUNDAY).asDay(), 10)
+		this.assertEquals(new Calendar(20120613)
+				.findRecentWeekDay(Calendar.WEDNESDAY).asDay(), 6)
+		this.assertEquals(new Calendar(20120630)
+				.findRecentWeekDay(Calendar.SUNDAY).asDay(), 24)
+		cal := new Calendar()
+		this.assertException(cal, "findRecentWeekDay",,, "abc")
+		this.assertException(cal, "findRecentWeekDay",,, 1, "abc")
+		this.assertException(cal, "findRecentWeekDay",,, 0)
+		this.assertException(cal, "findRecentWeekDay",,, 8)
+    }
+
 	@Test_formatTime() {
 		this.assertEquals(new Calendar(201311151325)
-				.formatTime(), "13:25 Freitag, 15. November 2013")
+				.formatTime(), "13:25 15. Nov. 2013")
+		this.assertEquals(new Calendar(201311151325)
+				.formatTime("HH:mm dddd, dd. MMMM yyyy"), "13:25 Freitag, 15. November 2013")
 		this.assertEquals(new Calendar(201311151325)
 				.formatTime("ShortDate"), "15.11.2013")
 		this.assertEquals(new Calendar(201311151325)
