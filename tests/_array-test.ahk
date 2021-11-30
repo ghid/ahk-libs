@@ -427,7 +427,11 @@ class _arrayTest extends TestCase {
     @Test_spread() {
         numbers := [1,2,3]
         TestCase.assertTrue(numbers.spread(4).equals([1,2,3,4]))
-        TestCase.assertTrue(numbers.spread(4,5).equals([1,2,3,4,5]))
+        TestCase.assertTrue(numbers.spread(4,5,6).equals([1,2,3,4,5,6]))
+        rivers := ["Nile","Ganges","Yangte"]
+        moreRivers := ["Danube","Amazon"]
+        TestCase.assertEquals(rivers.spread(moreRivers)
+                .equals(["Nile","Ganges","Yangte","Danube","Amazon"]))
     }
 
     @Test_toString() {

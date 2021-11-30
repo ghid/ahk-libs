@@ -315,7 +315,15 @@ class _Array {
 
     spread(addValues*) {
         newArray := this.clone()
-        newArray.push(addValues*)
+        for each, addValue in addValues {
+            if (addValue.count() != "") {
+                for each, element in addValue {
+                    newArray.push(element)
+                }
+            } else {
+                newArray.push(addValue)
+            }
+        }
         return newArray
     }
 
