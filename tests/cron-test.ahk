@@ -1,4 +1,4 @@
-﻿; ahk: console
+﻿;@Ahk2Exe-ConsoleApp
 #NoEnv
 #Warn All, StdOut
 SetBatchLines -1
@@ -67,7 +67,7 @@ class CronTest extends TestCase {
 				. "(?P<hour>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
 				. "(?P<day>L|((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
 				. "(?P<month>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s+"
-				. "(?P<weekday>((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s"
+				. "(?P<weekday>[1-7]#[1-5]|((\d+,)*\d+|(\d+-\d+,)*\d+-\d+|\*)(\/\d+)*)\s" ;ahklint-ignore: W002
 				. "+(?P<functionName>.+?)$")
 	}
 
@@ -184,6 +184,19 @@ class CronTest extends TestCase {
 		this.assertEquals(Cron.cronTab, "`n1:* * L * * Dummy"
 				. "`n2:59 23 L 3,6,9,12 * FooBar`n")
 	}
+
+    @Test_nthWeekdayOfMonth() {
+        this.assertEquals(Cron.nthWeekdayOfMonth(20211112, 6, 26), "|6#4")
+        this.assertEquals(Cron.nthWeekdayOfMonth(20211112, 6, 25), "")
+        this.assertEquals(Cron.nthWeekdayOfMonth(20211112, 5, 26), "")
+        this.assertEquals(Cron.nthWeekdayOfMonth(20211112, 5, 25), "|5#4")
+    }
+
+    @Test_nthDayInMonth() {
+		Cron.reset()
+		Cron.addScheduler("0 12 * * 2#1", "Dummy")
+        this.assertEquals(Cron.cronTab, "`n1:0 12 * * 2#1 Dummy`n")
+    }
 }
 
 dummy(n) {

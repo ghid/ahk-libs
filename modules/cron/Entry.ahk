@@ -79,7 +79,7 @@
 	}
 
 	range2List(range, lowerBound, upperBound, currentValue=0) {
-		if (range = "*") {
+		if (range = "*" || RegExMatch(range, "[1-7]#[1-5]")) {
 			return range
 		}
 		intervals := []
