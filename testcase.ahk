@@ -68,12 +68,32 @@ class TestCase {
     }
 
     consoleCodePage() {
+        EnvGet shell, SHELL
+        codePage := (shell != ""
+                ? TestCase.shellCodePage()
+                : TestCase.windowsCodePage())
+        FileEncoding cp%codePage%
+        return "cp" codePage
+    }
+
+    shellCodePage() {
+        EnvGet locale, LANG
+        RegExMatch(locale, "(?<=\.)[a-zA-Z0-9-]+$", codePage)
+        switch codePage {
+            case "utf-8":
+                return 65001
+            default:
+                return codePage
+        }
+    }
+
+    windowsCodePage() {
         codePage := DllCall("GetConsoleCP", "UInt")
         if (codePage == 0) {
             codePage := 850
         }
-        FileEncoding cp%codePage%
-        return "cp" codePage
+        print(A_ThisFunc "#codePage: ", codePage)
+        return codePage
     }
 
     initAPIOverhead() {
