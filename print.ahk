@@ -1,49 +1,64 @@
-print(objects*) {
-    static stdOut := 0
-    if (stdOut == 0) {
-        stdOut := FileOpen("*", "w")
+﻿print(objects*) {
+    static printStdOut := 0
+
+    if (!IsObject(printStdOut)) {
+        printStdOut := FileOpen("*", "w", "utf-8")
     }
     for each, thing in objects {
         if (A_Index > 1) {
-            stdOut.write(" ")
+            printStdOut.write(" ")
         }
         if (IsObject(thing)) {
-            stdOut.write(print#objectToString(thing))
+            printStdOut.write(objectToString(thing))
         } else {
-            stdOut.write(thing)
+            printStdOut.write(thing)
         }
     }
-    stdOut.writeLine("")
-}
+    printStdOut.writeLine("")
 
-print#objectToString(a) {
-    static color := print#hasAnsiSupport()
-            ? {on: "[32m", off: "[0m"}
-            : {on: "", off: ""}
-    isArray := a.__class = "_Array"
-            || (a.minIndex() == 1 && a.maxIndex() == a.count())
-    result := isArray ? "[ " : "{ "
-    for each, value in a {
-        result .= A_Index > 1 ? ", " : ""
-        if (IsObject(value)) {
-            result .= (isArray ? "" : each ": ") print#objectToString(value)
+    objectToString(a) {
+        static color := hasAnsiSupport()
+                ? {on: "[32m", off: "[0m"}
+                : {on: "", off: ""}
+
+        if (a.__class = "Array") {
+            result .= "[ "
+            for (value in a) {
+                result .= A_Index > 1 ? ", " : ""
+                if (IsObject(value)) {
+                    result .= objectToString(value)
+                } else {
+                    resultValue := (IsNumber(value)
+                            ? value
+                            : color.on "`"" value "`"" color.off)
+                    result .= resultValue
+                }
+            }
+            return result .= " ]"
         } else {
-            resultValue := (value + 0 == value
-                    ? value
-                    : color.on """" value """" color.off)
-            result .= isArray ? resultValue : each ": " resultValue
+            result .= "{ "
+            for (each, value in a.ownProps()) {
+                result .= A_Index > 1 ? ", " : ""
+                if (IsObject(value)) {
+                    result .= each ": " objectToString(value)
+                } else {
+                    resultValue := (IsNumber(value)
+                            ? value
+                            : color.on "`"" value "`"" color.off)
+                    result .= each ": " resultValue
+                }
+            }
+            return result .= " }"
         }
     }
-    return result .= isArray ? " ]" : " }"
-}
 
-
-print#hasAnsiSupport() {
-    EnvGet da, DISABLE_ANSI
-    EnvGet shell, SHELL
-    if (RegExMatch(A_OSVersion, "^10\.") || shell != "") {
-        return true && (!da)
+    hasAnsiSupport() {
+        da := EnvGet("DISABLE_ANSI")
+        shell := EnvGet("SHELL")
+        if (RegExMatch(A_OSVersion, "^10\.") || shell != "") {
+            return true && (!da)
+        }
+        ansicon_version := EnvGet("ANSICON_VER")
+        return ansicon_version && (!da)
     }
-    EnvGet ansicon_version, ANSICON_VER
-    return ansicon_version && (!da)
 }
