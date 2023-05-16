@@ -447,6 +447,23 @@ class TestCase {
         return result
     }
 
+    compareDeepObject(actualValue, expectedValue) {
+        if (!isObject(actualValue) || !isObject(expectedValue)) {
+            return false
+        }
+        for key, value in actualValue {
+            if (IsObject(value)) {
+                if (TestCase.compareDeepObject(value, expectedValue[key])) {
+                    expectedValue.delete(key)
+                }
+            } else if (value != expectedValue[key]) {
+                return false
+            }
+            expectedValue.delete(key)
+        }
+        return expectedValue.count() == 0
+    }
+
     assertTrue(expression="", messageText="AssertionError") {
         TestData.assertionCounter++
         if (expression == "" || !expression) {

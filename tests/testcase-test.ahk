@@ -1,4 +1,4 @@
-;@Ahk2Exe-ConsoleApp
+﻿;@Ahk2Exe-ConsoleApp
 #Warn All, StdOut
 
 #Include <ansi>
@@ -137,6 +137,11 @@ class TestCaseTest extends TestCase {
 		this.assertEquals(TestCase.stateName("X"), "Unknown state: X")
 		this.assertEquals(TestCase.stateName(""), "Unknown test")
 	}
+
+    @Test_assertEqualsDeepObject() {
+        TestCase.assertEquals({a:1,b:{x:42,z:[1,2,3]},u:"123"},{a:1,b:{x:42,z:[0,1,2,3]},u:"123"}, TestCase.compareDeepObject.bind(TestCase))
+    }
+
 }
 
 exitapp TestCaseTest.runTests()
