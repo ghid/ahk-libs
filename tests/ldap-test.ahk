@@ -20,9 +20,9 @@ class LdapTest extends TestCase {
 
 	static SERVER := "localhost"
 	static PORT := 10389
-	static ADMINUSER := "cn=admin,dc=example,dc=com"
-	static PASSWORD := "secret"
-	static BASE_DN := "dc=example,dc=com"
+	static ADMINUSER := "cn=admin,dc=example,dc=org"
+	static PASSWORD := "admin"
+	static BASE_DN := "dc=example,dc=org"
 	static VI_SERVER := "lxs150w05.viessmann.com"
 	static VI_PORT := 389
 
@@ -284,11 +284,11 @@ class LdapTest extends TestCase {
 				, mod_vals: ["Developer"]})
 				.implode(_title)
 		System.ptrList(newEntry, &_cn, &_oc, &_givenName, &_sn, &_title, 0)
-		rc := LdapTest.ld.add("cn=Peter Pan,dc=example,dc=com", newEntry)
+		rc := LdapTest.ld.add("cn=Peter Pan,dc=example,dc=org", newEntry)
 		if (rc) {
 			this.fail("Entry to create already existing!`nTo delete"
 					, Format("ldapdelete -h localhost:{:i} -D {:s} "
-					. "-w {:s} ""cn=Peter Pan,dc=example,dc=com"""
+					. "-w {:s} ""cn=Peter Pan,dc=example,dc=org"""
 					, LdapTest.PORT, LdapTest.ADMINUSER, LdapTest.PASSWORD)
 					, true)
 		}
@@ -306,7 +306,7 @@ class LdapTest extends TestCase {
 				, "Lightning And Strike Detonator"]})
 				.implode(_title)
 		System.ptrList(modEntry, &_title, &_sn, 0)
-		rc := LdapTest.ld.modify("cn=Peter Pan,dc=example,dc=com", modEntry)
+		rc := LdapTest.ld.modify("cn=Peter Pan,dc=example,dc=org", modEntry)
 		this.assertEquals(rc, 0)
 	}
 
@@ -383,10 +383,10 @@ class LdapTest extends TestCase {
 	@Test_searchByDN() {
 		values := []
 		this.assertException(LdapTest.ld, "Search",,, sr := ""
-				, "cn=Peter Pan,dc=example,dc=com", "(objectclass=*)"
+				, "cn=Peter Pan,dc=example,dc=org", "(objectclass=*)"
 				,, "string_nicht_erlaubt")
 		this.assertEquals(LdapTest.ld.search(sr
-				, "cn=Peter Pan,dc=example,dc=com"
+				, "cn=Peter Pan,dc=example,dc=org"
 				, "(objectclass=*)",, ["title", "sn"]), 0)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
@@ -404,7 +404,7 @@ class LdapTest extends TestCase {
 	}
 	@Test_searchAttributes() {
 		values := []
-		this.assertEquals(LdapTest.ld.search(sr, "dc=example,dc=com"
+		this.assertEquals(LdapTest.ld.search(sr, "dc=example,dc=org"
 				, "(cn=Peter Pan)",, ["title", "sn"]), 0)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
@@ -422,7 +422,7 @@ class LdapTest extends TestCase {
 	}
 	@Test_searchMultiple() {
 		values := []
-		this.assertEquals(LdapTest.ld.search(sr, "dc=example,dc=com"
+		this.assertEquals(LdapTest.ld.search(sr, "dc=example,dc=org"
 				, "(sn=van Pelt)", 2, ["givenname"]), 0)
 		1stEntry := LdapTest.ld.firstEntry(sr)
 		1stAttr := LdapTest.ld.firstAttribute(1stEntry)
@@ -442,7 +442,7 @@ class LdapTest extends TestCase {
 		return "@Test_add"
 	}
 	@Test_delete() {
-		rc := LdapTest.ld.delete("cn=Peter Pan,dc=example,dc=com")
+		rc := LdapTest.ld.delete("cn=Peter Pan,dc=example,dc=org")
 		this.assertEquals(rc, 0)
 	}
 
