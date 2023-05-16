@@ -161,22 +161,17 @@ class Math {
 		if (Math.isPrime(number)) {
 			return new PrimeFactorProduct(number)
 		}
+
 		listOfPrimeFactors := new PrimeFactorProduct()
-		i := 2
-		while (number > 1 && number / i != 1) {
-			while (Mod(number, i) = 0) {
-				listOfPrimeFactors.add(i)
-				number //= i
-			}
-			if (number > 1) {
-				loop {
-					i++
-				} until (Math.isPrime(i))
-			}
-		}
-		if (number > 1) {
-			listOfPrimeFactors.add(i)
-		}
+        divisor := 2
+        while (number > 1) {
+            while (Mod(number, divisor) == 0) {
+                listOfPrimeFactors.add(divisor)
+                number //= divisor
+            }
+            divisor++
+        }
+
 		return listOfPrimeFactors
 	}
 
